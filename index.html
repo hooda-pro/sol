@@ -179,30 +179,44 @@ a { text-decoration:none; color:inherit; }
   border-color:transparent; font-weight:700;
 }
 .nav-links a.active::after { display:none; }
-.nav-school-btn {
-  background:linear-gradient(135deg,rgba(139,26,26,0.85),rgba(176,42,42,0.85)) !important;
-  color:rgba(255,255,255,0.9) !important; border-color:rgba(139,26,26,0.4) !important;
-  backdrop-filter:blur(8px);
-}
-.nav-school-btn:hover { background:linear-gradient(135deg,#8b1a1a,#b02a2a) !important; color:#fff !important; }
 
-/* HAMBURGER — MOBILE */
+/* Global: remove blue tap highlight and focus outline on all interactive elements */
+*, *::before, *::after { -webkit-tap-highlight-color: transparent !important; }
+button:focus, a:focus, [onclick]:focus { outline: none !important; box-shadow: none !important; }
+button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outline-offset: 2px; }
+
 .hamburger {
   display:none; width:36px; height:36px;
   flex-direction:column; gap:5px; align-items:center; justify-content:center;
   cursor:pointer; border-radius:10px;
   background:rgba(255,255,255,0.05); border:1px solid var(--border2);
-  transition:all 0.3s; z-index:1002;
+  transition:background 0.3s, border-color 0.3s; z-index:1002;
+  -webkit-tap-highlight-color:transparent; outline:none;
 }
 .hamburger span {
   width:20px; height:2px; background:var(--gold); border-radius:2px;
   transition:all 0.4s cubic-bezier(0.4,0,0.2,1); transform-origin:center;
+  display:block;
 }
-.hamburger.active { background:rgba(201,168,76,0.12); border-color:var(--border); }
+.hamburger.active { background:rgba(201,168,76,0.1); border-color:rgba(201,168,76,0.25); }
 .hamburger.active span:nth-child(1) { transform:rotate(45deg) translate(5px,5px); }
 .hamburger.active span:nth-child(2) { opacity:0; transform:scaleX(0); }
 .hamburger.active span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px); }
 
+/* Nav school btn — true pill shape, no border-radius mismatch */
+.nav-school-btn {
+  background:linear-gradient(135deg,#a01c1c,#c42828) !important;
+  color:#fff !important;
+  border:1px solid rgba(160,28,28,0.5) !important;
+  border-radius:50px !important;
+  padding:7px 16px !important;
+}
+.nav-school-btn:hover {
+  background:linear-gradient(135deg,#b02020,#d63030) !important;
+  box-shadow:0 6px 20px rgba(160,28,28,0.35) !important;
+  transform:translateY(-2px) !important;
+}
+.nav-school-btn::after { display:none !important; }
 /* MOBILE MENU — slides from LEFT */
 #mobileMenu {
   position:fixed; top:0; left:0; bottom:0; width:82vw; max-width:320px;
@@ -262,7 +276,6 @@ a { text-decoration:none; color:inherit; }
 #heroPage {
   position:relative; overflow:hidden;
   display:flex; flex-direction:column;
-  padding-top:var(--nav-h);
 }
 .hero-section {
   position:relative; z-index:2;
@@ -340,8 +353,12 @@ a { text-decoration:none; color:inherit; }
 }
 .btn-gold:hover::before { left:130%; }
 .btn-gold:hover { transform:translateY(-4px) scale(1.03); box-shadow:0 16px 40px var(--gold-glow); }
-.btn-gold svg { width:17px; height:17px; }
-.btn-ghost {
+.btn-gold:active  { transform:scale(0.97); box-shadow:none; }
+.btn-ghost:active { transform:scale(0.97); }
+.btn-gold svg { width:17px; height:17px; transition:transform 0.3s; }
+.btn-gold:hover svg { transform:translateX(-3px); }
+.btn-ghost svg { width:17px; height:17px; transition:transform 0.3s; }
+.btn-ghost:hover svg { transform:translateX(-3px); }
   display:inline-flex; align-items:center; gap:8px;
   background:transparent; color:var(--text);
   border:1.5px solid rgba(255,255,255,0.18);
@@ -352,12 +369,6 @@ a { text-decoration:none; color:inherit; }
 .btn-ghost:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-4px); background:var(--gold-dim); }
 .btn-ghost svg { width:17px; height:17px; }
 
-/* STATS STRIP */
-.stats-strip {
-  position:relative; z-index:2;
-  padding:0 2rem 4rem;
-  animation:fadeUp 0.8s 0.8s both;
-}
 /* STATS STRIP wrapper */
 .stats-strip {
   position:relative; z-index:2;
@@ -691,18 +702,71 @@ a { text-decoration:none; color:inherit; }
 .t-modal-bio { color:var(--text-dim); font-size:0.85rem; line-height:1.9; text-align:center; border-top:1px solid var(--border2); padding-top:1.2rem; }
 
 /* FILTER TABS */
-.filter-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center; margin-bottom:2.5rem; }
+.filter-area { margin-bottom:2rem; position:relative; }
+.filter-bar { display:flex; align-items:center; gap:0.7rem; }
+.filter-tabs {
+  display:flex; gap:0.5rem; flex-wrap:nowrap;
+  overflow-x:auto; flex:1;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  padding-bottom:2px;
+}
+.filter-tabs::-webkit-scrollbar { display:none; }
 .filter-tab {
   background:var(--surface); border:1px solid var(--border2);
-  color:var(--text-dim); padding:7px 20px; border-radius:50px;
-  font-size:0.8rem; font-weight:600;
-  transition:all 0.3s; cursor:pointer;
+  color:rgba(232,228,220,0.55); padding:7px 18px; border-radius:50px;
+  font-size:0.78rem; font-weight:600;
+  transition:all 0.3s cubic-bezier(0.4,0,0.2,1); cursor:pointer;
+  flex-shrink:0; white-space:nowrap; font-family:'Cairo',sans-serif;
+  outline:none; -webkit-tap-highlight-color:transparent;
 }
-.filter-tab:hover { background:var(--gold-dim); border-color:var(--border); color:var(--gold); transform:translateY(-2px); }
+.filter-tab:hover { background:var(--gold-dim); border-color:rgba(201,168,76,0.22); color:var(--gold); transform:translateY(-2px); }
 .filter-tab.active {
   background:linear-gradient(135deg,var(--gold),var(--gold2));
   border-color:transparent; color:var(--bg); font-weight:700;
-  box-shadow:0 6px 20px var(--gold-glow);
+  box-shadow:0 4px 16px rgba(201,168,76,0.3);
+}
+
+/* Dropdown trigger button */
+.filter-dropdown-btn {
+  display:flex; align-items:center; gap:6px;
+  background:var(--surface); border:1px solid var(--border2);
+  color:var(--gold); padding:7px 14px; border-radius:10px;
+  font-size:0.78rem; font-weight:700; cursor:pointer; flex-shrink:0;
+  transition:all 0.3s; font-family:'Cairo',sans-serif;
+  outline:none; -webkit-tap-highlight-color:transparent;
+  white-space:nowrap;
+}
+.filter-dropdown-btn:hover { background:var(--gold-dim); border-color:rgba(201,168,76,0.28); }
+.filter-dropdown-btn.open { background:var(--gold-dim); border-color:rgba(201,168,76,0.35); }
+
+/* Dropdown panel */
+.filter-dropdown {
+  position:absolute; top:calc(100% + 8px); left:0; right:0;
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:16px; padding:0.6rem;
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:0.5rem;
+  z-index:200;
+  opacity:0; transform:translateY(-8px) scale(0.97); pointer-events:none;
+  transition:opacity 0.25s ease, transform 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+  box-shadow:0 20px 50px rgba(0,0,0,0.5);
+  backdrop-filter:blur(16px);
+}
+.filter-dropdown.open {
+  opacity:1; transform:translateY(0) scale(1); pointer-events:all;
+}
+.fdrop-item {
+  display:flex; align-items:center; gap:8px;
+  padding:0.7rem 1rem; border-radius:10px;
+  background:transparent; border:1px solid transparent;
+  color:rgba(232,228,220,0.6); font-size:0.8rem; font-weight:600;
+  cursor:pointer; transition:all 0.22s; font-family:'Cairo',sans-serif;
+  outline:none; -webkit-tap-highlight-color:transparent; text-align:right;
+  width:100%;
+}
+.fdrop-item:hover { background:var(--gold-dim); border-color:rgba(201,168,76,0.2); color:var(--gold); }
+.fdrop-item.active {
+  background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.3);
+  color:var(--gold); font-weight:700;
 }
 
 /* ========== TOP STUDENTS PAGE ========== */
@@ -954,32 +1018,148 @@ footer::before {
 }
 
 @media (max-width: 600px) {
-  .section-wrap { padding:3.5rem 1rem; }
-  .hero-section { padding:2rem 1rem 1rem; }
-  .stats-strip { padding:0 1rem 3.5rem; }
-  .stats-strip-inner { grid-template-columns:repeat(2,1fr); gap:0.75rem; max-width:100%; }
-  .stat-cell { padding:1.2rem 0.8rem 1rem; border-radius:14px; }
-  .stat-num { font-size:1.9rem; }
-  .stat-label { font-size:0.68rem; }
-  .hero-actions { flex-direction:column; align-items:center; }
-  .btn-gold,.btn-ghost { width:100%; max-width:260px; justify-content:center; }
-  .students-grid { grid-template-columns:1fr 1fr; }
-  .photos-grid { grid-template-columns:repeat(2,1fr); }
-  .section-title { font-size:1.7rem; }
-  .filter-tabs { gap:0.35rem; }
-  .filter-tab { padding:6px 14px; font-size:0.75rem; }
+  :root { --nav-h: var(--mobile-nav-h); }
+
+  /* Core layout */
+  .section-wrap { padding:2.5rem 1rem 6rem; }
+  .hero-section { padding:1.5rem 1.2rem 0.5rem; min-height:calc(100svh - var(--mobile-nav-h)); }
+  .hero-pill { font-size:0.68rem; padding:6px 16px; margin-bottom:1.4rem; }
+  .hero-title { font-size:clamp(2rem,10vw,2.8rem); margin-bottom:1rem; }
+  .hero-title .sub { font-size:0.36em; letter-spacing:2.5px; }
+  .hero-desc { font-size:0.85rem; margin-bottom:2rem; line-height:1.75; }
+
+  /* Buttons — full width stacked */
+  .hero-actions { flex-direction:column; align-items:stretch; gap:0.7rem; padding:0 0.5rem; }
+  .btn-gold, .btn-ghost {
+    width:100%; justify-content:center;
+    padding:14px 24px; font-size:0.88rem;
+    border-radius:14px;
+  }
+
+  /* Stats — 2x2 clean cards */
+  .stats-strip { padding:0 1rem 2rem; }
+  .stats-strip-inner { grid-template-columns:repeat(2,1fr); gap:0.7rem; }
+  .stat-cell { padding:1.1rem 0.8rem 0.9rem; border-radius:14px; }
+  .stat-num { font-size:1.75rem; }
+  .stat-icon { width:22px; height:22px; margin-bottom:0.5rem; }
+  .stat-label { font-size:0.65rem; }
+
+  /* School info strip */
+  .school-info-strip { grid-template-columns:1fr; gap:1rem; padding:1.5rem; margin-top:0; border-radius:16px; }
+  .info-block h4 { font-size:0.88rem; }
+  .info-block p { font-size:0.78rem; }
+
+  /* Section headers */
+  .section-title { font-size:1.65rem; }
+  .section-tag { font-size:0.68rem; padding:4px 14px; }
+  .section-desc { font-size:0.83rem; }
+
+  /* Teacher rows — stack vertically on mobile */
+  .teacher-row { border-radius:16px; margin-bottom:1rem; }
+  .teacher-row-photo { min-height:180px; }
+  .teacher-photo-letter { font-size:7rem; }
+  .teacher-row-info { padding:1.2rem; }
+  .t-name { font-size:1.1rem; }
+  .t-bio-short { font-size:0.8rem; }
+  .t-meta-chips { gap:0.4rem; }
+  .t-chip { font-size:0.68rem; padding:3px 10px; }
+
+  /* Filter tabs */
+  .filter-tabs { gap:0.3rem; overflow-x:auto; flex-wrap:nowrap; justify-content:flex-start; padding-bottom:0.4rem; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .filter-tabs::-webkit-scrollbar { display:none; }
+  .filter-tab { padding:6px 14px; font-size:0.73rem; flex-shrink:0; }
+
+  /* Principal */
   .principal-hero-row { border-radius:16px; }
-  .principal-info { padding:1.8rem 1.4rem; }
-  .principal-chips { grid-template-columns:1fr; }
-  .t-modal-grid { grid-template-columns:1fr; }
-  .about-grid { gap:2.5rem; }
-  .about-orb { width:180px; height:180px; }
-  .about-orb svg { width:70px; height:70px; }
-  .team-member { flex-direction:row; }
-  footer { padding:2.5rem 1rem 1.5rem; }
-  .footer-links { gap:1.2rem; }
-  #scrollTop { bottom:1rem; left:1rem; width:40px; height:40px; }
+  .principal-portrait-area { min-height:220px; }
+  .principal-info { padding:1.5rem 1.2rem; }
+  .principal-name { font-size:1.4rem; }
+  .principal-chips { grid-template-columns:1fr 1fr; gap:0.6rem; }
+  .p-chip { padding:0.7rem 0.8rem; }
+  .p-chip .val { font-size:0.8rem; }
+  .p-chip .lbl { font-size:0.63rem; }
+
+  /* Students */
+  .students-grid { grid-template-columns:1fr 1fr; gap:0.9rem; }
+  .student-card { padding:1.5rem 1rem; border-radius:16px; }
+  .rank-badge { width:40px; height:40px; font-size:1rem; margin-bottom:1rem; }
+  .s-avatar { width:70px; height:70px; font-size:1.6rem; }
+  .s-name { font-size:0.9rem; }
+  .s-score { font-size:1.6rem; }
+
+  /* Memories */
+  .videos-grid { grid-template-columns:1fr; gap:0.9rem; }
+  .photos-grid { grid-template-columns:repeat(2,1fr); gap:0.6rem; }
+
+  /* Modal */
+  .t-modal-box { padding:1.8rem 1.2rem; }
+  .t-modal-grid { grid-template-columns:1fr 1fr; }
+  .t-modal-name { font-size:1.2rem; }
+
+  /* About */
+  .about-grid { gap:2rem; }
+  .about-orb { width:160px; height:160px; }
+  .about-orb svg { width:60px; height:60px; }
+  .team-member { border-radius:12px; }
+
+  /* Footer */
+  footer { padding:2rem 1rem 6rem; } /* extra bottom for app nav */
+  .footer-logo { font-size:1.1rem; }
+  .footer-links { gap:1rem; flex-wrap:wrap; justify-content:center; }
+  .footer-links button { font-size:0.76rem; }
+  .footer-copy { font-size:0.66rem; }
+
+  /* Scroll top - avoid bottom nav */
+  #scrollTop { bottom:5rem; left:1rem; width:40px; height:40px; }
 }
+
+/* ========== MOBILE BOTTOM APP NAV ========== */
+#bottomNav {
+  display:none;
+  position:fixed; bottom:0; left:0; right:0; z-index:900;
+  background:rgba(10,14,26,0.96);
+  backdrop-filter:blur(20px) saturate(1.4);
+  border-top:1px solid rgba(201,168,76,0.12);
+  padding:0.4rem 0 max(0.5rem, env(safe-area-inset-bottom));
+  padding-bottom:calc(0.5rem + env(safe-area-inset-bottom));
+}
+@media (max-width: 600px) {
+  #bottomNav { display:flex; }
+}
+.bottom-nav-inner {
+  display:grid; grid-template-columns:repeat(5,1fr);
+  width:100%; max-width:480px; margin:0 auto;
+}
+.bnav-item {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:0.4rem 0.3rem;
+  color:rgba(232,228,220,0.38); font-size:0.56rem; font-weight:700;
+  cursor:pointer; position:relative; transition:color 0.25s;
+  letter-spacing:0.2px; text-align:center; border:none; background:none;
+  font-family:'Cairo', sans-serif;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.bnav-item svg {
+  width:21px; height:21px;
+  transition:transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), color 0.25s;
+  flex-shrink:0;
+}
+.bnav-item.active { color:var(--gold); }
+.bnav-item.active svg { transform:translateY(-2px) scale(1.12); }
+.bnav-item::after {
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:20px; height:2px; border-radius:0 0 2px 2px;
+  background:var(--gold);
+  opacity:0; transition:opacity 0.3s;
+}
+.bnav-item.active::after { opacity:1; }
+/* Tap ripple */
+.bnav-item:active svg { transform:scale(0.88); }
+/* School link special */
+.bnav-item.bnav-school { color:rgba(232,180,140,0.5); }
+.bnav-item.bnav-school.active, .bnav-item.bnav-school:active { color:#e8b08c; }
+.bnav-item.bnav-school::after { background:#e8b08c; }
 </style>
 </head>
 <body>
@@ -1263,13 +1443,37 @@ footer::before {
       <div class="section-line"></div>
       <p class="section-desc">نخبة من المعلمين والمعلمات المتخصصين في مختلف المجالات — للمرحلة الثانوية</p>
     </div>
-    <div class="filter-tabs" id="filterTabs">
-      <button class="filter-tab active" onclick="filterTeachers('all',this)">الكل</button>
-      <button class="filter-tab" onclick="filterTeachers('علوم',this)">علوم</button>
-      <button class="filter-tab" onclick="filterTeachers('لغات',this)">لغات</button>
-      <button class="filter-tab" onclick="filterTeachers('رياضيات',this)">رياضيات</button>
-      <button class="filter-tab" onclick="filterTeachers('انسانيات',this)">انسانيات</button>
-      <button class="filter-tab" onclick="filterTeachers('فنون',this)">فنون</button>
+    <div class="filter-area" id="filterArea">
+      <div class="filter-bar">
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" onclick="filterTeachers('all',this)">الكل</button>
+          <button class="filter-tab" onclick="filterTeachers('برمجة',this)">برمجة</button>
+          <button class="filter-tab" onclick="filterTeachers('عربي',this)">عربي</button>
+          <button class="filter-tab" onclick="filterTeachers('رياضة',this)">رياضة</button>
+          <button class="filter-tab" onclick="filterTeachers('علوم',this)">علوم</button>
+          <button class="filter-tab" onclick="filterTeachers('تاريخ',this)">تاريخ</button>
+          <button class="filter-tab" onclick="filterTeachers('فلسفة',this)">فلسفة ومنطق</button>
+          <button class="filter-tab" onclick="filterTeachers('دينية',this)">تربية دينية</button>
+          <button class="filter-tab" onclick="filterTeachers('انجليزي',this)">انجليزي</button>
+          <button class="filter-tab" onclick="filterTeachers('فرنساوي',this)">فرنساوي</button>
+        </div>
+        <button class="filter-dropdown-btn" onclick="toggleFilterDropdown('filterDropdown')" id="filterDropBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          تصفية
+        </button>
+      </div>
+      <div class="filter-dropdown" id="filterDropdown">
+        <button class="fdrop-item active" onclick="filterTeachers('all',this,true)">📚 الكل</button>
+        <button class="fdrop-item" onclick="filterTeachers('برمجة',this,true)">💻 برمجة</button>
+        <button class="fdrop-item" onclick="filterTeachers('عربي',this,true)">✍️ عربي</button>
+        <button class="fdrop-item" onclick="filterTeachers('رياضة',this,true)">⚽ رياضة</button>
+        <button class="fdrop-item" onclick="filterTeachers('علوم',this,true)">🔬 علوم</button>
+        <button class="fdrop-item" onclick="filterTeachers('تاريخ',this,true)">🏛️ تاريخ</button>
+        <button class="fdrop-item" onclick="filterTeachers('فلسفة',this,true)">🧠 فلسفة ومنطق</button>
+        <button class="fdrop-item" onclick="filterTeachers('دينية',this,true)">☪️ تربية دينية</button>
+        <button class="fdrop-item" onclick="filterTeachers('انجليزي',this,true)">🇬🇧 انجليزي</button>
+        <button class="fdrop-item" onclick="filterTeachers('فرنساوي',this,true)">🇫🇷 فرنساوي</button>
+      </div>
     </div>
     <div id="teachersList"></div>
   </div>
@@ -1403,7 +1607,7 @@ footer::before {
             <div class="team-av">م</div>
             <div class="team-info">
               <h4>محمود أحمد سعيد</h4>
-              <span>مطور الموقع · التفكير التصميمي والديزاين · العمر: <strong id="mahmoudAge" style="color:var(--gold)">16</strong>سنة</span>
+              <span>مطور الموقع · التفكير التصميمي والديزاين · العمر: <strong id="mahmoudAge" style="color:var(--gold)">16</strong> سنة (27 يناير 2010)</span>
             </div>
           </div>
           <div class="team-member">
@@ -1476,6 +1680,32 @@ footer::before {
   </div>
 </div>
 
+<!-- ======== MOBILE BOTTOM APP NAV ======== -->
+<nav id="bottomNav" aria-label="التنقل السريع">
+  <div class="bottom-nav-inner">
+    <button class="bnav-item active" data-page="home" onclick="goPage('home'); setBNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      الرئيسية
+    </button>
+    <button class="bnav-item" data-page="principal" onclick="goPage('principal'); setBNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      المدرسون
+    </button>
+    <button class="bnav-item" data-page="students" onclick="goPage('students'); setBNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      المتفوقون
+    </button>
+    <button class="bnav-item" data-page="memories" onclick="goPage('memories'); setBNav(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      ذكريات
+    </button>
+    <button class="bnav-item bnav-school" onclick="goPage('about'); setBNav(this)" data-page="about">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      عن الموقع
+    </button>
+  </div>
+</nav>
+
 <script>
 /* ============================================================
    DATA
@@ -1491,116 +1721,116 @@ function calcAge(dob) {
 
 const teachers = [
   {
-    name:'أ. سامي عبد الرحمن', subject:'علوم طبيعية', age:44, exp:18,
+    name:'أ. كريم الشاذلي', subject:'برمجة وحاسوب', age:32, exp:7,
+    spec:'Python · Web Dev · قواعد البيانات', grade:'الثانوية', icon:'ك', cat:'برمجة',
+    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. كريم الشاذلي، مدرس حاسوب وبرمجة، عمره ٣٢ سنة، من القاهرة. متخصص في Python وتطوير الويب وقواعد البيانات. خريج كلية الحاسبات والمعلومات. يُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يجعل البرمجة بسيطة ومرحة للطلاب من خلال مشاريع حقيقية.'
+  },
+  {
+    name:'أ. مروان سيد فرحان', subject:'برمجة تطبيقات', age:29, exp:5,
+    spec:'تطبيقات موبايل · JavaScript', grade:'الثانوية', icon:'م', cat:'برمجة',
+    from:'الجيزة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. مروان سيد فرحان، مدرس برمجة تطبيقات موبايل وJavaScript، عمره ٢٩ سنة، من الجيزة. خريج هندسة حاسبات. يُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يحمّس الطلاب لبناء تطبيقاتهم الخاصة بأيديهم.'
+  },
+  {
+    name:'أ. رانيا حسين الغزالي', subject:'لغة عربية', age:43, exp:17,
+    spec:'بلاغة وأدب وقواعد نحوية', grade:'الثانوية', icon:'ر', cat:'عربي',
+    from:'المنيا', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. رانيا حسين الغزالي، مدرسة لغة عربية متخصصة في البلاغة والأدب وقواعد اللغة، عمرها ٤٣ سنة، من المنيا. خريجة دار العلوم جامعة القاهرة. تُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٧ عامًا. تُحبّب الطلاب في لغتهم العربية بأسلوب شيّق ومبتكر.'
+  },
+  {
+    name:'أ. محمود طاهر درويش', subject:'نحو وصرف', age:50, exp:24,
+    spec:'نحو وصرف وعلم العروض', grade:'الثانوية', icon:'م', cat:'عربي',
+    from:'المنصورة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. محمود طاهر درويش، عميد في تدريس اللغة العربية، عمره ٥٠ سنة، من المنصورة. يحمل ليسانس لغة عربية من جامعة المنصورة. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. مرجع في النحو والصرف والعروض العربي.'
+  },
+  {
+    name:'أ. أحمد رفعت الحضري', subject:'تربية رياضية', age:34, exp:8,
+    spec:'ألعاب جماعية ولياقة بدنية', grade:'الثانوية', icon:'أ', cat:'رياضة',
+    from:'الغربية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. أحمد رفعت الحضري، مدرس تربية رياضية متخصص في الألعاب الجماعية واللياقة البدنية، عمره ٣٤ سنة، من محافظة الغربية. خريج معهد التربية الرياضية. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٨ أعوام. يبني روح الفريق والصحة الجسدية لدى الطلاب.'
+  },
+  {
+    name:'أ. سامي عبد الرحمن نصار', subject:'علوم طبيعية', age:44, exp:18,
     spec:'أحياء وكيمياء', grade:'الثانوية', icon:'س', cat:'علوم',
     from:'محافظة الجيزة', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
-    bio:'أ. سامي عبد الرحمن، مدرس علوم طبيعية متخصص في مجالي الأحياء والكيمياء، خريج كلية العلوم جامعة القاهرة. يعمل في مدرسة شهيد حسن حمدي الثانوية التابعة لإدارة الحسنية منذ ما يزيد على ١٥ عامًا. عمره ٤٤ سنة، ولد في محافظة الجيزة. يتميز بأسلوبه التجريبي في شرح المفاهيم العلمية المعقدة.'
+    bio:'أ. سامي عبد الرحمن نصار، مدرس علوم طبيعية متخصص في الأحياء والكيمياء، عمره ٤٤ سنة، من محافظة الجيزة. خريج كلية العلوم جامعة القاهرة. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٥ عامًا. يتميز بأسلوبه التجريبي في شرح المفاهيم العلمية.'
   },
   {
-    name:'أ. هناء مصطفى', subject:'فيزياء', age:38, exp:12,
+    name:'أ. هناء مصطفى كمال', subject:'فيزياء', age:38, exp:12,
     spec:'فيزياء تطبيقية', grade:'الثانوية', icon:'هـ', cat:'علوم',
     from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. هناء مصطفى، مدرسة فيزياء متخصصة في الفيزياء التطبيقية، تخرجت من كلية العلوم جامعة عين شمس. عمرها ٣٨ سنة، من القاهرة. تُدرِّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تستخدم المعامل وأدوات القياس بشكل يومي لجعل الفيزياء حية وملموسة.'
+    bio:'أ. هناء مصطفى كمال، مدرسة فيزياء متخصصة في الفيزياء التطبيقية، عمرها ٣٨ سنة، من القاهرة. خريجة كلية العلوم جامعة عين شمس. تُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تستخدم المعامل وأدوات القياس يوميًا لجعل الفيزياء حية وملموسة.'
   },
   {
-    name:'أ. خالد السيد', subject:'كيمياء', age:41, exp:15,
-    spec:'كيمياء عضوية', grade:'الثانوية', icon:'خ', cat:'علوم',
-    from:'محافظة المنوفية', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. خالد السيد، مدرس كيمياء متخصص في الكيمياء العضوية، عمره ٤١ سنة، من محافظة المنوفية. حاصل على ليسانس كيمياء من جامعة المنوفية ودبلوم تربوي. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٥ عامًا. يربط الكيمياء بالحياة اليومية للطلاب.'
-  },
-  {
-    name:'أ. منى إبراهيم', subject:'أحياء', age:35, exp:9,
+    name:'أ. منى إبراهيم الطيب', subject:'أحياء', age:35, exp:9,
     spec:'علم الخلية والوراثة', grade:'الثانوية', icon:'م', cat:'علوم',
     from:'الإسكندرية', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. منى إبراهيم، مدرسة أحياء متخصصة في علم الخلية والوراثة، عمرها ٣٥ سنة، من الإسكندرية. تخرجت من كلية العلوم جامعة الإسكندرية. تعمل في مدرسة شهيد حسن حمدي الثانوية ضمن إدارة الحسنية. شغوفة بنقل حب علم الأحياء لطلاب المرحلة الثانوية.'
+    bio:'أ. منى إبراهيم الطيب، مدرسة أحياء متخصصة في علم الخلية والوراثة، عمرها ٣٥ سنة، من الإسكندرية. خريجة كلية العلوم جامعة الإسكندرية. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. شغوفة بنقل حب علم الأحياء لطلاب الثانوية.'
   },
   {
-    name:'Mr. Karim El-Shadly', subject:'English Language', age:37, exp:11,
-    spec:'Conversation & Writing', grade:'Secondary', icon:'K', cat:'لغات',
-    from:'Cairo', where:'Shaheed Hassan Hamdi Secondary School',
-    lang:'en', gender:'M',
-    bio:'Mr. Karim El-Shadly is an English Language teacher specializing in conversational and written communication, aged 37, originally from Cairo. He holds a B.A. in English Literature from Cairo University. He has been teaching at Shaheed Hassan Hamdi Secondary School under Al-Haseniya Administration for 11 years, using modern interactive methods.'
-  },
-  {
-    name:'Mme. Nadia Farid', subject:'Langue Française', age:40, exp:14,
-    spec:'Linguistique & Littérature', grade:'Secondaire', icon:'N', cat:'لغات',
-    from:'Alexandrie', where:'École Secondaire Chahid Hassan Hamdi',
-    lang:'fr', gender:'F',
-    bio:'Mme. Nadia Farid est professeure de français, âgée de 40 ans, originaire d\'Alexandrie. Elle est diplômée de l\'Institut des Langues et possède une expérience internationale dans l\'enseignement. Elle enseigne au sein de l\'école secondaire Chahid Hassan Hamdi relevant de l\'administration d\'Al-Haseniya depuis 14 ans.'
-  },
-  {
-    name:'أ. رانيا حسين', subject:'لغة عربية', age:43, exp:17,
-    spec:'بلاغة وأدب وقواعد', grade:'الثانوية', icon:'ر', cat:'لغات',
-    from:'المنيا', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'أ',
-    bio:'أ. رانيا حسين، مدرسة لغة عربية متخصصة في البلاغة والأدب وقواعد اللغة، عمرها ٤٣ سنة، من المنيا. خريجة دار العلوم جامعة القاهرة. تُدرِّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٧ عامًا. تُحبِّب الطلاب في لغتهم العربية بأسلوب شيّق.'
-  },
-  {
-    name:'أ. محمود طاهر', subject:'لغة عربية — نحو وصرف', age:50, exp:24,
-    spec:'نحو وصرف وعلم العروض', grade:'الثانوية', icon:'م', cat:'لغات',
-    from:'المنصورة', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. محمود طاهر، عميد مدرسي في مجال تدريس اللغة العربية، عمره ٥٠ سنة، من المنصورة. يحمل ليسانس لغة عربية ودراسات إسلامية من جامعة المنصورة. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يُعدّ مرجعًا في النحو والصرف والعروض العربي.'
-  },
-  {
-    name:'أ. طارق جلال', subject:'رياضيات', age:46, exp:20,
-    spec:'جبر وهندسة وحساب تفاضل', grade:'الثانوية', icon:'ط', cat:'رياضيات',
-    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. طارق جلال، مدرس رياضيات متخصص في الجبر والهندسة والحساب، عمره ٤٦ سنة، من القاهرة. خريج كلية العلوم — رياضيات جامعة القاهرة. يعمل في مدرسة شهيد حسن حمدي الثانوية ضمن إدارة الحسنية منذ ٢٠ عامًا. يُحوِّل المسائل المعقدة إلى ألعاب ذهنية ممتعة.'
-  },
-  {
-    name:'أ. دعاء نصر', subject:'إحصاء وجبر', age:36, exp:10,
-    spec:'رياضيات تطبيقية وإحصاء', grade:'الثانوية', icon:'د', cat:'رياضيات',
-    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'أ',
-    bio:'أ. دعاء نصر، مدرسة إحصاء وجبر متخصصة في الرياضيات التطبيقية، عمرها ٣٦ سنة، من القاهرة. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٠ أعوام. تُرسِّخ مفاهيم الإحصاء بأمثلة واقعية من الحياة اليومية.'
-  },
-  {
-    name:'أ. بشير صالح', subject:'تحليل رياضي', age:48, exp:22,
-    spec:'تفاضل وتكامل', grade:'الثانوية', icon:'ب', cat:'رياضيات',
-    from:'الجيزة', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. بشير صالح، مدرس رياضيات متقدمة متخصص في التفاضل والتكامل، عمره ٤٨ سنة، من الجيزة. خريج كلية العلوم جامعة عين شمس. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. خبير في الرياضيات العليا للمرحلة الثانوية وله باع طويل.'
-  },
-  {
-    name:'أ. سلوى الديب', subject:'تاريخ', age:47, exp:21,
-    spec:'التاريخ الإسلامي والحديث', grade:'الثانوية', icon:'س', cat:'انسانيات',
+    name:'أ. سلوى محمد الديب', subject:'تاريخ', age:47, exp:21,
+    spec:'التاريخ الإسلامي والحديث', grade:'الثانوية', icon:'س', cat:'تاريخ',
     from:'سوهاج', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. سلوى الديب، مدرسة تاريخ متخصصة في التاريخ الإسلامي والحديث، عمرها ٤٧ سنة، من سوهاج. تخرجت من كلية الآداب — قسم التاريخ جامعة سوهاج. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُحيي أحداث التاريخ بقصص شيّقة تشدّ انتباه الطلاب.'
+    bio:'أ. سلوى محمد الديب، مدرسة تاريخ متخصصة في التاريخ الإسلامي والحديث، عمرها ٤٧ سنة، من سوهاج. خريجة كلية الآداب قسم التاريخ جامعة سوهاج. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُحيي أحداث التاريخ بقصص شيّقة تشدّ الطلاب.'
   },
   {
-    name:'أ. جمال عبد العزيز', subject:'فلسفة ومنطق', age:52, exp:26,
-    spec:'فلسفة وأخلاق وتفكير نقدي', grade:'الثانوية', icon:'ج', cat:'انسانيات',
+    name:'أ. جمال فتحي عبد العزيز', subject:'فلسفة ومنطق', age:52, exp:26,
+    spec:'فلسفة وأخلاق وتفكير نقدي', grade:'الثانوية', icon:'ج', cat:'فلسفة',
     from:'أسيوط', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
-    bio:'أ. جمال عبد العزيز، مدرس فلسفة ومنطق متخصص في الأخلاق والتفكير النقدي، عمره ٥٢ سنة، من أسيوط. يحمل ليسانس فلسفة من جامعة أسيوط. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٢٦ عامًا. يُعلِّم طلابه كيفية التساؤل المنطقي وبناء الحجج.'
+    bio:'أ. جمال فتحي عبد العزيز، مدرس فلسفة ومنطق متخصص في الأخلاق والتفكير النقدي، عمره ٥٢ سنة، من أسيوط. يحمل ليسانس فلسفة من جامعة أسيوط. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٢٦ عامًا. يُعلّم طلابه بناء الحجج والتساؤل المنطقي.'
   },
   {
-    name:'أ. إيمان الغزالي', subject:'تربية دينية', age:40, exp:14,
-    spec:'فقه وتفسير وسيرة نبوية', grade:'الثانوية', icon:'إ', cat:'انسانيات',
+    name:'أ. إيمان صالح الغزالي', subject:'تربية دينية', age:40, exp:14,
+    spec:'فقه وتفسير وسيرة نبوية', grade:'الثانوية', icon:'إ', cat:'دينية',
     from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. إيمان الغزالي، مدرسة تربية دينية متخصصة في الفقه والتفسير والسيرة النبوية، عمرها ٤٠ سنة، من القاهرة. خريجة كلية الدراسات الإسلامية والعربية. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُرسِّخ القيم الإسلامية الأصيلة في نفوس الطلاب.'
+    bio:'أ. إيمان صالح الغزالي، مدرسة تربية دينية متخصصة في الفقه والتفسير والسيرة النبوية، عمرها ٤٠ سنة، من القاهرة. خريجة كلية الدراسات الإسلامية والعربية. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُرسّخ القيم الإسلامية الأصيلة في نفوس الطلاب.'
   },
   {
-    name:'أ. هيام الشرقاوي', subject:'تربية فنية', age:37, exp:11,
-    spec:'رسم وتصوير وفنون تشكيلية', grade:'الثانوية', icon:'هـ', cat:'فنون',
-    from:'الشرقية', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'أ',
-    bio:'أ. هيام الشرقاوي، مدرسة تربية فنية متخصصة في الرسم والتصوير والفنون التشكيلية، عمرها ٣٧ سنة، من محافظة الشرقية. خريجة كلية التربية الفنية جامعة حلوان. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُطلق العنان لإبداع الطلاب عبر الفن.'
-  },
-  {
-    name:'أ. أحمد الحضري', subject:'تربية رياضية', age:34, exp:8,
-    spec:'ألعاب جماعية ولياقة بدنية', grade:'الثانوية', icon:'أ', cat:'فنون',
-    from:'الغربية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. خالد أسامة السيد', subject:'تربية دينية — فقه', age:41, exp:15,
+    spec:'فقه إسلامي وعقيدة', grade:'الثانوية', icon:'خ', cat:'دينية',
+    from:'محافظة المنوفية', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
-    bio:'أ. أحمد الحضري، مدرس تربية رياضية متخصص في الألعاب الجماعية واللياقة البدنية، عمره ٣٤ سنة، من محافظة الغربية. خريج معهد التربية الرياضية. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٨ أعوام. يبني روح الفريق والصحة الجسدية لدى الطلاب.'
+    bio:'أ. خالد أسامة السيد، مدرس تربية دينية متخصص في الفقه الإسلامي والعقيدة، عمره ٤١ سنة، من المنوفية. خريج كلية الشريعة والقانون. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٥ عامًا. يربط الدين بالحياة اليومية للطلاب.'
+  },
+  {
+    name:'Mr. Karim Nabil El-Shadly', subject:'English Language', age:37, exp:11,
+    spec:'Conversation & Academic Writing', grade:'Secondary', icon:'K', cat:'انجليزي',
+    from:'Cairo', where:'Shaheed Hassan Hamdi Secondary School',
+    lang:'en', gender:'M',
+    bio:'Mr. Karim Nabil El-Shadly is an English Language teacher specializing in conversational and academic writing, aged 37, originally from Cairo. He holds a B.A. in English Literature from Cairo University. He has been teaching at Shaheed Hassan Hamdi Secondary School under Al-Haseniya Administration for 11 years, using modern interactive methods to build fluency.'
+  },
+  {
+    name:'Ms. Dina Fawzy Hassan', subject:'English Language — Grammar', age:33, exp:7,
+    spec:'Grammar · Reading Comprehension', grade:'Secondary', icon:'D', cat:'انجليزي',
+    from:'Alexandria', where:'Shaheed Hassan Hamdi Secondary School',
+    lang:'en', gender:'F',
+    bio:'Ms. Dina Fawzy Hassan is an English Grammar and Reading teacher, aged 33, from Alexandria. She holds a B.A. in English from Alexandria University. She teaches at Shaheed Hassan Hamdi Secondary School under Al-Haseniya Administration. She uses visual and interactive methods to make grammar intuitive for students.'
+  },
+  {
+    name:'Mme. Nadia Samir Farid', subject:'Langue Française', age:40, exp:14,
+    spec:'Linguistique · Littérature · Expression', grade:'Secondaire', icon:'N', cat:'فرنساوي',
+    from:'Alexandrie', where:'École Secondaire Chahid Hassan Hamdi',
+    lang:'fr', gender:'F',
+    bio:'Mme. Nadia Samir Farid est professeure de français, âgée de 40 ans, originaire d\'Alexandrie. Diplômée de l\'Institut des Langues. Elle enseigne au sein de l\'école secondaire Chahid Hassan Hamdi relevant de l\'administration d\'Al-Haseniya depuis 14 ans avec passion et méthodes innovantes.'
+  },
+  {
+    name:'M. Youssef Adel Mansour', subject:'Français — Conversation', age:35, exp:9,
+    spec:'Expression orale · Culture francophone', grade:'Secondaire', icon:'Y', cat:'فرنساوي',
+    from:'Le Caire', where:'École Secondaire Chahid Hassan Hamdi',
+    lang:'fr', gender:'M',
+    bio:'M. Youssef Adel Mansour est professeur de français spécialisé en expression orale, âgé de 35 ans, du Caire. Il enseigne à l\'école secondaire Chahid Hassan Hamdi sous l\'administration d\'Al-Haseniya depuis 9 ans, en valorisant la culture francophone pour ouvrir l\'horizon des élèves.'
   },
 ];
 
@@ -1660,6 +1890,18 @@ const photos = [
    PAGES SYSTEM
 ============================================================ */
 const PAGE_IDS = ['home','principal','students','memories','about'];
+
+function setBNav(activeEl) {
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  if (activeEl) activeEl.classList.add('active');
+}
+
+function syncBNav(id) {
+  document.querySelectorAll('.bnav-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === id);
+  });
+}
+
 function goPage(id, linkEl) {
   PAGE_IDS.forEach(p => {
     const el = document.getElementById('page-'+p);
@@ -1668,6 +1910,7 @@ function goPage(id, linkEl) {
   const target = document.getElementById('page-'+id);
   if (!target) return;
   target.classList.add('active');
+  syncBNav(id);
   window.scrollTo({ top:0, behavior:'smooth' });
 
   // update nav active
@@ -1874,15 +2117,47 @@ function renderTeachersList(listId, tabsId, filter = 'all') {
   setTimeout(setupReveal, 50);
 }
 
-function filterTeachers(f, btn) {
-  document.querySelectorAll('#filterTabs .filter-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTeachersList('teachersList','filterTabs', f);
+function toggleFilterDropdown(id) {
+  const dd = document.getElementById(id);
+  const btn = document.getElementById('filterDropBtn');
+  if (!dd) return;
+  const isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  if (btn) btn.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    setTimeout(() => {
+      document.addEventListener('click', function close(e) {
+        if (!dd.contains(e.target) && e.target !== btn) {
+          dd.classList.remove('open');
+          if (btn) btn.classList.remove('open');
+        }
+        document.removeEventListener('click', close);
+      });
+    }, 10);
+  }
 }
-function filterTeachers2(f, btn) {
-  document.querySelectorAll('#filterTabs2 .filter-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTeachersList('teachersList2','filterTabs2', f);
+
+function filterTeachers(f, btn, fromDropdown) {
+  // sync tab bar
+  document.querySelectorAll('#filterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+  if (!fromDropdown) {
+    if (btn) btn.classList.add('active');
+  } else {
+    // match tab bar too
+    document.querySelectorAll('#filterTabs .filter-tab').forEach(b => {
+      if ((f === 'all' && b.textContent.trim() === 'الكل') ||
+          b.getAttribute('onclick')?.includes(`'${f}'`)) b.classList.add('active');
+    });
+    // sync dropdown items
+    document.querySelectorAll('#filterDropdown .fdrop-item').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    // close dropdown
+    const dd = document.getElementById('filterDropdown');
+    const dbtn = document.getElementById('filterDropBtn');
+    if (dd) { dd.classList.remove('open'); }
+    if (dbtn) { dbtn.classList.remove('open'); }
+  }
+  renderTeachersList('teachersList','filterTabs', f);
 }
 
 /* ============================================================
