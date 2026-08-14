@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>عن الموقع | مدرسة شهيد حسن حمدي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg-deep: #030712;
+  --bg-dark: #0a0f1e;
+  --bg-card: rgba(255,255,255,0.025);
+  --bg-glass: rgba(255,255,255,0.04);
+  --primary: #0ea5e9;
+  --primary-light: #38bdf8;
+  --primary-glow: rgba(14,165,233,0.15);
+  --accent: #f59e0b;
+  --accent-light: #fbbf24;
+  --accent-glow: rgba(245,158,11,0.2);
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(14,165,233,0.25);
+  --success: #10b981;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 40px rgba(14,165,233,0.1);
+  --transition-fast: 0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-base: 0.4s cubic-bezier(0.4,0,0.2,1);
+  --transition-bounce: 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--primary), var(--accent)); border-radius: 3px; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,0.3); }
+  50% { box-shadow: 0 0 0 12px rgba(14,165,233,0); }
+}
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes morphBlob {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+@keyframes drawLine {
+  from { width: 0; }
+  to { width: 60px; }
+}
+@keyframes loadProgress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* NAVBAR */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(3,7,18,0.85);
+  backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeInDown 0.6s ease forwards;
+  transition: all var(--transition-base);
+}
+nav.scrolled {
+  background: rgba(3,7,18,0.95);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  height: 60px;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.nav-logo .emblem {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-glow 3s infinite;
+}
+.nav-logo .emblem svg { width: 22px; height: 22px; }
+.nav-logo span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+.nav-links {
+  display: flex;
+  gap: 0.2rem;
+  list-style: none;
+  align-items: center;
+}
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 50px;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.nav-links a:hover {
+  color: var(--primary-light);
+  background: var(--primary-glow);
+  border-color: var(--border-hover);
+}
+.nav-links a.active {
+  color: var(--bg-deep);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  font-weight: 700;
+  border-color: transparent;
+}
+.school-site-btn {
+  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+  background: var(--bg-glass);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.hamburger span {
+  width: 22px;
+  height: 2px;
+  background: var(--primary-light);
+  border-radius: 2px;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+/* MOBILE DRAWER */
+.mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.mobile-drawer-overlay.open { opacity: 1; pointer-events: all; }
+.mobile-drawer {
+  position: fixed;
+  top: 0; left: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 80vw;
+  background: linear-gradient(180deg, var(--bg-dark), var(--bg-deep));
+  border-right: 1px solid var(--border);
+  z-index: 999;
+  transform: translateX(-100%);
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+}
+.mobile-drawer.open { transform: translateX(0); }
+.drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.drawer-header .emblem {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.drawer-header .emblem svg { width: 24px; height: 24px; }
+.drawer-header h3 {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.drawer-header p {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+.mobile-drawer a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+.mobile-drawer a:hover, .mobile-drawer a.active {
+  background: var(--primary-glow);
+  color: var(--primary-light);
+  border-color: var(--border-hover);
+  transform: translateX(4px);
+}
+.mobile-drawer a svg {
+  width: 18px; height: 18px;
+  opacity: 0.6;
+}
+.drawer-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+/* LOADER */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-deep);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  transition: opacity 0.6s ease, visibility 0.6s;
+}
+#loader.hidden { opacity: 0; visibility: hidden; }
+.loader-ring {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+.loader-ring::before, .loader-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+.loader-ring::before {
+  border-top-color: var(--primary);
+  border-right-color: var(--accent);
+  animation: rotateSlow 1.2s linear infinite;
+}
+.loader-ring::after {
+  inset: 10px;
+  border-bottom-color: var(--primary-light);
+  border-left-color: var(--accent-light);
+  animation: rotateSlow 0.9s linear infinite reverse;
+}
+.loader-logo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loader-logo svg { width: 32px; height: 32px; }
+.loader-text {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.loader-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+.loader-track {
+  width: 180px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  animation: loadProgress 1.2s ease-in-out forwards;
+  border-radius: 2px;
+}
+
+/* SECTIONS */
+section {
+  padding: 6rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  color: var(--primary-light);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 50px;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: 'Tajawal', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 0.6rem;
+}
+.section-title span {
+  background: linear-gradient(135deg, var(--primary-light), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.section-line {
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), transparent);
+  margin: 0.8rem auto 0;
+  border-radius: 2px;
+  animation: drawLine 0.8s 0.3s forwards;
+}
+.section-desc {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  max-width: 500px;
+  margin: 1rem auto 0;
+  line-height: 1.8;
+}
+
+/* BUTTONS */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: var(--bg-deep);
+  border: none;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-bounce);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -60%;
+  width: 50%; height: 200%;
+  background: rgba(255,255,255,0.2);
+  transform: skewX(-20deg);
+  transition: left 0.5s;
+}
+.btn-primary:hover::before { left: 130%; }
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(14,165,233,0.3), var(--shadow-glow);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-bounce);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary-light);
+  background: var(--primary-glow);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* FOOTER */
+footer {
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border);
+  padding: 3rem 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+.footer-logo {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--primary-light);
+  margin-bottom: 0.4rem;
+}
+.footer-sub {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.footer-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.82rem;
+  transition: all var(--transition-fast);
+  position: relative;
+  padding-bottom: 4px;
+}
+.footer-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--primary);
+  transition: width var(--transition-fast);
+}
+.footer-links a:hover { color: var(--primary-light); }
+.footer-links a:hover::after { width: 100%; }
+.footer-copy {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  line-height: 1.8;
+}
+.footer-copy strong { color: var(--text-muted); }
+
+/* SCROLL TO TOP */
+#scrollTop {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border: none;
+  border-radius: 50%;
+  color: var(--bg-deep);
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all var(--transition-bounce);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  box-shadow: 0 8px 25px rgba(14,165,233,0.3);
+}
+#scrollTop.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+#scrollTop:hover {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 12px 35px rgba(14,165,233,0.5);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  section { padding: 4rem 1rem; }
+  nav { padding: 0 1rem; height: 60px; }
+}
+@media (max-width: 480px) {
+  .mobile-drawer { width: 260px; }
+  .footer-links { gap: 1rem; }
+}
+
+
+#about-site {
+  background: linear-gradient(180deg, var(--bg-deep), var(--bg-dark));
+  min-height: 100vh;
+  padding-top: 8rem;
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.about-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.about-visual-inner {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(245,158,11,0.05));
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: float 7s ease-in-out infinite;
+}
+.about-visual-inner::before {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1px dashed rgba(14,165,233,0.15);
+  animation: rotateSlow 25s linear infinite;
+}
+.about-visual-inner svg { width: 110px; height: 110px; opacity: 0.6; }
+.about-content h3 {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--primary-light);
+  margin-bottom: 1rem;
+}
+.about-content p {
+  color: var(--text-muted);
+  line-height: 2;
+  margin-bottom: 1.2rem;
+  font-size: 0.95rem;
+}
+.school-info-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem;
+  margin: 1.5rem 0;
+}
+.school-info-box h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.school-info-box p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  line-height: 1.8;
+}
+.team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.2rem;
+  transition: all var(--transition-fast);
+}
+.team-member:hover {
+  border-color: var(--border-hover);
+  background: var(--primary-glow);
+  transform: translateX(-4px);
+}
+.team-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  color: var(--bg-deep);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.team-info h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.team-info span {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+  .about-visual { order: -1; }
+  .about-visual-inner { width: 220px; height: 220px; }
+  .about-visual-inner svg { width: 80px; height: 80px; }
+  .team-member { justify-content: center; }
+}
+@media (max-width: 480px) {
+  .about-visual-inner { width: 180px; height: 180px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-ring">
+    <div class="loader-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
+  </div>
+  <div class="loader-text">مدرسة شهيد حسن حمدي</div>
+  <div class="loader-sub">الأخيوة · إدارة الحسنية · محافظة الشرقية</div>
+  <div class="loader-track"><div class="loader-fill"></div></div>
+</div>
+
+
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="emblem"><svg viewBox="0 0 24 24" fill="none" stroke="#030712" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
+    <span>مدرسة شهيد<br>حسن حمدي</span>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="">الرئيسية</a></li>
+<li><a href="principal.html" class="">المدير والمدرسون</a></li>
+<li><a href="students.html" class="">الطلاب المتفوقين</a></li>
+<li><a href="memories.html" class="">ذكريات</a></li>
+<li><a href="about.html" class="active">عن الموقع</a></li>
+
+    <li><a href="https://www.example.com" target="_blank" class="school-site-btn">موقع المدرسة</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mobile-drawer-overlay" id="drawerOverlay" onclick="closeMobile()"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-header">
+    <div class="emblem"><svg viewBox="0 0 24 24" fill="none" stroke="#030712" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
+    <div>
+      <h3>مدرسة شهيد حسن حمدي</h3>
+      <p>الثانوية العامة · الأخيوة</p>
+    </div>
+  </div>
+  <a href="index.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>الرئيسية</a>
+<a href="principal.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>المدير والمدرسون</a>
+<a href="students.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>الطلاب المتفوقين</a>
+<a href="memories.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>ذكريات</a>
+<a href="about.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>عن الموقع</a>
+
+  <a href="https://www.example.com" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>موقع المدرسة</a>
+  <div class="drawer-footer">© ٢٠٢٧ مدرسة شهيد حسن حمدي</div>
+</div>
+
+
+<section id="about-site">
+  <div class="section-header reveal">
+    <div class="section-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>عن الموقع</div>
+    <h2 class="section-title">معلومات <span>عن الموقع</span></h2>
+    <div class="section-line"></div>
+    <p class="section-desc">تعرف على فريق العمل والجهود المبذولة لإنشاء هذا الموقع</p>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <div class="about-visual-inner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+          <path d="M6 8l3 3 3-3 3 3 3-3"/>
+        </svg>
+      </div>
+    </div>
+    <div class="about-content reveal reveal-delay-2">
+      <h3>من نحن</h3>
+      <p>
+        تم إنشاء هذا الموقع بهدف تقديم واجهة رقمية رسمية ومتكاملة لمدرسة شهيد حسن حمدي الثانوية العامة،
+        ليكون منصة تواصل فعّالة بين المدرسة وأولياء الأمور والطلاب، ونافذة إلكترونية تعكس
+        قيم المؤسسة التعليمية ورسالتها السامية في بناء الأجيال.
+      </p>
+
+      <div class="school-info-box">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          معلومات عن المدرسة
+        </h4>
+        <p><strong>الاسم:</strong> مدرسة شهيد حسن حمدي الثانوية العامة</p>
+        <p><strong>الموقع:</strong> قرية الأخيوة، مركز الحسنية، محافظة الشرقية</p>
+        <p><strong>الإدارة:</strong> إدارة الحسنية التعليمية</p>
+        <p><strong>المرحلة:</strong> الثانوية العامة (ثانوي)</p>
+      </div>
+
+      <div class="team-list">
+        <div class="team-member">
+          <div class="team-avatar">م</div>
+          <div class="team-info">
+            <h4>محمود أحمد سعيد</h4>
+            <span>مطور الموقع · التفكير التصميمي والديزاين</span>
+          </div>
+        </div>
+        <div class="team-member">
+          <div class="team-avatar">س</div>
+          <div class="team-info">
+            <h4>سلمى سخيلي</h4>
+            <span>المساهمة في التفكير والتخطيط</span>
+          </div>
+        </div>
+        <div class="team-member">
+          <div class="team-avatar">ر</div>
+          <div class="team-info">
+            <h4>ريماس حبيب</h4>
+            <span>المساهمة في التفكير والتخطيط</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
+    <div class="footer-sub">نبني الأجيال · نصنع المستقبل</div>
+    <div class="footer-links">
+      <a href="index.html">الرئيسية</a>
+      <a href="principal.html">المدير والمدرسون</a>
+      <a href="students.html">الطلاب المتفوقين</a>
+      <a href="memories.html">ذكريات</a>
+      <a href="about.html">عن الموقع</a>
+      <a href="https://www.example.com" target="_blank">موقع المدرسة الرسمي</a>
+    </div>
+    <div class="footer-copy">
+      <strong>تصميم وتطوير:</strong> محمود أحمد سعيد<br>
+      <strong>فريق التفكير:</strong> سلمى سخيلي · ريماس حبيب<br>
+      © ٢٠٢٧ مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة
+    </div>
+  </div>
+</footer>
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+
+<script>
+function setupReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+    setupReveal();
+  }, 1200);
+});
+</script>
+
+<script>
+function toggleMobileMenu() {
+  const drawer = document.getElementById('mobileDrawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const hamburger = document.getElementById('hamburger');
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    hamburger.classList.remove('active');
+    document.body.style.overflow = '';
+  } else {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    hamburger.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeMobile() {
+  document.getElementById('mobileDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTop');
+  if (btn) btn.classList.toggle('show', window.scrollY > 400);
+  const nav = document.getElementById('navbar');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeMobile();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('hidden');
+  }, 1200);
+});
+</script>
+
+</body>
+</html>
