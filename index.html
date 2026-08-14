@@ -2,1073 +2,2090 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>مدرسة شهيد حسن حمدي | الرئيسية</title>
-<meta name="description" content="الموقع الرسمي لمدرسة شهيد حسن حمدي الثانوية العامة - الأخيوة، إدارة الحسنية التعليمية، محافظة الشرقية">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>مدرسة شهيد حسن حمدي | الثانوية — ادارة الحسنية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Noto+Kufi+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-
+/* ========== CSS VARS ========== */
 :root {
-  --bg-deep: #030712;
-  --bg-dark: #0a0f1e;
-  --bg-card: rgba(255,255,255,0.025);
-  --bg-glass: rgba(255,255,255,0.04);
-  --primary: #0ea5e9;
-  --primary-light: #38bdf8;
-  --primary-glow: rgba(14,165,233,0.15);
-  --accent: #f59e0b;
-  --accent-light: #fbbf24;
-  --accent-glow: rgba(245,158,11,0.2);
-  --text: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --border: rgba(255,255,255,0.06);
-  --border-hover: rgba(14,165,233,0.25);
-  --success: #10b981;
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
-  --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
-  --shadow-glow: 0 0 40px rgba(14,165,233,0.1);
-  --transition-fast: 0.2s cubic-bezier(0.4,0,0.2,1);
-  --transition-base: 0.4s cubic-bezier(0.4,0,0.2,1);
-  --transition-bounce: 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  --bg:       #07090f;
+  --bg2:      #0c1120;
+  --bg3:      #111827;
+  --surface:  rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.07);
+  --gold:     #c9a84c;
+  --gold2:    #e8c96a;
+  --gold-dim: rgba(201,168,76,0.12);
+  --gold-glow:rgba(201,168,76,0.22);
+  --crimson:  #8b1a1a;
+  --crimson2: #b02a2a;
+  --border:   rgba(201,168,76,0.15);
+  --border2:  rgba(255,255,255,0.07);
+  --text:     #e8e4dc;
+  --text-dim: rgba(232,228,220,0.55);
+  --text-muted:rgba(232,228,220,0.3);
+  --white:    #ffffff;
+  --radius:   20px;
+  --radius-sm:12px;
+  --nav-h:    68px;
+  --mobile-nav-h: 60px;
+  --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
+
+/* ========== RESET ========== */
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
 body {
-  font-family: 'Cairo', sans-serif;
-  background: var(--bg-deep);
+  font-family:'Cairo', sans-serif;
+  background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
+  line-height:1.7;
+  min-height:100vh;
 }
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-}
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-deep); }
-::-webkit-scrollbar-thumb { background: linear-gradient(var(--primary), var(--accent)); border-radius: 3px; }
+body.menu-open { overflow:hidden; }
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--gold); border-radius:3px; }
+img { display:block; max-width:100%; }
+button { font-family:'Cairo',sans-serif; cursor:pointer; border:none; background:none; }
+a { text-decoration:none; color:inherit; }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,0.3); }
-  50% { box-shadow: 0 0 0 12px rgba(14,165,233,0); }
-}
-@keyframes gradientFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-@keyframes rotateSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-@keyframes morphBlob {
-  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-}
-@keyframes drawLine {
-  from { width: 0; }
-  to { width: 60px; }
-}
-@keyframes loadProgress {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
+/* ========== ANIMATIONS ========== */
+@keyframes fadeUp    { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn    { from{opacity:0} to{opacity:1} }
+@keyframes fadeDown  { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideRight{ from{opacity:0;transform:translateX(-40px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slideLeft { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+@keyframes scaleIn   { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+@keyframes float     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes glow-pulse{ 0%,100%{box-shadow:0 0 0 0 var(--gold-glow)} 50%{box-shadow:0 0 0 14px transparent} }
+@keyframes spin      { to{transform:rotate(360deg)} }
+@keyframes spin-rev  { to{transform:rotate(-360deg)} }
+@keyframes twinkle   { 0%,100%{opacity:0.15;transform:scale(0.7)} 50%{opacity:1;transform:scale(1.2)} }
+@keyframes shimmer   { 0%{background-position:-200% center} 100%{background-position:200% center} }
+@keyframes lineGrow  { from{width:0} to{width:60px} }
+@keyframes counterUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes menuSlide { from{opacity:0;transform:translateX(-100%)} to{opacity:1;transform:translateX(0)} }
+@keyframes progressLoad { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes particleDrift { 0%{transform:translateY(0) translateX(0) rotate(0deg)} 100%{transform:translateY(-60px) translateX(20px) rotate(180deg)} }
+@keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes borderDance  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes slideMenuIn { from{transform:translateX(-100%)} to{transform:translateX(0)} }
+@keyframes slideMenuOut{ from{transform:translateX(0)} to{transform:translateX(-100%)} }
+@keyframes cardEntrance { from{opacity:0;transform:translateY(28px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes rankPop { 0%{transform:scale(0.5)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
+@keyframes hoverBob  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+@keyframes pageSlide { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes softPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+@keyframes iconBounce{ 0%,100%{transform:translateY(0)} 40%{transform:translateY(-4px)} 60%{transform:translateY(-1px)} }
+@keyframes waveIn    { from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0% 0 0)} }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s cubic-bezier(0.4,0,0.2,1);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* NAVBAR */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
-  background: rgba(3,7,18,0.85);
-  backdrop-filter: blur(20px) saturate(1.5);
-  border-bottom: 1px solid var(--border);
-  padding: 0 2rem;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  animation: fadeInDown 0.6s ease forwards;
-  transition: all var(--transition-base);
-}
-nav.scrolled {
-  background: rgba(3,7,18,0.95);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  height: 60px;
-}
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  text-decoration: none;
-}
-.nav-logo .emblem {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulse-glow 3s infinite;
-}
-.nav-logo .emblem svg { width: 22px; height: 22px; }
-.nav-logo span {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.3;
-}
-.nav-links {
-  display: flex;
-  gap: 0.2rem;
-  list-style: none;
-  align-items: center;
-}
-.nav-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 7px 14px;
-  border-radius: 50px;
-  transition: all var(--transition-fast);
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-.nav-links a:hover {
-  color: var(--primary-light);
-  background: var(--primary-glow);
-  border-color: var(--border-hover);
-}
-.nav-links a.active {
-  color: var(--bg-deep);
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  font-weight: 700;
-  border-color: transparent;
-}
-.school-site-btn {
-  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
-  color: white !important;
-  border-color: transparent !important;
-}
-.hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  cursor: pointer;
-  padding: 8px;
-  z-index: 1001;
-  background: var(--bg-glass);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-}
-.hamburger span {
-  width: 22px;
-  height: 2px;
-  background: var(--primary-light);
-  border-radius: 2px;
-  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-.hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-
-/* MOBILE DRAWER */
-.mobile-drawer-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  z-index: 998;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-.mobile-drawer-overlay.open { opacity: 1; pointer-events: all; }
-.mobile-drawer {
-  position: fixed;
-  top: 0; left: 0;
-  bottom: 0;
-  width: 280px;
-  max-width: 80vw;
-  background: linear-gradient(180deg, var(--bg-dark), var(--bg-deep));
-  border-right: 1px solid var(--border);
-  z-index: 999;
-  transform: translateX(-100%);
-  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow-y: auto;
-}
-.mobile-drawer.open { transform: translateX(0); }
-.drawer-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-bottom: 1.5rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-}
-.drawer-header .emblem {
-  width: 44px; height: 44px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-}
-.drawer-header .emblem svg { width: 24px; height: 24px; }
-.drawer-header h3 {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--text);
-}
-.drawer-header p {
-  font-size: 0.7rem;
-  color: var(--text-dim);
-}
-.mobile-drawer a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-muted);
-  text-decoration: none;
-  padding: 0.9rem 1rem;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: all var(--transition-fast);
-  border: 1px solid transparent;
-}
-.mobile-drawer a:hover, .mobile-drawer a.active {
-  background: var(--primary-glow);
-  color: var(--primary-light);
-  border-color: var(--border-hover);
-  transform: translateX(4px);
-}
-.mobile-drawer a svg {
-  width: 18px; height: 18px;
-  opacity: 0.6;
-}
-.drawer-footer {
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  text-align: center;
-  font-size: 0.7rem;
-  color: var(--text-dim);
-}
-
-/* LOADER */
+/* ========== LOADER ========== */
 #loader {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-deep);
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  transition: opacity 0.6s ease, visibility 0.6s;
+  position:fixed; inset:0; background:var(--bg);
+  z-index:99999; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:1.6rem;
+  transition:opacity 0.8s ease, visibility 0.8s;
 }
-#loader.hidden { opacity: 0; visibility: hidden; }
+#loader.gone { opacity:0; visibility:hidden; pointer-events:none; }
 .loader-ring {
-  width: 80px;
-  height: 80px;
-  position: relative;
+  width:88px; height:88px; position:relative;
 }
-.loader-ring::before, .loader-ring::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid transparent;
+.loader-ring::before,.loader-ring::after {
+  content:''; position:absolute; inset:0; border-radius:50%;
+  border:2.5px solid transparent;
 }
 .loader-ring::before {
-  border-top-color: var(--primary);
-  border-right-color: var(--accent);
-  animation: rotateSlow 1.2s linear infinite;
+  border-top-color:var(--gold); border-right-color:var(--gold2);
+  animation:spin 1.4s linear infinite;
 }
 .loader-ring::after {
-  inset: 10px;
-  border-bottom-color: var(--primary-light);
-  border-left-color: var(--accent-light);
-  animation: rotateSlow 0.9s linear infinite reverse;
+  inset:14px; border-bottom-color:var(--gold); border-left-color:var(--gold2);
+  animation:spin-rev 1.1s linear infinite;
 }
-.loader-logo {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.loader-emblem {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
 }
-.loader-logo svg { width: 32px; height: 32px; }
-.loader-text {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: 1px;
+.loader-emblem svg { width:34px; height:34px; }
+.loader-name {
+  font-family:'Tajawal',sans-serif; font-size:1.1rem; font-weight:900;
+  color:var(--gold); letter-spacing:2px;
 }
-.loader-sub {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-}
-.loader-track {
-  width: 180px;
-  height: 2px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
+.loader-sub { font-size:0.72rem; color:var(--text-muted); }
+.loader-bar {
+  width:200px; height:2px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;
 }
 .loader-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  animation: loadProgress 1.2s ease-in-out forwards;
-  border-radius: 2px;
+  height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2));
+  border-radius:2px; transform-origin:left;
+  animation:progressLoad 1.6s ease forwards;
 }
 
-/* SECTIONS */
-section {
-  padding: 6rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+/* ========== NAVBAR ========== */
+#navbar {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  height:var(--nav-h);
+  background:rgba(7,9,15,0.88);
+  backdrop-filter:blur(24px) saturate(1.3);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 2.5rem;
+  animation:fadeDown 0.7s ease both;
+  transition:background 0.3s, height 0.3s, box-shadow 0.3s;
 }
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
+#navbar.scrolled {
+  background:rgba(7,9,15,0.97);
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);
 }
+.nav-brand {
+  display:flex; align-items:center; gap:12px; cursor:pointer;
+}
+.nav-emblem {
+  width:42px; height:42px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex; align-items:center; justify-content:center;
+  animation:glow-pulse 3s ease infinite;
+  flex-shrink:0;
+}
+.nav-emblem svg { width:22px; height:22px; }
+.nav-brand-text span:first-child {
+  display:block; font-family:'Tajawal',sans-serif;
+  font-size:0.82rem; font-weight:900; color:var(--gold); line-height:1.2;
+}
+.nav-brand-text span:last-child {
+  display:block; font-size:0.62rem; color:var(--text-muted); font-weight:500;
+}
+.nav-links {
+  display:flex; gap:0.2rem; list-style:none; align-items:center;
+}
+.nav-links a {
+  color:rgba(232,228,220,0.6); font-size:0.78rem; font-weight:600;
+  padding:7px 14px; border-radius:50px;
+  border:1px solid transparent;
+  transition:all 0.3s; white-space:nowrap; position:relative;
+  display:flex; align-items:center; gap:5px;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-1px; left:50%; right:50%;
+  height:2px; background:var(--gold); border-radius:2px;
+  transition:left 0.3s, right 0.3s;
+}
+.nav-links a:hover { color:var(--gold); background:rgba(201,168,76,0.07); border-color:rgba(201,168,76,0.12); }
+.nav-links a:hover::after { left:20%; right:20%; }
+.nav-links a.active {
+  color:var(--bg); background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-color:transparent; font-weight:700;
+}
+.nav-links a.active::after { display:none; }
+.nav-school-btn {
+  background:linear-gradient(135deg,rgba(139,26,26,0.85),rgba(176,42,42,0.85)) !important;
+  color:rgba(255,255,255,0.9) !important; border-color:rgba(139,26,26,0.4) !important;
+  backdrop-filter:blur(8px);
+}
+.nav-school-btn:hover { background:linear-gradient(135deg,#8b1a1a,#b02a2a) !important; color:#fff !important; }
+
+/* HAMBURGER — MOBILE */
+.hamburger {
+  display:none; width:36px; height:36px;
+  flex-direction:column; gap:5px; align-items:center; justify-content:center;
+  cursor:pointer; border-radius:10px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--border2);
+  transition:all 0.3s; z-index:1002;
+}
+.hamburger span {
+  width:20px; height:2px; background:var(--gold); border-radius:2px;
+  transition:all 0.4s cubic-bezier(0.4,0,0.2,1); transform-origin:center;
+}
+.hamburger.active { background:rgba(201,168,76,0.12); border-color:var(--border); }
+.hamburger.active span:nth-child(1) { transform:rotate(45deg) translate(5px,5px); }
+.hamburger.active span:nth-child(2) { opacity:0; transform:scaleX(0); }
+.hamburger.active span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px); }
+
+/* MOBILE MENU — slides from LEFT */
+#mobileMenu {
+  position:fixed; top:0; left:0; bottom:0; width:82vw; max-width:320px;
+  background:var(--bg2); border-right:1px solid var(--border);
+  z-index:2000; padding:var(--mobile-nav-h) 0 2rem;
+  transform:translateX(-100%);
+  transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  display:flex; flex-direction:column;
+  overflow-y:auto;
+}
+#mobileMenu.open { transform:translateX(0); }
+#mobileMenuOverlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.65);
+  z-index:1999; opacity:0; pointer-events:none;
+  transition:opacity 0.4s;
+  backdrop-filter:blur(4px);
+}
+#mobileMenuOverlay.show { opacity:1; pointer-events:all; }
+.mobile-menu-header {
+  padding:1.2rem 1.5rem 1.5rem;
+  border-bottom:1px solid var(--border2);
+  margin-bottom:0.8rem;
+}
+.mobile-menu-header .logo-text {
+  font-family:'Tajawal',sans-serif; font-size:1rem; font-weight:900; color:var(--gold);
+}
+.mobile-menu-header .logo-sub { font-size:0.65rem; color:var(--text-muted); margin-top:2px; }
+.mobile-nav-link {
+  display:flex; align-items:center; gap:12px;
+  padding:0.85rem 1.5rem;
+  color:rgba(232,228,220,0.65); font-size:0.88rem; font-weight:600;
+  transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
+  border-right:3px solid transparent;
+  cursor:pointer; border-radius:0;
+  position:relative;
+}
+.mobile-nav-link::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, rgba(201,168,76,0.06), transparent);
+  opacity:0; transition:opacity 0.25s;
+}
+.mobile-nav-link svg { width:18px; height:18px; flex-shrink:0; color:var(--gold); opacity:0.5; transition:all 0.3s; }
+.mobile-nav-link:hover { color:var(--gold); border-right-color:var(--gold); }
+.mobile-nav-link:hover::before { opacity:1; }
+.mobile-nav-link:hover svg { opacity:1; animation:iconBounce 0.5s ease; }
+
+/* ========== PAGES SYSTEM ========== */
+.page { display:none; min-height:100vh; padding-top:var(--nav-h); }
+.page.active { display:block; animation:pageSlide 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+
+/* ========== STARS BACKGROUND ========== */
+#starsCanvas {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+}
+
+/* ========== HERO ========== */
+#heroPage {
+  position:relative; overflow:hidden;
+  display:flex; flex-direction:column;
+  padding-top:var(--nav-h);
+}
+.hero-section {
+  position:relative; z-index:2;
+  min-height:calc(100vh - var(--nav-h));
+  display:flex; align-items:center; justify-content:center;
+  padding:4rem 2rem 2rem;
+}
+.hero-bg-gradient {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% -5%, rgba(15,22,40,0.95) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 45% at 85% 90%, rgba(201,168,76,0.055) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 38% at 10% 80%, rgba(100,20,20,0.04) 0%, transparent 55%),
+    linear-gradient(175deg, #07090f 0%, #0b1322 45%, #07090f 100%);
+}
+.hero-particles { position:absolute; inset:0; overflow:hidden; }
+.hero-particle {
+  position:absolute; border-radius:50%; background:var(--gold2);
+  animation:particleDrift var(--d) var(--del) infinite alternate ease-in-out;
+  opacity:0.18;
+}
+.hero-content {
+  position:relative; z-index:3; text-align:center;
+  max-width:860px; margin:0 auto;
+}
+.hero-pill {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(201,168,76,0.09); border:1px solid var(--border);
+  color:var(--gold); font-size:0.75rem; font-weight:700;
+  padding:8px 22px; border-radius:50px;
+  margin-bottom:2rem; animation:fadeUp 0.7s 0.2s both;
+  backdrop-filter:blur(8px); letter-spacing:0.5px;
+}
+.hero-pill svg { width:15px; height:15px; }
+.hero-title {
+  font-family:'Tajawal',sans-serif;
+  font-size:clamp(2.6rem,7vw,5.5rem);
+  font-weight:900; line-height:1.02;
+  margin-bottom:1.4rem; animation:fadeUp 0.8s 0.35s both;
+}
+.hero-title .main {
+  display:block;
+  background:linear-gradient(135deg,var(--gold),var(--gold2),#fff,var(--gold));
+  background-size:300% auto;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:shimmer 5s ease infinite;
+}
+.hero-title .sub {
+  display:block; color:rgba(255,255,255,0.38);
+  font-size:0.38em; font-weight:400;
+  letter-spacing:4px; margin-top:0.6rem;
+}
+.hero-desc {
+  color:var(--text-dim); font-size:1rem; line-height:1.9;
+  margin-bottom:3rem; animation:fadeUp 0.8s 0.5s both;
+  max-width:580px; margin-left:auto; margin-right:auto;
+}
+.hero-actions {
+  display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;
+  animation:fadeUp 0.8s 0.65s both;
+}
+.btn-gold {
+  display:inline-flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--bg); padding:14px 32px; border-radius:50px;
+  font-size:0.9rem; font-weight:700;
+  transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  position:relative; overflow:hidden;
+}
+.btn-gold::before {
+  content:''; position:absolute; top:-50%; left:-60%; width:50%; height:200%;
+  background:rgba(255,255,255,0.3); transform:skewX(-20deg);
+  transition:left 0.5s;
+}
+.btn-gold:hover::before { left:130%; }
+.btn-gold:hover { transform:translateY(-4px) scale(1.03); box-shadow:0 16px 40px var(--gold-glow); }
+.btn-gold svg { width:17px; height:17px; }
+.btn-ghost {
+  display:inline-flex; align-items:center; gap:8px;
+  background:transparent; color:var(--text);
+  border:1.5px solid rgba(255,255,255,0.18);
+  padding:14px 32px; border-radius:50px;
+  font-size:0.9rem; font-weight:600;
+  transition:all 0.4s;
+}
+.btn-ghost:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-4px); background:var(--gold-dim); }
+.btn-ghost svg { width:17px; height:17px; }
+
+/* STATS STRIP */
+.stats-strip {
+  position:relative; z-index:2;
+  padding:0 2rem 4rem;
+  animation:fadeUp 0.8s 0.8s both;
+}
+/* STATS STRIP wrapper */
+.stats-strip {
+  position:relative; z-index:2;
+  padding:0 2rem 5rem;
+  animation:fadeUp 0.8s 0.8s both;
+}
+.stats-strip-inner {
+  max-width:860px; margin:0 auto;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1rem;
+}
+.stat-cell {
+  padding:1.6rem 1rem 1.4rem; text-align:center;
+  background:rgba(12,17,32,0.55);
+  border:1px solid rgba(201,168,76,0.1);
+  border-radius:16px;
+  position:relative; overflow:hidden;
+  transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+  backdrop-filter:blur(14px);
+  cursor:default;
+}
+.stat-cell::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:0; transition:opacity 0.4s;
+}
+.stat-cell::after {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.07), transparent 65%);
+  opacity:0; transition:opacity 0.4s;
+}
+.stat-cell:hover { 
+  border-color:rgba(201,168,76,0.28); 
+  transform:translateY(-6px);
+  box-shadow:0 20px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,168,76,0.1);
+}
+.stat-cell:hover::before { opacity:1; }
+.stat-cell:hover::after  { opacity:1; }
+.stat-icon { margin:0 auto 0.7rem; opacity:0.55; width:26px; height:26px; transition:opacity 0.3s, transform 0.4s; position:relative; z-index:1; }
+.stat-cell:hover .stat-icon { opacity:0.9; transform:scale(1.1) rotate(-5deg); }
+.stat-num {
+  font-family:'Tajawal',sans-serif; font-size:2.1rem;
+  font-weight:900; color:var(--gold); display:block; line-height:1;
+  position:relative; z-index:1;
+  transition:transform 0.3s;
+}
+.stat-cell:hover .stat-num { transform:scale(1.06); }
+.stat-suf { font-size:1rem; }
+.stat-label { font-size:0.7rem; color:rgba(232,228,220,0.38); font-weight:600; margin-top:0.4rem; display:block; letter-spacing:0.3px; position:relative; z-index:1; }
+
+/* ========== SECTION COMMONS ========== */
+.section-wrap { max-width:1200px; margin:0 auto; padding:5rem 2rem; }
+.section-head { text-align:center; margin-bottom:3.5rem; }
 .section-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border);
-  color: var(--primary-light);
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 6px 18px;
-  border-radius: 50px;
-  letter-spacing: 1px;
-  margin-bottom: 1rem;
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--gold-dim); border:1px solid var(--border);
+  color:var(--gold); font-size:0.72rem; font-weight:700;
+  padding:5px 18px; border-radius:50px; margin-bottom:1rem;
+  letter-spacing:0.5px;
 }
+.section-tag svg { width:12px; height:12px; }
 .section-title {
-  font-family: 'Tajawal', sans-serif;
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  font-weight: 900;
-  line-height: 1.15;
-  margin-bottom: 0.6rem;
+  font-family:'Tajawal',sans-serif; font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:900; line-height:1.15; margin-bottom:0.6rem;
 }
-.section-title span {
-  background: linear-gradient(135deg, var(--primary-light), var(--accent-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+.section-title span { color:var(--gold); }
 .section-line {
-  width: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary), transparent);
-  margin: 0.8rem auto 0;
-  border-radius: 2px;
-  animation: drawLine 0.8s 0.3s forwards;
+  width:0; height:3px; background:linear-gradient(90deg,var(--gold),transparent);
+  margin:0.8rem auto 0; border-radius:2px; animation:lineGrow 1s 0.4s forwards;
 }
-.section-desc {
-  color: var(--text-dim);
-  font-size: 0.92rem;
-  max-width: 500px;
-  margin: 1rem auto 0;
-  line-height: 1.8;
+.section-desc { color:var(--text-dim); font-size:0.9rem; max-width:500px; margin:0.8rem auto 0; line-height:1.8; }
+
+/* ========== SCROLL REVEAL ========== */
+.reveal { opacity:0; transform:translateY(30px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-left { opacity:0; transform:translateX(-35px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.reveal-left.visible { opacity:1; transform:translateX(0); }
+.reveal-right { opacity:0; transform:translateX(35px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.reveal-right.visible { opacity:1; transform:translateX(0); }
+
+/* ========== PRINCIPAL PAGE ========== */
+.principal-hero-row {
+  display:grid; grid-template-columns:280px 1fr;
+  gap:0; align-items:stretch;
+  border:1px solid var(--border); border-radius:28px;
+  overflow:hidden; position:relative; min-height:320px;
+}
+.principal-hero-row::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 80% 50%,rgba(201,168,76,0.04) 0%,transparent 60%);
+  pointer-events:none; z-index:0;
+}
+/* Principal photo panel — same style as teachers */
+.principal-portrait-area {
+  position:relative; overflow:hidden;
+  background:linear-gradient(160deg, var(--bg3) 0%, var(--bg2) 100%);
+  display:flex; align-items:center; justify-content:center;
+  min-height:320px; flex-shrink:0;
+}
+.principal-portrait-area::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent 50%, rgba(7,9,15,0.85) 100%);
+  z-index:1;
+}
+.principal-portrait-area::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(201,168,76,0.12), transparent 65%);
+  z-index:1;
+}
+.principal-portrait-area .bg-letter {
+  position:absolute; font-family:'Tajawal',sans-serif; font-size:14rem;
+  font-weight:900; color:var(--gold); opacity:0.07; z-index:0; line-height:1;
+  user-select:none;
+}
+.principal-portrait-svg {
+  position:absolute; inset:0; width:100%; height:100%; z-index:2;
+}
+.principal-badge-tag {
+  position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+  z-index:4;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--bg); font-size:0.65rem; font-weight:700;
+  padding:5px 18px; border-radius:50px; white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,0.4);
+}
+.principal-role-label { display:none; }
+/* Info side */
+.principal-info {
+  position:relative; z-index:1;
+  padding:2.8rem 3rem;
+  background:linear-gradient(135deg, rgba(17,24,39,0.5), rgba(7,9,15,0.3));
+  display:flex; flex-direction:column; justify-content:center;
+}
+.principal-name {
+  font-family:'Tajawal',sans-serif; font-size:2rem; font-weight:900;
+  color:var(--gold); margin-bottom:0.5rem;
+}
+.principal-role-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.35);
+  color:#e08080; font-size:0.75rem; font-weight:600;
+  padding:5px 16px; border-radius:50px; margin-bottom:1.4rem;
+}
+.principal-bio {
+  color:var(--text-dim); line-height:2; margin-bottom:1.8rem; font-size:0.9rem;
+}
+.principal-chips {
+  display:grid; grid-template-columns:1fr 1fr; gap:0.9rem;
+}
+.p-chip {
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius-sm); padding:0.9rem 1rem;
+  transition:all 0.3s;
+}
+.p-chip:hover { border-color:var(--border); background:var(--gold-dim); transform:translateX(-4px); }
+.p-chip .lbl { color:var(--text-muted); font-size:0.68rem; font-weight:600; display:block; margin-bottom:3px; }
+.p-chip .val { color:var(--gold); font-weight:700; font-size:0.88rem; }
+
+/* ========== TEACHERS PAGE ========== */
+.teacher-row {
+  display:grid;
+  grid-template-columns: 240px 1fr;
+  gap:0;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius); overflow:hidden;
+  margin-bottom:1.5rem; cursor:pointer; position:relative;
+  transition:all 0.45s cubic-bezier(0.4,0,0.2,1);
+  min-height:220px;
 }
 
-/* BUTTONS */
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: var(--bg-deep);
-  border: none;
-  padding: 14px 32px;
-  border-radius: 50px;
-  font-family: 'Cairo', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition-bounce);
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
+/* AR: image on RIGHT (start in RTL = right), info on left */
+/* EN/FR: image on LEFT, info on right */
+.teacher-row.lang-en,
+.teacher-row.lang-fr { grid-template-columns: 240px 1fr; direction:ltr; }
+.teacher-row.lang-en .teacher-row-info,
+.teacher-row.lang-fr .teacher-row-info { direction:ltr; text-align:left; }
+
+.teacher-row::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transform:scaleX(0); transform-origin:center; transition:transform 0.45s;
 }
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: -50%; left: -60%;
-  width: 50%; height: 200%;
-  background: rgba(255,255,255,0.2);
-  transform: skewX(-20deg);
-  transition: left 0.5s;
-}
-.btn-primary:hover::before { left: 130%; }
-.btn-primary:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 15px 40px rgba(14,165,233,0.3), var(--shadow-glow);
-}
-.btn-outline {
-  background: transparent;
-  color: var(--text);
-  border: 1.5px solid var(--border);
-  padding: 14px 32px;
-  border-radius: 50px;
-  font-family: 'Cairo', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-bounce);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-}
-.btn-outline:hover {
-  border-color: var(--primary);
-  color: var(--primary-light);
-  background: var(--primary-glow);
-  transform: translateY(-3px) scale(1.02);
+.teacher-row:hover::after  { transform:scaleX(1); }
+.teacher-row:hover {
+  border-color:var(--border);
+  transform:translateY(-5px);
+  box-shadow:0 24px 55px rgba(0,0,0,0.45);
 }
 
-/* FOOTER */
+/* The image panel — full height, fills its column */
+.teacher-row-photo {
+  position:relative; overflow:hidden;
+  flex-shrink:0;
+  background:linear-gradient(160deg, var(--bg3) 0%, var(--bg2) 100%);
+  display:flex; align-items:center; justify-content:center;
+  min-height:220px;
+}
+/* Gold shimmer overlay on hover */
+.teacher-row-photo::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent 55%, rgba(7,9,15,0.9) 100%);
+  z-index:1;
+}
+.teacher-row-photo::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(201,168,76,0.1), transparent 60%);
+  opacity:0; transition:opacity 0.4s; z-index:2;
+}
+.teacher-row:hover .teacher-row-photo::after { opacity:1; }
+
+/* The big letter avatar — fills the full photo panel */
+.teacher-photo-letter {
+  font-family:'Tajawal',sans-serif;
+  font-size:6rem; font-weight:900; color:var(--gold);
+  opacity:0.18; user-select:none; position:absolute;
+  z-index:0; line-height:1;
+  transition:transform 0.5s ease, opacity 0.4s;
+}
+.teacher-row:hover .teacher-photo-letter { transform:scale(1.1); opacity:0.26; }
+
+/* The actual generated "portrait" graphic */
+.teacher-portrait-graphic {
+  position:relative; z-index:3; width:100%; height:100%;
+  display:flex; align-items:flex-end; justify-content:center;
+  padding-bottom:0;
+}
+.teacher-portrait-svg {
+  width:100%; height:100%;
+  position:absolute; inset:0;
+}
+
+/* Gender / subject badge on the photo */
+.teacher-photo-badge {
+  position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+  z-index:4;
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  color:var(--bg); font-size:0.62rem; font-weight:700;
+  padding:4px 14px; border-radius:50px; white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,0.4);
+  letter-spacing:0.3px;
+}
+
+/* Info panel — padding inside */
+.teacher-row-info {
+  padding:1.8rem 2rem;
+  display:flex; flex-direction:column; justify-content:center;
+  position:relative; z-index:1;
+  background:linear-gradient(135deg, rgba(17,24,39,0.4), transparent);
+}
+
+/* Gold left-border accent on info side */
+.teacher-row-info::before {
+  content:''; position:absolute; top:1.5rem; bottom:1.5rem;
+  width:2px; border-radius:2px;
+  background:linear-gradient(180deg, var(--gold), transparent);
+  right:0; /* in RTL this is the separator closest to photo */
+}
+.teacher-row.lang-en .teacher-row-info::before,
+.teacher-row.lang-fr .teacher-row-info::before { right:auto; left:0; }
+
+.t-gender-dot {
+  display:none; /* hidden — replaced by photo badge */
+}
+.teacher-row-info { position:relative; z-index:1; }
+.t-subject-tag {
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--gold-dim); border:1px solid var(--border);
+  color:var(--gold); font-size:0.7rem; font-weight:700;
+  padding:3px 14px; border-radius:50px; margin-bottom:0.7rem;
+}
+.t-name {
+  font-family:'Tajawal',sans-serif; font-size:1.35rem; font-weight:900;
+  color:var(--white); margin-bottom:0.3rem;
+}
+.t-location {
+  font-size:0.78rem; color:var(--text-muted); margin-bottom:0.8rem;
+  display:flex; align-items:center; gap:5px;
+}
+.t-location svg { width:13px; height:13px; color:var(--gold); }
+.t-bio-short { color:var(--text-dim); font-size:0.85rem; line-height:1.7; margin-bottom:1rem; }
+.t-meta-chips { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.t-chip {
+  background:rgba(255,255,255,0.04); border:1px solid var(--border2);
+  color:var(--text-dim); font-size:0.72rem; font-weight:600;
+  padding:4px 12px; border-radius:50px;
+}
+.t-chip strong { color:var(--gold); }
+
+/* Teacher modal */
+.t-modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.88);
+  backdrop-filter:blur(16px); z-index:3000;
+  display:flex; align-items:center; justify-content:center; padding:1.5rem;
+  opacity:0; pointer-events:none; transition:opacity 0.4s;
+}
+.t-modal-overlay.open { opacity:1; pointer-events:all; }
+.t-modal-box {
+  background:linear-gradient(135deg,var(--bg2),var(--bg));
+  border:1px solid var(--border); border-radius:24px; padding:2.5rem;
+  max-width:480px; width:100%; position:relative;
+  transform:scale(0.88) translateY(30px);
+  transition:all 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
+  box-shadow:0 40px 80px rgba(0,0,0,0.6);
+  max-height:90vh; overflow-y:auto;
+}
+.t-modal-overlay.open .t-modal-box { transform:scale(1) translateY(0); }
+.t-modal-close {
+  position:absolute; top:1rem; left:1rem;
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,0.07); border:1px solid var(--border2);
+  color:var(--white); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.3s; font-size:1rem; font-family:'Cairo',sans-serif;
+}
+.t-modal-close:hover { background:rgba(139,26,26,0.5); transform:rotate(90deg); }
+.t-modal-avatar {
+  width:100px; height:100px; border-radius:50%;
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:2.5px solid var(--gold); margin:0 auto 1.2rem;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Tajawal',sans-serif; font-size:2.2rem; font-weight:900; color:var(--gold);
+  animation:float 4s ease-in-out infinite;
+}
+.t-modal-name { font-family:'Tajawal',sans-serif; font-size:1.5rem; font-weight:900; color:var(--gold); text-align:center; margin-bottom:0.3rem; }
+.t-modal-sub { text-align:center; margin-bottom:1.5rem; }
+.t-modal-sub span { background:var(--gold-dim); border:1px solid var(--border); color:var(--gold); font-size:0.78rem; font-weight:600; padding:5px 18px; border-radius:50px; }
+.t-modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:1.5rem; }
+.t-modal-cell { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius-sm); padding:0.9rem; transition:all 0.3s; }
+.t-modal-cell:hover { border-color:var(--border); transform:translateY(-2px); }
+.t-modal-cell .lbl { color:var(--text-muted); font-size:0.66rem; display:block; margin-bottom:3px; font-weight:600; }
+.t-modal-cell .val { color:var(--white); font-weight:700; font-size:0.85rem; }
+.t-modal-bio { color:var(--text-dim); font-size:0.85rem; line-height:1.9; text-align:center; border-top:1px solid var(--border2); padding-top:1.2rem; }
+
+/* FILTER TABS */
+.filter-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center; margin-bottom:2.5rem; }
+.filter-tab {
+  background:var(--surface); border:1px solid var(--border2);
+  color:var(--text-dim); padding:7px 20px; border-radius:50px;
+  font-size:0.8rem; font-weight:600;
+  transition:all 0.3s; cursor:pointer;
+}
+.filter-tab:hover { background:var(--gold-dim); border-color:var(--border); color:var(--gold); transform:translateY(-2px); }
+.filter-tab.active {
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-color:transparent; color:var(--bg); font-weight:700;
+  box-shadow:0 6px 20px var(--gold-glow);
+}
+
+/* ========== TOP STUDENTS PAGE ========== */
+.students-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:1.8rem;
+}
+.student-card {
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius); padding:2.2rem; text-align:center;
+  position:relative; overflow:hidden;
+  transition:all 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+  opacity:0; transform:translateY(28px);
+}
+.student-card.visible {
+  animation:cardEntrance 0.6s ease forwards;
+}
+.student-card:hover { transform:translateY(-8px) scale(1.02); border-color:var(--border); box-shadow:0 24px 60px rgba(0,0,0,0.5); }
+.student-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));
+  background-size:200% auto; animation:gradientShift 3s linear infinite;
+}
+.student-card::after {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% -10%,var(--gold-dim),transparent 60%);
+  pointer-events:none;
+}
+.rank-badge {
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--bg); font-family:'Tajawal',sans-serif; font-size:1.3rem; font-weight:900;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 1.4rem; box-shadow:0 8px 24px var(--gold-glow);
+  position:relative; z-index:1;
+  animation:rankPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+.rank-badge::after {
+  content:''; position:absolute; inset:-5px; border-radius:50%;
+  border:2px solid rgba(201,168,76,0.22);
+  animation:glow-pulse 2s infinite;
+}
+.rank-1 { background:linear-gradient(135deg,#ffd700,#ffec5c); }
+.rank-2 { background:linear-gradient(135deg,#c0c0c0,#e8e8e8); }
+.rank-3 { background:linear-gradient(135deg,#cd7f32,#e8a870); }
+.s-avatar {
+  width:90px; height:90px; border-radius:50%;
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:2px solid rgba(201,168,76,0.25);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Tajawal',sans-serif; font-size:2rem; font-weight:900; color:var(--gold);
+  margin:0 auto 1rem; transition:all 0.4s;
+  position:relative; z-index:1;
+}
+.student-card:hover .s-avatar { border-color:var(--gold); box-shadow:0 0 20px var(--gold-glow); transform:scale(1.08); }
+.s-name { font-family:'Tajawal',sans-serif; font-size:1.15rem; font-weight:900; color:var(--white); margin-bottom:0.2rem; position:relative; z-index:1; }
+.s-from { font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem; z-index:1; position:relative; }
+.s-grade { color:var(--gold); font-size:0.82rem; font-weight:600; margin-bottom:0.8rem; position:relative; z-index:1; }
+.s-score { font-family:'Tajawal',sans-serif; font-size:2rem; font-weight:900; color:var(--gold); line-height:1; position:relative; z-index:1; }
+.s-score-label { font-size:0.7rem; color:var(--text-muted); margin-bottom:1rem; position:relative; z-index:1; }
+.s-age-live {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(201,168,76,0.1); border:1px solid var(--border);
+  color:var(--gold); font-size:0.72rem; font-weight:700;
+  padding:4px 14px; border-radius:50px; margin-bottom:0.8rem;
+  position:relative; z-index:1;
+}
+.s-age-live svg { width:12px; height:12px; }
+.s-quote { font-size:0.8rem; color:var(--text-dim); font-style:italic; line-height:1.7; border-top:1px solid var(--border2); padding-top:0.9rem; position:relative; z-index:1; }
+
+/* ========== MEMORIES PAGE ========== */
+.videos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-bottom:3.5rem; }
+.video-card {
+  border-radius:var(--radius-sm); overflow:hidden;
+  background:rgba(12,17,32,0.5); border:1px solid var(--border2);
+  cursor:pointer; transition:all 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
+  opacity:0; transform:translateY(30px);
+}
+.video-card.visible { animation:cardEntrance 0.6s ease forwards; }
+.video-card:hover { border-color:var(--border); transform:translateY(-6px) scale(1.02); box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+.video-thumb { aspect-ratio:16/9; background:linear-gradient(135deg,var(--bg2),var(--bg3)); display:flex; align-items:center; justify-content:center; position:relative; }
+.video-thumb::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--gold-dim),rgba(12,17,32,0.8)); }
+.play-btn {
+  width:58px; height:58px; border-radius:50%;
+  background:rgba(201,168,76,0.85); color:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; z-index:1;
+  transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.play-btn svg { width:20px; height:20px; margin-right:-2px; }
+.video-card:hover .play-btn { transform:scale(1.2); background:var(--gold); box-shadow:0 0 30px var(--gold-glow); }
+.video-info { padding:1rem 1.3rem; }
+.video-title { font-size:0.9rem; font-weight:700; margin-bottom:0.3rem; }
+.video-meta { font-size:0.72rem; color:var(--text-muted); }
+.photos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; }
+.photo-card {
+  aspect-ratio:4/3; border-radius:var(--radius-sm); overflow:hidden;
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
+  position:relative; opacity:0; transform:scale(0.9);
+}
+.photo-card.visible { animation:scaleIn 0.5s ease forwards; }
+.photo-card:hover { border-color:var(--border); transform:scale(1.05); z-index:2; box-shadow:0 16px 40px rgba(0,0,0,0.5); }
+.photo-card svg { opacity:0.35; transition:all 0.3s; }
+.photo-card:hover svg { opacity:0.65; transform:scale(1.1); }
+.photo-card::after {
+  content:attr(data-label); position:absolute;
+  bottom:0; left:0; right:0;
+  background:linear-gradient(0deg,rgba(7,9,15,0.95),transparent);
+  color:var(--white); font-size:0.76rem; font-weight:600;
+  padding:2rem 0.8rem 0.8rem;
+  transform:translateY(100%); transition:transform 0.4s;
+}
+.photo-card:hover::after { transform:translateY(0); }
+
+/* VIDEO MODAL */
+.vid-modal {
+  position:fixed; inset:0; background:rgba(0,0,0,0.96);
+  z-index:4000; display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.4s;
+}
+.vid-modal.open { opacity:1; pointer-events:all; }
+.vid-modal-inner { max-width:820px; width:90%; position:relative; transform:scale(0.9); transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+.vid-modal.open .vid-modal-inner { transform:scale(1); }
+.vid-modal-close {
+  position:absolute; top:-50px; left:0;
+  background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.14);
+  color:var(--white); font-size:0.85rem; padding:9px 22px;
+  border-radius:50px; cursor:pointer; font-family:'Cairo',sans-serif;
+  display:flex; align-items:center; gap:7px; transition:all 0.3s;
+}
+.vid-modal-close:hover { background:var(--gold-dim); border-color:var(--gold); }
+.vid-placeholder {
+  width:100%; aspect-ratio:16/9; background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border-radius:18px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; border:1px solid var(--border); gap:1rem;
+}
+.vid-placeholder svg { width:56px; height:56px; opacity:0.45; }
+.vid-placeholder p { font-size:1rem; color:var(--text-dim); font-weight:600; }
+.vid-placeholder .sub { font-size:0.78rem; color:var(--text-muted); }
+
+/* ========== ABOUT SITE PAGE ========== */
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+.about-visual { position:relative; display:flex; align-items:center; justify-content:center; }
+.about-orb {
+  width:300px; height:300px; border-radius:50%;
+  background:linear-gradient(135deg,rgba(12,17,32,0.7),rgba(7,9,15,0.9));
+  border:2px solid var(--border); display:flex; align-items:center; justify-content:center;
+  position:relative; animation:float 6s ease-in-out infinite;
+}
+.about-orb::before {
+  content:''; position:absolute; inset:-18px; border-radius:50%;
+  border:1px dashed rgba(201,168,76,0.18); animation:spin 22s linear infinite;
+}
+.about-orb svg { width:110px; height:110px; opacity:0.65; }
+.about-content h3 { font-family:'Tajawal',sans-serif; font-size:1.7rem; font-weight:900; color:var(--gold); margin-bottom:1rem; }
+.about-content p { color:var(--text-dim); line-height:2; margin-bottom:1.2rem; font-size:0.9rem; }
+.team-list { display:flex; flex-direction:column; gap:0.9rem; margin-top:1.8rem; }
+.team-member {
+  display:flex; align-items:center; gap:1rem;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius-sm); padding:0.9rem 1.2rem; transition:all 0.3s;
+}
+.team-member:hover { border-color:var(--border); background:var(--gold-dim); transform:translateX(-5px); }
+.team-av {
+  width:44px; height:44px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Tajawal',sans-serif; font-weight:900; color:var(--bg); font-size:0.95rem;
+  flex-shrink:0;
+}
+.team-info h4 { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:2px; }
+.team-info span { font-size:0.72rem; color:var(--text-muted); }
+
+/* ========== FOOTER ========== */
 footer {
-  background: var(--bg-deep);
-  border-top: 1px solid var(--border);
-  padding: 3rem 2rem 1.5rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  background:rgba(0,0,0,0.55); border-top:1px solid var(--border);
+  padding:3.5rem 2rem 2rem; text-align:center; position:relative; overflow:hidden;
 }
 footer::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 150px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:180px; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
 }
-.footer-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
-.footer-logo {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: var(--primary-light);
-  margin-bottom: 0.4rem;
-}
-.footer-sub {
-  color: var(--text-dim);
-  font-size: 0.8rem;
-  margin-bottom: 2rem;
-  letter-spacing: 1px;
-}
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
-.footer-links a {
-  color: var(--text-dim);
-  text-decoration: none;
-  font-size: 0.82rem;
-  transition: all var(--transition-fast);
-  position: relative;
-  padding-bottom: 4px;
-}
-.footer-links a::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--primary);
-  transition: width var(--transition-fast);
-}
-.footer-links a:hover { color: var(--primary-light); }
-.footer-links a:hover::after { width: 100%; }
-.footer-copy {
-  color: var(--text-dim);
-  font-size: 0.72rem;
-  border-top: 1px solid var(--border);
-  padding-top: 1.5rem;
-  margin-top: 0.5rem;
-  line-height: 1.8;
-}
-.footer-copy strong { color: var(--text-muted); }
+.footer-inner { max-width:1200px; margin:0 auto; position:relative; z-index:1; }
+.footer-logo { font-family:'Tajawal',sans-serif; font-size:1.4rem; font-weight:900; color:var(--gold); margin-bottom:0.4rem; }
+.footer-tagline { color:var(--text-muted); font-size:0.8rem; margin-bottom:2rem; }
+.footer-links { display:flex; justify-content:center; flex-wrap:wrap; gap:2rem; margin-bottom:2.5rem; }
+.footer-links button { color:var(--text-muted); font-size:0.82rem; transition:all 0.3s; position:relative; padding-bottom:3px; cursor:pointer; background:none; border:none; font-family:'Cairo',sans-serif; }
+.footer-links button::after { content:''; position:absolute; bottom:0; left:0; width:0; height:1px; background:var(--gold); transition:width 0.3s; }
+.footer-links button:hover { color:var(--gold); }
+.footer-links button:hover::after { width:100%; }
+.footer-copy { color:rgba(255,255,255,0.12); font-size:0.72rem; border-top:1px solid rgba(255,255,255,0.04); padding-top:1.5rem; line-height:1.9; }
+.footer-copy strong { color:rgba(255,255,255,0.3); }
 
-/* SCROLL TO TOP */
+/* SCROLL TOP */
 #scrollTop {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  width: 46px;
-  height: 46px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  border: none;
-  border-radius: 50%;
-  color: var(--bg-deep);
-  font-size: 1.2rem;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all var(--transition-bounce);
-  z-index: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  box-shadow: 0 8px 25px rgba(14,165,233,0.3);
+  position:fixed; bottom:1.5rem; left:1.5rem;
+  width:46px; height:46px; border-radius:50%;
+  background:var(--gold); color:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; z-index:800;
+  opacity:0; transform:translateY(20px);
+  transition:all 0.4s; box-shadow:0 6px 20px var(--gold-glow);
 }
-#scrollTop.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-#scrollTop:hover {
-  transform: translateY(-4px) scale(1.1);
-  box-shadow: 0 12px 35px rgba(14,165,233,0.5);
-}
+#scrollTop.show { opacity:1; transform:translateY(0); }
+#scrollTop:hover { transform:translateY(-5px) scale(1.1); }
 
-/* RESPONSIVE */
+/* ========== SCHOOL INFO SECTION ========== */
+.school-info-strip {
+  background:linear-gradient(135deg,rgba(12,17,32,0.6),rgba(7,9,15,0.8));
+  border:1px solid var(--border); border-radius:var(--radius);
+  padding:2.5rem; margin-top:3rem; display:grid;
+  grid-template-columns:repeat(3,1fr); gap:2rem; align-items:start;
+}
+.info-block h4 { font-family:'Tajawal',sans-serif; font-size:0.95rem; font-weight:900; color:var(--gold); margin-bottom:0.6rem; }
+.info-block p { color:var(--text-dim); font-size:0.82rem; line-height:1.8; }
+
+/* ========== MOBILE — RESPONSIVE ========== */
 @media (max-width: 900px) {
-  .nav-links { display: none; }
-  .hamburger { display: flex; }
-  section { padding: 4rem 1rem; }
-  nav { padding: 0 1rem; height: 60px; }
-}
-@media (max-width: 480px) {
-  .mobile-drawer { width: 260px; }
-  .footer-links { gap: 1rem; }
-}
-
-
-/* HERO */
-#home {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  padding-top: 68px;
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(14,165,233,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(245,158,11,0.04) 0%, transparent 50%),
-    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-dark) 50%, var(--bg-deep) 100%);
-}
-.hero-mesh {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-.mesh-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  animation: morphBlob 10s ease-in-out infinite;
-}
-.mesh-blob:nth-child(1) { width: 500px; height: 500px; background: var(--primary); top: -10%; right: -10%; animation-delay: 0s; }
-.mesh-blob:nth-child(2) { width: 400px; height: 400px; background: var(--accent); bottom: -10%; left: -10%; animation-delay: -5s; }
-.mesh-blob:nth-child(3) { width: 300px; height: 300px; background: #8b5cf6; top: 40%; left: 30%; opacity: 0.08; animation-delay: -2s; }
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  max-width: 850px;
-  padding: 2rem;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border);
-  padding: 8px 20px;
-  border-radius: 50px;
-  font-size: 0.78rem;
-  color: var(--primary-light);
-  font-weight: 600;
-  margin-bottom: 1.8rem;
-  backdrop-filter: blur(10px);
-  animation: fadeInUp 0.6s 0.2s both;
-}
-.hero-badge svg { width: 16px; height: 16px; }
-.hero-title {
-  font-family: 'Tajawal', sans-serif;
-  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
-  font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 1rem;
-  animation: fadeInUp 0.7s 0.3s both;
-}
-.hero-title .line1 {
-  display: block;
-  background: linear-gradient(135deg, var(--text), var(--primary-light), var(--accent-light));
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientFlow 5s ease infinite;
-}
-.hero-title .line2 {
-  display: block;
-  color: var(--text-muted);
-  font-size: 0.45em;
-  font-weight: 400;
-  margin-top: 0.6rem;
-  letter-spacing: 4px;
-}
-.hero-sub {
-  font-size: 1rem;
-  color: var(--text-dim);
-  margin-bottom: 2.5rem;
-  animation: fadeInUp 0.7s 0.5s both;
-  line-height: 1.9;
-  max-width: 550px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.hero-btns {
-  display: flex;
-  gap: 0.8rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  animation: fadeInUp 0.7s 0.7s both;
+  :root { --nav-h: var(--mobile-nav-h); }
+  #navbar { padding:0 1rem; height:var(--mobile-nav-h); }
+  .nav-links { display:none; }
+  .hamburger { display:flex; }
+  .principal-hero-row { grid-template-columns:1fr; }
+  .principal-portrait-area { min-height:260px; order:-1; }
+  .principal-info { padding:2rem 1.5rem; text-align:center; }
+  .principal-chips { grid-template-columns:1fr 1fr; }
+  .principal-role-chip { justify-content:center; margin-left:auto; margin-right:auto; }
+  .about-grid { grid-template-columns:1fr; text-align:center; }
+  .about-visual { order:-1; }
+  .about-orb { width:220px; height:220px; }
+  .videos-grid { grid-template-columns:1fr; }
+  .stats-strip-inner { grid-template-columns:repeat(2,1fr); gap:0.75rem; }
+  .stat-cell { border-radius:14px; }
+  .hero-title { font-size:clamp(2.2rem,9vw,3.5rem); }
+  .hero-desc { font-size:0.9rem; }
+  .school-info-strip { grid-template-columns:1fr; }
+  .teacher-row { grid-template-columns:1fr !important; direction:rtl !important; }
+  .teacher-row.lang-en, .teacher-row.lang-fr { direction:ltr !important; }
+  .teacher-row-photo { min-height:200px; }
+  .teacher-photo-letter { font-size:8rem; }
+  .teacher-row-info { padding:1.4rem 1.4rem; }
+  .teacher-row-info::before { display:none; }
+  .t-meta-chips { flex-wrap:wrap; }
+  .t-location { flex-wrap:wrap; }
 }
 
-/* STATS */
-.stats-bar {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  background: var(--bg-glass);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  max-width: 900px;
-  margin: 0 auto;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  animation: fadeInUp 0.8s 0.9s both;
-}
-.stat-item {
-  padding: 1.8rem 1rem;
-  text-align: center;
-  border-left: 1px solid var(--border);
-  position: relative;
-  transition: all var(--transition-base);
-  cursor: default;
-}
-.stat-item:last-child { border-left: none; }
-.stat-item:hover { background: var(--primary-glow); transform: translateY(-2px); }
-.stat-num {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 2.2rem;
-  font-weight: 900;
-  color: var(--primary-light);
-  display: block;
-  line-height: 1;
-  margin-bottom: 0.3rem;
-}
-.stat-label { font-size: 0.75rem; color: var(--text-dim); font-weight: 600; }
-.stat-icon { width: 28px; height: 28px; margin: 0 auto 0.5rem; opacity: 0.5; }
-
-/* QUICK LINKS */
-.quick-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-.quick-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 2rem;
-  text-align: center;
-  transition: all var(--transition-base);
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-.quick-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
-  transform: translateY(-6px);
-}
-.quick-card svg {
-  width: 48px;
-  height: 48px;
-  color: var(--primary-light);
-  opacity: 0.8;
-}
-.quick-card h3 {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-.quick-card p {
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  line-height: 1.7;
-}
-.quick-card .arrow {
-  margin-top: auto;
-  font-size: 1.2rem;
-  color: var(--accent-light);
-}
-
-@media (max-width: 768px) {
-  .stats-bar { grid-template-columns: repeat(2, 1fr); }
-  .stat-item:nth-child(2) { border-left: none; }
-  .stat-item:nth-child(1), .stat-item:nth-child(2) { border-bottom: 1px solid var(--border); }
-  .hero-content { padding: 1.5rem; }
-}
-@media (max-width: 480px) {
-  .stats-bar { grid-template-columns: repeat(2, 1fr); }
-  .stat-item { padding: 1.2rem 0.5rem; }
-  .stat-num { font-size: 1.6rem; }
-  .stat-label { font-size: 0.68rem; }
-  .hero-title { font-size: 1.8rem; }
+@media (max-width: 600px) {
+  .section-wrap { padding:3.5rem 1rem; }
+  .hero-section { padding:2rem 1rem 1rem; }
+  .stats-strip { padding:0 1rem 3.5rem; }
+  .stats-strip-inner { grid-template-columns:repeat(2,1fr); gap:0.75rem; max-width:100%; }
+  .stat-cell { padding:1.2rem 0.8rem 1rem; border-radius:14px; }
+  .stat-num { font-size:1.9rem; }
+  .stat-label { font-size:0.68rem; }
+  .hero-actions { flex-direction:column; align-items:center; }
+  .btn-gold,.btn-ghost { width:100%; max-width:260px; justify-content:center; }
+  .students-grid { grid-template-columns:1fr 1fr; }
+  .photos-grid { grid-template-columns:repeat(2,1fr); }
+  .section-title { font-size:1.7rem; }
+  .filter-tabs { gap:0.35rem; }
+  .filter-tab { padding:6px 14px; font-size:0.75rem; }
+  .principal-hero-row { padding:1.5rem 1.2rem; gap:1.5rem; }
+  .principal-chips { grid-template-columns:1fr; }
+  .t-modal-grid { grid-template-columns:1fr; }
+  .about-grid { gap:2.5rem; }
+  .about-orb { width:180px; height:180px; }
+  .about-orb svg { width:70px; height:70px; }
+  .team-member { flex-direction:row; }
+  footer { padding:2.5rem 1rem 1.5rem; }
+  .footer-links { gap:1.2rem; }
+  #scrollTop { bottom:1rem; left:1rem; width:40px; height:40px; }
 }
 </style>
 </head>
 <body>
 
+<!-- LOADER -->
 <div id="loader">
   <div class="loader-ring">
-    <div class="loader-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
+    <div class="loader-emblem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0a1628" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+        <path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/>
+      </svg>
+    </div>
   </div>
-  <div class="loader-text">مدرسة شهيد حسن حمدي</div>
-  <div class="loader-sub">الأخيوة · إدارة الحسنية · محافظة الشرقية</div>
-  <div class="loader-track"><div class="loader-fill"></div></div>
+  <div class="loader-name">مدرسة شهيد حسن حمدي</div>
+  <div class="loader-sub">مدرسة ثانوية · إدارة الحسنية · جمهورية مصر العربية</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
 
+<!-- CANVAS STARS -->
+<canvas id="starsCanvas"></canvas>
 
+<!-- NAVBAR -->
 <nav id="navbar">
-  <a href="index.html" class="nav-logo">
-    <div class="emblem"><svg viewBox="0 0 24 24" fill="none" stroke="#030712" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
-    <span>مدرسة شهيد<br>حسن حمدي</span>
-  </a>
+  <div class="nav-brand" onclick="goPage('home')">
+    <div class="nav-emblem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#07090f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+        <path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/>
+      </svg>
+    </div>
+    <div class="nav-brand-text">
+      <span>مدرسة شهيد حسن حمدي</span>
+      <span>ثانوية · إدارة الحسنية</span>
+    </div>
+  </div>
   <ul class="nav-links" id="navLinks">
-    <li><a href="index.html" class="active">الرئيسية</a></li>
-<li><a href="principal.html" class="">المدير والمدرسون</a></li>
-<li><a href="students.html" class="">الطلاب المتفوقين</a></li>
-<li><a href="memories.html" class="">ذكريات</a></li>
-<li><a href="about.html" class="">عن الموقع</a></li>
-
-    <li><a href="https://www.example.com" target="_blank" class="school-site-btn">موقع المدرسة</a></li>
+    <li><a href="#" onclick="goPage('home',this)" class="active" data-page="home">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      الرئيسية
+    </a></li>
+    <li><a href="#" onclick="goPage('principal',this)" data-page="principal">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      المدير والمدرسون
+    </a></li>
+    <li><a href="#" onclick="goPage('students',this)" data-page="students">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      الطلاب المتفوقون
+    </a></li>
+    <li><a href="#" onclick="goPage('memories',this)" data-page="memories">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      ذكريات
+    </a></li>
+    <li><a href="#" onclick="goPage('about',this)" data-page="about">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      عن الموقع
+    </a></li>
+    <li><a href="#" class="nav-school-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      موقع المدرسة
+    </a></li>
   </ul>
-  <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
 </nav>
 
-<div class="mobile-drawer-overlay" id="drawerOverlay" onclick="closeMobile()"></div>
-<div class="mobile-drawer" id="mobileDrawer">
-  <div class="drawer-header">
-    <div class="emblem"><svg viewBox="0 0 24 24" fill="none" stroke="#030712" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
-    <div>
-      <h3>مدرسة شهيد حسن حمدي</h3>
-      <p>الثانوية العامة · الأخيوة</p>
-    </div>
+<!-- MOBILE MENU -->
+<div id="mobileMenuOverlay" onclick="closeMenu()"></div>
+<div id="mobileMenu">
+  <div class="mobile-menu-header">
+    <div class="logo-text">مدرسة شهيد حسن حمدي</div>
+    <div class="logo-sub">ثانوية — إدارة الحسنية — جمهورية مصر العربية</div>
   </div>
-  <a href="index.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>الرئيسية</a>
-<a href="principal.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>المدير والمدرسون</a>
-<a href="students.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>الطلاب المتفوقين</a>
-<a href="memories.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>ذكريات</a>
-<a href="about.html" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>عن الموقع</a>
-
-  <a href="https://www.example.com" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>موقع المدرسة</a>
-  <div class="drawer-footer">© ٢٠٢٧ مدرسة شهيد حسن حمدي</div>
+  <div class="mobile-nav-link" onclick="goPage('home');closeMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    الرئيسية
+  </div>
+  <div class="mobile-nav-link" onclick="goPage('principal');closeMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    المدير والمدرسون
+  </div>
+  <div class="mobile-nav-link" onclick="goPage('students');closeMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    الطلاب المتفوقون
+  </div>
+  <div class="mobile-nav-link" onclick="goPage('memories');closeMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    ذكريات
+  </div>
+  <div class="mobile-nav-link" onclick="goPage('about');closeMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    عن الموقع
+  </div>
+  <div style="margin:0.8rem 1.5rem;height:1px;background:rgba(201,168,76,0.1);"></div>
+  <a href="#" class="mobile-nav-link mobile-school-btn" style="color:#e8c96a;background:rgba(139,26,26,0.15);border-right:3px solid #8b1a1a;margin:0 0.8rem;border-radius:12px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    موقع المدرسة الرسمي
+  </a>
 </div>
 
+<!-- ======== PAGE: HOME ======== -->
+<div class="page active" id="page-home">
+  <div id="heroPage">
+    <section class="hero-section">
+      <div class="hero-bg-gradient"></div>
+      <div class="hero-particles" id="heroParticles"></div>
+      <div class="hero-content">
+        <div class="hero-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
+          مدرسة ثانوية حكومية — إدارة الحسنية — جمهورية مصر العربية
+        </div>
+        <h1 class="hero-title">
+          <span class="main">مدرسة شهيد<br>حسن حمدي</span>
+          <span class="sub">نبني الأجيال · نصنع المستقبل · نرعى المواهب</span>
+        </h1>
+        <p class="hero-desc">
+          مؤسسة تعليمية ثانوية متميزة تابعة لإدارة الحسنية، تجمع بين الكفاءة الأكاديمية والقيم الأصيلة
+          بكادر تعليمي راقٍ متفانٍ في خدمة طلاب المرحلة الثانوية
+        </p>
+        <div class="hero-actions">
+          <button class="btn-gold" onclick="goPage('principal')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            تعرف على المدرسين
+          </button>
+          <button class="btn-ghost" onclick="goPage('students')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            الطلاب المتفوقون
+          </button>
+        </div>
+      </div>
+    </section>
 
-<div id="home">
-  <div class="hero-bg"></div>
-  <div class="hero-mesh">
-    <div class="mesh-blob"></div>
-    <div class="mesh-blob"></div>
-    <div class="mesh-blob"></div>
+    <div class="stats-strip">
+      <div class="stats-strip-inner">
+        <div class="stat-cell">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <span class="stat-num" data-target="29">0</span>
+          <span class="stat-label">عضو هيئة تدريس</span>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="stat-num" data-target="12">0</span>
+          <span class="stat-label">مادة دراسية</span>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          </div>
+          <span class="stat-num" data-target="450">0</span>
+          <span class="stat-label">طالب وطالبة</span>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 4 12 14.01 9 11.01"/><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/></svg>
+          </div>
+          <span class="stat-num" data-target="98">0</span><span class="stat-suf" style="color:var(--gold);font-family:'Tajawal',sans-serif;font-weight:900;">%</span>
+          <span class="stat-label">نسبة النجاح</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- School Info -->
+    <div style="max-width:1200px;margin:0 auto;padding:0 2rem 5rem;">
+      <div class="school-info-strip reveal">
+        <div class="info-block">
+          <h4>📍 الموقع والتبعية</h4>
+          <p>تقع مدرسة شهيد حسن حمدي ضمن نطاق إدارة الحسنية التعليمية، جمهورية مصر العربية. تُشرف عليها مديرية التربية والتعليم وتلتزم بمناهج وزارة التربية والتعليم المصرية للمرحلة الثانوية.</p>
+        </div>
+        <div class="info-block">
+          <h4>🎓 المرحلة الدراسية</h4>
+          <p>مدرسة ثانوية عامة تستقبل طلاب الصفوف الأول والثاني والثالث الثانوي، بقسمين علمي وأدبي. تُعِدّ طلابها لاجتياز الثانوية العامة وفق أعلى معايير الجودة.</p>
+        </div>
+        <div class="info-block">
+          <h4>🏅 رسالة المدرسة</h4>
+          <p>تكريس مفهوم التميز الأكاديمي في ظل بيئة تربوية آمنة ومحفّزة، مع الاهتمام بالقيم الوطنية والإنسانية لبناء أجيال قادرة على صنع المستقبل.</p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="hero-content">
-    <div class="hero-badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
-      مدرسة حكومية رسمية — الثانوية العامة
-    </div>
-    <h1 class="hero-title">
-      <span class="line1">مدرسة شهيد<br>حسن حمدي</span>
-      <span class="line2">نبني الأجيال · نصنع المستقبل · نرعى المواهب</span>
-    </h1>
-    <p class="hero-sub">
-      مؤسسة تعليمية ثانوية متميزة في الأخيوة، إدارة الحسنية التعليمية، محافظة الشرقية<br>
-      تجمع بين الكفاءة الأكاديمية والقيم الأصيلة بطاقم متميز من المعلمين المتفانين
-    </p>
-    <div class="hero-btns">
-      <a href="principal.html" class="btn-primary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-        تعرف على الكادر
-      </a>
-      <a href="memories.html" class="btn-outline">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-        </svg>
-        ذكريات المدرسة
-      </a>
-    </div>
-  </div>
-
-  <div class="stats-bar">
-    <div class="stat-item">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
+  <!-- FOOTER for Home -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
+      <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
+      <div class="footer-links">
+        <button onclick="goPage('home')">الرئيسية</button>
+        <button onclick="goPage('principal')">المدير والمدرسون</button>
+        <button onclick="goPage('students')">المتفوقون</button>
+        <button onclick="goPage('memories')">ذكريات</button>
+        <button onclick="goPage('about')">عن الموقع</button>
       </div>
-      <span class="stat-num" data-target="29">0</span>
-      <span class="stat-label">عضو هيئة تدريس</span>
-    </div>
-    <div class="stat-item">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-        </svg>
+      <div class="footer-copy">
+        <strong>تصميم وتطوير:</strong> محمود أحمد سعيد<br>
+        <strong>فريق التفكير:</strong> سلمى سخيلي · ريماس حبيب<br>
+        © ٢٠٢٧ مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة
       </div>
-      <span class="stat-num" data-target="12">0</span>
-      <span class="stat-label">مادة دراسية</span>
     </div>
-    <div class="stat-item">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-      </div>
-      <span class="stat-num" data-target="450">0</span>
-      <span class="stat-label">طالب وطالبة</span>
-    </div>
-    <div class="stat-item">
-      <div class="stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-      </div>
-      <span class="stat-num" data-target="98">0</span>
-      <span class="stat-label">% نسبة النجاح</span>
-    </div>
-  </div>
+  </footer>
 </div>
 
-<section>
-  <div class="section-header reveal">
-    <div class="section-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>استكشف الموقع</div>
-    <h2 class="section-title">تصفح <span>أقسامنا</span></h2>
-    <div class="section-line"></div>
-  </div>
-  <div class="quick-links">
-    <a href="principal.html" class="quick-card reveal">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <h3>المدير والمدرسون</h3>
-      <p>تعرف على قائد المدرسة وكادر المعلمين المتخصصين في مختلف المجالات</p>
-      <span class="arrow">←</span>
-    </a>
-    <a href="students.html" class="quick-card reveal reveal-delay-1">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <h3>الطلاب المتفوقين</h3>
-      <p>تكريم نخبة طلابنا المتفوقين وإنجازاتهم الأكاديمية المتميزة</p>
-      <span class="arrow">←</span>
-    </a>
-    <a href="memories.html" class="quick-card reveal reveal-delay-2">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      <h3>ذكريات المدرسة</h3>
-      <p>لحظات لا تُنسى من فعاليات ومناسبات وأحداث مدرستنا الحبيبة</p>
-      <span class="arrow">←</span>
-    </a>
-    <a href="about.html" class="quick-card reveal reveal-delay-3">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <h3>عن الموقع</h3>
-      <p>تعرف على فريق العمل ومعومات المدرسة والجهود المبذولة</p>
-      <span class="arrow">←</span>
-    </a>
-  </div>
-</section>
-
-
-<footer>
-  <div class="footer-inner">
-    <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
-    <div class="footer-sub">نبني الأجيال · نصنع المستقبل</div>
-    <div class="footer-links">
-      <a href="index.html">الرئيسية</a>
-      <a href="principal.html">المدير والمدرسون</a>
-      <a href="students.html">الطلاب المتفوقين</a>
-      <a href="memories.html">ذكريات</a>
-      <a href="about.html">عن الموقع</a>
-      <a href="https://www.example.com" target="_blank">موقع المدرسة الرسمي</a>
+<!-- ======== PAGE: PRINCIPAL + TEACHERS ======== -->
+<div class="page" id="page-principal">
+  <div class="section-wrap">
+    <!-- PRINCIPAL -->
+    <div class="section-head">
+      <div class="section-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+        القيادة المدرسية
+      </div>
+      <h2 class="section-title">مدير <span>المدرسة</span></h2>
+      <div class="section-line"></div>
     </div>
-    <div class="footer-copy">
-      <strong>تصميم وتطوير:</strong> محمود أحمد سعيد<br>
-      <strong>فريق التفكير:</strong> سلمى سخيلي · ريماس حبيب<br>
-      © ٢٠٢٧ مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة
+
+    <div class="principal-hero-row reveal">
+      <!-- Arabic RTL: photo panel is first in DOM = appears on RIGHT visually -->
+      <div class="principal-portrait-area">
+        <span class="bg-letter">م</span>
+        <svg class="principal-portrait-svg" viewBox="0 0 280 340" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="p-fig" x1="0.5" y1="0" x2="0.5" y2="1">
+              <stop offset="0%" stop-color="rgba(201,168,76,0.28)"/>
+              <stop offset="100%" stop-color="rgba(201,168,76,0.07)"/>
+            </linearGradient>
+            <linearGradient id="p-fade" x1="0.5" y1="0" x2="0.5" y2="1">
+              <stop offset="0%" stop-color="#0c1120"/>
+              <stop offset="100%" stop-color="#07090f"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="140" cy="280" rx="110" ry="45" fill="rgba(201,168,76,0.06)"/>
+          <!-- Head -->
+          <circle cx="140" cy="105" r="54" fill="url(#p-fig)" stroke="rgba(201,168,76,0.3)" stroke-width="1.5"/>
+          <circle cx="140" cy="105" r="38" fill="rgba(12,17,32,0.5)"/>
+          <!-- Body -->
+          <path d="M65 340 Q80 228 140 215 Q200 228 215 340Z" fill="url(#p-fig)" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+          <!-- Collar -->
+          <path d="M118 215 L140 238 L162 215" stroke="rgba(201,168,76,0.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Tie -->
+          <path d="M140 238 L132 275 L140 285 L148 275Z" fill="rgba(201,168,76,0.15)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+          <!-- Initial -->
+          <text x="140" y="118" text-anchor="middle" dominant-baseline="middle"
+            font-family="Tajawal, Cairo, sans-serif" font-size="36" font-weight="900"
+            fill="rgba(201,168,76,0.92)">م</text>
+          <!-- Bottom fade -->
+          <rect x="0" y="270" width="280" height="70" fill="url(#p-fade)" opacity="0.85"/>
+        </svg>
+        <div class="principal-badge-tag">مدير المدرسة — إدارة الحسنية</div>
+      </div>
+      <div class="principal-info">
+        <h2 class="principal-name">أ. محمد عبد الله الحمدي</h2>
+        <div class="principal-role-chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          مدير المدرسة — رئيس الهيئة الإدارية
+        </div>
+        <p class="principal-bio">
+          أ. محمد عبد الله الحمدي، قائد تربوي متميز يعمل في إطار إدارة الحسنية التعليمية بمحافظة مصر. يحمل رؤية واضحة لبناء جيل ثانوي متوازن متسلح بالعلم والقيم الأصيلة. يُدير المدرسة بأسلوب إنساني راقٍ يجمع بين الحزم والمرونة، ويؤمن إيمانًا راسخًا بأن النجاح الحقيقي يبدأ من داخل الفصل الدراسي وينعكس على المجتمع بأسره.
+        </p>
+        <div class="principal-chips">
+          <div class="p-chip"><span class="lbl">السن</span><span class="val">٥٢ سنة</span></div>
+          <div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">٢٦ سنة</span></div>
+          <div class="p-chip"><span class="lbl">التخصص</span><span class="val">إدارة تربوية</span></div>
+          <div class="p-chip"><span class="lbl">المؤهل</span><span class="val">ماجستير تربية</span></div>
+          <div class="p-chip"><span class="lbl">مكان العمل</span><span class="val">مدرسة شهيد حسن حمدي</span></div>
+          <div class="p-chip"><span class="lbl">التبعية الإدارية</span><span class="val">إدارة الحسنية</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEACHERS in same page as principal -->
+    <div class="section-head" style="margin-top:5rem;">
+      <div class="section-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        الهيئة التدريسية
+      </div>
+      <h2 class="section-title">كادر <span>المدرسين</span></h2>
+      <div class="section-line"></div>
+      <p class="section-desc">نخبة من المعلمين والمعلمات المتخصصين في مختلف المجالات — للمرحلة الثانوية</p>
+    </div>
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" onclick="filterTeachers('all',this)">الكل</button>
+      <button class="filter-tab" onclick="filterTeachers('علوم',this)">علوم</button>
+      <button class="filter-tab" onclick="filterTeachers('لغات',this)">لغات</button>
+      <button class="filter-tab" onclick="filterTeachers('رياضيات',this)">رياضيات</button>
+      <button class="filter-tab" onclick="filterTeachers('انسانيات',this)">انسانيات</button>
+      <button class="filter-tab" onclick="filterTeachers('فنون',this)">فنون</button>
+    </div>
+    <div id="teachersList"></div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
+      <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
+      <div class="footer-copy">© ٢٠٢٧ مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======== PAGE: TEACHERS (merged into principal, hidden) ======== -->
+<div class="page" id="page-teachers" style="display:none!important">
+  <div class="section-wrap">
+    <div class="section-head">
+      <div class="section-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        الهيئة التدريسية
+      </div>
+      <h2 class="section-title">كادر <span>المدرسين</span></h2>
+      <div class="section-line"></div>
+      <p class="section-desc">المرحلة الثانوية — إدارة الحسنية</p>
+    </div>
+    <div class="filter-tabs" id="filterTabs2">
+      <button class="filter-tab active" onclick="filterTeachers2('all',this)">الكل</button>
+      <button class="filter-tab" onclick="filterTeachers2('علوم',this)">علوم</button>
+      <button class="filter-tab" onclick="filterTeachers2('لغات',this)">لغات</button>
+      <button class="filter-tab" onclick="filterTeachers2('رياضيات',this)">رياضيات</button>
+      <button class="filter-tab" onclick="filterTeachers2('انسانيات',this)">انسانيات</button>
+      <button class="filter-tab" onclick="filterTeachers2('فنون',this)">فنون</button>
+    </div>
+    <div id="teachersList2"></div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
+      <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======== PAGE: TOP STUDENTS ======== -->
+<div class="page" id="page-students">
+  <div class="section-wrap">
+    <div class="section-head">
+      <div class="section-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        المتفوقون
+      </div>
+      <h2 class="section-title">الطلاب <span>المتفوقون</span></h2>
+      <div class="section-line"></div>
+      <p class="section-desc">نجوم مدرسة شهيد حسن حمدي — أوائل المرحلة الثانوية لعام ٢٠٢٧</p>
+    </div>
+    <div class="students-grid" id="studentsGrid"></div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
+      <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======== PAGE: MEMORIES ======== -->
+<div class="page" id="page-memories">
+  <div class="section-wrap">
+    <div class="section-head">
+      <div class="section-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        ذكريات وأحداث
+      </div>
+      <h2 class="section-title">ذكريات <span>المدرسة</span></h2>
+      <div class="section-line"></div>
+      <p class="section-desc">لحظات لا تُنسى جمعتنا في رحاب مدرستنا الحبيبة</p>
+    </div>
+
+    <h3 style="font-family:'Tajawal',sans-serif;font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:1.4rem;display:flex;align-items:center;gap:10px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      مقاطع الذكريات
+    </h3>
+    <div class="videos-grid" id="videosGrid"></div>
+
+    <h3 style="font-family:'Tajawal',sans-serif;font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:1.4rem;display:flex;align-items:center;gap:10px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      معرض الصور
+    </h3>
+    <div class="photos-grid" id="photosGrid"></div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
+      <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======== PAGE: ABOUT ======== -->
+<div class="page" id="page-about">
+  <div class="section-wrap">
+    <div class="section-head">
+      <div class="section-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        عن الموقع
+      </div>
+      <h2 class="section-title">معلومات <span>عن الموقع</span></h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-visual reveal-left">
+        <div class="about-orb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+            <path d="M6 8l3 3 3-3 3 3 3-3"/>
+          </svg>
+        </div>
+      </div>
+      <div class="about-content reveal-right">
+        <h3>من نحن</h3>
+        <p>
+          تم إنشاء هذا الموقع بهدف تقديم واجهة رقمية رسمية ومتكاملة لمدرسة شهيد حسن حمدي الثانوية التابعة لإدارة الحسنية، ليكون منصة تواصل فعّالة بين المدرسة وأولياء الأمور والطلاب.
+        </p>
+        <p>
+          يجمع الموقع بين التصميم العصري والمحتوى الوافي، مع التركيز على تجربة المستخدم السلسة والوصول السريع للمعلومات عبر جميع الأجهزة.
+        </p>
+        <div class="team-list">
+          <div class="team-member">
+            <div class="team-av">م</div>
+            <div class="team-info">
+              <h4>محمود أحمد سعيد</h4>
+              <span>مطور الموقع · التفكير التصميمي والديزاين · العمر: <strong id="mahmoudAge" style="color:var(--gold)">16</strong> سنة (27 يناير 2010)</span>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="team-av">س</div>
+            <div class="team-info">
+              <h4>سلمى سخيلي</h4>
+              <span>المساهمة في التفكير والتخطيط</span>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="team-av">ر</div>
+            <div class="team-info">
+              <h4>ريماس حبيب</h4>
+              <span>المساهمة في التفكير والتخطيط</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</footer>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
+      <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
+      <div class="footer-copy">
+        <strong>تصميم وتطوير:</strong> محمود أحمد سعيد<br>
+        <strong>فريق التفكير:</strong> سلمى سخيلي · ريماس حبيب<br>
+        © ٢٠٢٧ مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- SCROLL TOP -->
 <button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
+<!-- TEACHER MODAL -->
+<div class="t-modal-overlay" id="tModal" onclick="closeTModal(event)">
+  <div class="t-modal-box">
+    <button class="t-modal-close" onclick="closeTModalDirect()">✕</button>
+    <div class="t-modal-avatar" id="mAv"></div>
+    <div class="t-modal-name" id="mName">—</div>
+    <div class="t-modal-sub"><span id="mSub">—</span></div>
+    <div class="t-modal-grid">
+      <div class="t-modal-cell"><span class="lbl">السن</span><span class="val" id="mAge">—</span></div>
+      <div class="t-modal-cell"><span class="lbl">الخبرة</span><span class="val" id="mExp">—</span></div>
+      <div class="t-modal-cell"><span class="lbl">التخصص</span><span class="val" id="mSpec">—</span></div>
+      <div class="t-modal-cell"><span class="lbl">المرحلة</span><span class="val" id="mGrade">—</span></div>
+      <div class="t-modal-cell"><span class="lbl">المنشأ</span><span class="val" id="mFrom">—</span></div>
+      <div class="t-modal-cell"><span class="lbl">يُدرِّس في</span><span class="val" id="mWhere">—</span></div>
+    </div>
+    <div class="t-modal-bio" id="mBio">—</div>
+  </div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="vid-modal" id="vidModal" onclick="closeVidModal()">
+  <div class="vid-modal-inner" onclick="event.stopPropagation()">
+    <button class="vid-modal-close" onclick="closeVidModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      إغلاق
+    </button>
+    <div class="vid-placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      <p id="vidTitle">الفيديو</p>
+      <p class="sub">أضف رابط الفيديو الخاص بك هنا</p>
+    </div>
+  </div>
+</div>
 
 <script>
-function setupReveal() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+/* ============================================================
+   DATA
+============================================================ */
+const NOW = new Date();
+function calcAge(dob) {
+  const d = new Date(dob);
+  let age = NOW.getFullYear() - d.getFullYear();
+  const m = NOW.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && NOW.getDate() < d.getDate())) age--;
+  return age;
 }
 
-function animateCounters() {
-  const counters = document.querySelectorAll('.stat-num');
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const target = parseInt(entry.target.dataset.target);
-        let current = 0;
-        const step = target / 50;
-        const timer = setInterval(() => {
-          current += step;
-          if (current >= target) { current = target; clearInterval(timer); }
-          entry.target.textContent = Math.floor(current);
-        }, 25);
-        obs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.5 });
-  counters.forEach(c => obs.observe(c));
+const teachers = [
+  {
+    name:'أ. سامي عبد الرحمن', subject:'علوم طبيعية', age:44, exp:18,
+    spec:'أحياء وكيمياء', grade:'الثانوية', icon:'س', cat:'علوم',
+    from:'محافظة الجيزة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. سامي عبد الرحمن، مدرس علوم طبيعية متخصص في مجالي الأحياء والكيمياء، خريج كلية العلوم جامعة القاهرة. يعمل في مدرسة شهيد حسن حمدي الثانوية التابعة لإدارة الحسنية منذ ما يزيد على ١٥ عامًا. عمره ٤٤ سنة، ولد في محافظة الجيزة. يتميز بأسلوبه التجريبي في شرح المفاهيم العلمية المعقدة.'
+  },
+  {
+    name:'أ. هناء مصطفى', subject:'فيزياء', age:38, exp:12,
+    spec:'فيزياء تطبيقية', grade:'الثانوية', icon:'هـ', cat:'علوم',
+    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. هناء مصطفى، مدرسة فيزياء متخصصة في الفيزياء التطبيقية، تخرجت من كلية العلوم جامعة عين شمس. عمرها ٣٨ سنة، من القاهرة. تُدرِّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تستخدم المعامل وأدوات القياس بشكل يومي لجعل الفيزياء حية وملموسة.'
+  },
+  {
+    name:'أ. خالد السيد', subject:'كيمياء', age:41, exp:15,
+    spec:'كيمياء عضوية', grade:'الثانوية', icon:'خ', cat:'علوم',
+    from:'محافظة المنوفية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. خالد السيد، مدرس كيمياء متخصص في الكيمياء العضوية، عمره ٤١ سنة، من محافظة المنوفية. حاصل على ليسانس كيمياء من جامعة المنوفية ودبلوم تربوي. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٥ عامًا. يربط الكيمياء بالحياة اليومية للطلاب.'
+  },
+  {
+    name:'أ. منى إبراهيم', subject:'أحياء', age:35, exp:9,
+    spec:'علم الخلية والوراثة', grade:'الثانوية', icon:'م', cat:'علوم',
+    from:'الإسكندرية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. منى إبراهيم، مدرسة أحياء متخصصة في علم الخلية والوراثة، عمرها ٣٥ سنة، من الإسكندرية. تخرجت من كلية العلوم جامعة الإسكندرية. تعمل في مدرسة شهيد حسن حمدي الثانوية ضمن إدارة الحسنية. شغوفة بنقل حب علم الأحياء لطلاب المرحلة الثانوية.'
+  },
+  {
+    name:'Mr. Karim El-Shadly', subject:'English Language', age:37, exp:11,
+    spec:'Conversation & Writing', grade:'Secondary', icon:'K', cat:'لغات',
+    from:'Cairo', where:'Shaheed Hassan Hamdi Secondary School',
+    lang:'en', gender:'M',
+    bio:'Mr. Karim El-Shadly is an English Language teacher specializing in conversational and written communication, aged 37, originally from Cairo. He holds a B.A. in English Literature from Cairo University. He has been teaching at Shaheed Hassan Hamdi Secondary School under Al-Haseniya Administration for 11 years, using modern interactive methods.'
+  },
+  {
+    name:'Mme. Nadia Farid', subject:'Langue Française', age:40, exp:14,
+    spec:'Linguistique & Littérature', grade:'Secondaire', icon:'N', cat:'لغات',
+    from:'Alexandrie', where:'École Secondaire Chahid Hassan Hamdi',
+    lang:'fr', gender:'F',
+    bio:'Mme. Nadia Farid est professeure de français, âgée de 40 ans, originaire d\'Alexandrie. Elle est diplômée de l\'Institut des Langues et possède une expérience internationale dans l\'enseignement. Elle enseigne au sein de l\'école secondaire Chahid Hassan Hamdi relevant de l\'administration d\'Al-Haseniya depuis 14 ans.'
+  },
+  {
+    name:'أ. رانيا حسين', subject:'لغة عربية', age:43, exp:17,
+    spec:'بلاغة وأدب وقواعد', grade:'الثانوية', icon:'ر', cat:'لغات',
+    from:'المنيا', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. رانيا حسين، مدرسة لغة عربية متخصصة في البلاغة والأدب وقواعد اللغة، عمرها ٤٣ سنة، من المنيا. خريجة دار العلوم جامعة القاهرة. تُدرِّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٧ عامًا. تُحبِّب الطلاب في لغتهم العربية بأسلوب شيّق.'
+  },
+  {
+    name:'أ. محمود طاهر', subject:'لغة عربية — نحو وصرف', age:50, exp:24,
+    spec:'نحو وصرف وعلم العروض', grade:'الثانوية', icon:'م', cat:'لغات',
+    from:'المنصورة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. محمود طاهر، عميد مدرسي في مجال تدريس اللغة العربية، عمره ٥٠ سنة، من المنصورة. يحمل ليسانس لغة عربية ودراسات إسلامية من جامعة المنصورة. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يُعدّ مرجعًا في النحو والصرف والعروض العربي.'
+  },
+  {
+    name:'أ. طارق جلال', subject:'رياضيات', age:46, exp:20,
+    spec:'جبر وهندسة وحساب تفاضل', grade:'الثانوية', icon:'ط', cat:'رياضيات',
+    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. طارق جلال، مدرس رياضيات متخصص في الجبر والهندسة والحساب، عمره ٤٦ سنة، من القاهرة. خريج كلية العلوم — رياضيات جامعة القاهرة. يعمل في مدرسة شهيد حسن حمدي الثانوية ضمن إدارة الحسنية منذ ٢٠ عامًا. يُحوِّل المسائل المعقدة إلى ألعاب ذهنية ممتعة.'
+  },
+  {
+    name:'أ. دعاء نصر', subject:'إحصاء وجبر', age:36, exp:10,
+    spec:'رياضيات تطبيقية وإحصاء', grade:'الثانوية', icon:'د', cat:'رياضيات',
+    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. دعاء نصر، مدرسة إحصاء وجبر متخصصة في الرياضيات التطبيقية، عمرها ٣٦ سنة، من القاهرة. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٠ أعوام. تُرسِّخ مفاهيم الإحصاء بأمثلة واقعية من الحياة اليومية.'
+  },
+  {
+    name:'أ. بشير صالح', subject:'تحليل رياضي', age:48, exp:22,
+    spec:'تفاضل وتكامل', grade:'الثانوية', icon:'ب', cat:'رياضيات',
+    from:'الجيزة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. بشير صالح، مدرس رياضيات متقدمة متخصص في التفاضل والتكامل، عمره ٤٨ سنة، من الجيزة. خريج كلية العلوم جامعة عين شمس. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. خبير في الرياضيات العليا للمرحلة الثانوية وله باع طويل.'
+  },
+  {
+    name:'أ. سلوى الديب', subject:'تاريخ', age:47, exp:21,
+    spec:'التاريخ الإسلامي والحديث', grade:'الثانوية', icon:'س', cat:'انسانيات',
+    from:'سوهاج', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. سلوى الديب، مدرسة تاريخ متخصصة في التاريخ الإسلامي والحديث، عمرها ٤٧ سنة، من سوهاج. تخرجت من كلية الآداب — قسم التاريخ جامعة سوهاج. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُحيي أحداث التاريخ بقصص شيّقة تشدّ انتباه الطلاب.'
+  },
+  {
+    name:'أ. جمال عبد العزيز', subject:'فلسفة ومنطق', age:52, exp:26,
+    spec:'فلسفة وأخلاق وتفكير نقدي', grade:'الثانوية', icon:'ج', cat:'انسانيات',
+    from:'أسيوط', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. جمال عبد العزيز، مدرس فلسفة ومنطق متخصص في الأخلاق والتفكير النقدي، عمره ٥٢ سنة، من أسيوط. يحمل ليسانس فلسفة من جامعة أسيوط. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٢٦ عامًا. يُعلِّم طلابه كيفية التساؤل المنطقي وبناء الحجج.'
+  },
+  {
+    name:'أ. إيمان الغزالي', subject:'تربية دينية', age:40, exp:14,
+    spec:'فقه وتفسير وسيرة نبوية', grade:'الثانوية', icon:'إ', cat:'انسانيات',
+    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. إيمان الغزالي، مدرسة تربية دينية متخصصة في الفقه والتفسير والسيرة النبوية، عمرها ٤٠ سنة، من القاهرة. خريجة كلية الدراسات الإسلامية والعربية. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُرسِّخ القيم الإسلامية الأصيلة في نفوس الطلاب.'
+  },
+  {
+    name:'أ. هيام الشرقاوي', subject:'تربية فنية', age:37, exp:11,
+    spec:'رسم وتصوير وفنون تشكيلية', grade:'الثانوية', icon:'هـ', cat:'فنون',
+    from:'الشرقية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. هيام الشرقاوي، مدرسة تربية فنية متخصصة في الرسم والتصوير والفنون التشكيلية، عمرها ٣٧ سنة، من محافظة الشرقية. خريجة كلية التربية الفنية جامعة حلوان. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُطلق العنان لإبداع الطلاب عبر الفن.'
+  },
+  {
+    name:'أ. أحمد الحضري', subject:'تربية رياضية', age:34, exp:8,
+    spec:'ألعاب جماعية ولياقة بدنية', grade:'الثانوية', icon:'أ', cat:'فنون',
+    from:'الغربية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. أحمد الحضري، مدرس تربية رياضية متخصص في الألعاب الجماعية واللياقة البدنية، عمره ٣٤ سنة، من محافظة الغربية. خريج معهد التربية الرياضية. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٨ أعوام. يبني روح الفريق والصحة الجسدية لدى الطلاب.'
+  },
+];
+
+const students = [
+  {
+    rank:1, name:'أحمد خالد محمود', icon:'أ',
+    grade:'الصف الثالث الثانوي — علمي', score:'99.2%',
+    from:'القاهرة', dob:'2008-03-15',
+    quote:'العلم نور، والاجتهاد طريق النجاح المستمر'
+  },
+  {
+    rank:2, name:'سارة ياسر عبد الرحمن', icon:'س',
+    grade:'الصف الثالث الثانوي — أدبي', score:'98.7%',
+    from:'الجيزة', dob:'2008-07-22',
+    quote:'التميز ليس هدفًا بل هو أسلوب حياة'
+  },
+  {
+    rank:3, name:'عمر سامي إبراهيم', icon:'ع',
+    grade:'الصف الثاني الثانوي — علمي', score:'98.1%',
+    from:'القاهرة', dob:'2009-01-10',
+    quote:'كل يوم هو فرصة جديدة للتعلم والتطور'
+  },
+  {
+    rank:4, name:'نور محمد علي', icon:'ن',
+    grade:'الصف الثالث الثانوي — علمي', score:'97.8%',
+    from:'الجيزة', dob:'2008-11-05',
+    quote:'الصبر والمثابرة مفتاح كل نجاح'
+  },
+  {
+    rank:5, name:'فاطمة أحمد حسن', icon:'ف',
+    grade:'الصف الأول الثانوي — أدبي', score:'97.3%',
+    from:'القاهرة', dob:'2010-06-18',
+    quote:'العلم بالتعلم، والحكمة بالتجربة'
+  },
+  {
+    rank:6, name:'محمود أحمد سعيد', icon:'م',
+    grade:'الصف الأول الثانوي — علمي', score:'97.0%',
+    from:'القاهرة', dob:'2010-01-27',
+    quote:'من جد وجد، ومن زرع حصد'
+  },
+];
+
+const videos = [
+  { title:'حفل نهاية العام الدراسي ٢٠٢٧', meta:'يونيو ٢٠٢٧ · قاعة الاحتفالات' },
+  { title:'يوم الرياضة السنوي ٢٠٢٧', meta:'مارس ٢٠٢٧ · ملعب المدرسة' },
+  { title:'معرض العلوم والإبداع', meta:'فبراير ٢٠٢٧ · مختبر العلوم' },
+];
+
+const photos = [
+  'حفل التخرج ٢٠٢٧','يوم الكتاب العالمي','بطولة القدم الداخلية',
+  'معرض العلوم','معرض الفنون الطلابي','تكريم المتفوقين',
+  'يوم البيئة المدرسي','المسرحية السنوية','الرحلة المدرسية',
+  'الحفل الموسيقي','اجتماع أولياء الأمور','تجارب المختبر',
+];
+
+/* ============================================================
+   PAGES SYSTEM
+============================================================ */
+const PAGE_IDS = ['home','principal','students','memories','about'];
+function goPage(id, linkEl) {
+  PAGE_IDS.forEach(p => {
+    const el = document.getElementById('page-'+p);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById('page-'+id);
+  if (!target) return;
+  target.classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+
+  // update nav active
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  if (linkEl) { linkEl.classList.add('active'); }
+  else {
+    document.querySelectorAll(`.nav-links a[data-page="${id}"]`).forEach(a => a.classList.add('active'));
+  }
+
+  // render on demand
+  if (id === 'principal' && !document.getElementById('teachersList').childElementCount) { renderTeachersList('teachersList','filterTabs'); }
+  if (id === 'students'  && !document.getElementById('studentsGrid').childElementCount) { renderStudents(); }
+  if (id === 'memories'  && !document.getElementById('videosGrid').childElementCount)   { renderMemories(); }
+  if (id === 'about') { updateMahmoudAge(); }
+
+  setTimeout(setupReveal, 80);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('hidden');
-    animateCounters();
-    setupReveal();
-  }, 1200);
-});
-</script>
+/* ============================================================
+   MOBILE MENU
+============================================================ */
+function toggleMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const ham = document.getElementById('hamburger');
+  const isOpen = menu.classList.contains('open');
+  menu.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('show', !isOpen);
+  ham.classList.toggle('active', !isOpen);
+  document.body.classList.toggle('menu-open', !isOpen);
 
-<script>
-function toggleMobileMenu() {
-  const drawer = document.getElementById('mobileDrawer');
-  const overlay = document.getElementById('drawerOverlay');
-  const hamburger = document.getElementById('hamburger');
-  const isOpen = drawer.classList.contains('open');
-  if (isOpen) {
-    drawer.classList.remove('open');
-    overlay.classList.remove('open');
-    hamburger.classList.remove('active');
-    document.body.style.overflow = '';
-  } else {
-    drawer.classList.add('open');
-    overlay.classList.add('open');
-    hamburger.classList.add('active');
-    document.body.style.overflow = 'hidden';
+  // Stagger animate menu items on open
+  if (!isOpen) {
+    const items = menu.querySelectorAll('.mobile-nav-link, [style*="margin"]');
+    items.forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(-18px)';
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        el.style.opacity = '';
+        el.style.transform = '';
+      }, 80 + i * 55);
+    });
   }
 }
-function closeMobile() {
-  document.getElementById('mobileDrawer').classList.remove('open');
-  document.getElementById('drawerOverlay').classList.remove('open');
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('mobileMenuOverlay').classList.remove('show');
   document.getElementById('hamburger').classList.remove('active');
+  document.body.classList.remove('menu-open');
+}
+
+/* ============================================================
+   STARS CANVAS
+============================================================ */
+function initStars() {
+  const canvas = document.getElementById('starsCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 85; i++) {
+    stars.push({
+      x: Math.random() * 1920, y: Math.random() * 1080,
+      r: Math.random() * 1.4 + 0.3,
+      a: Math.random(),
+      speed: Math.random() * 0.012 + 0.004,
+      dir: Math.random() > 0.5 ? 1 : -1
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.a += s.speed * s.dir;
+      if (s.a >= 1 || s.a <= 0.05) s.dir *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x % W, s.y % H, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(201,168,76,${s.a * 0.7})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ============================================================
+   HERO PARTICLES
+============================================================ */
+function initHeroParticles() {
+  const c = document.getElementById('heroParticles');
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'hero-particle';
+    const size = Math.random() * 4 + 2;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      --d:${Math.random()*5+4}s;
+      --del:${Math.random()*4}s;
+    `;
+    c.appendChild(p);
+  }
+}
+
+/* ============================================================
+   TEACHER ROWS
+============================================================ */
+function buildTeacherRow(t) {
+  const row = document.createElement('div');
+  const isLangEn = t.lang === 'en';
+  const isLangFr = t.lang === 'fr';
+  row.className = `teacher-row reveal ${isLangEn ? 'lang-en' : isLangFr ? 'lang-fr' : ''}`;
+
+  // Generate a stylized SVG "portrait" using the teacher's initial
+  // The image panel — full-height colored panel with large SVG figure silhouette + initial
+  const genderIsMale = (t.gender === 'ذ' || t.gender === 'M');
+  const photoPanel = `
+    <div class="teacher-row-photo">
+      <span class="teacher-photo-letter">${t.icon}</span>
+      <svg class="teacher-portrait-svg" viewBox="0 0 240 260" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background gradient wash -->
+        <defs>
+          <linearGradient id="bg-${t.icon}-${t.age}" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0c1120"/>
+            <stop offset="100%" stop-color="#07090f"/>
+          </linearGradient>
+          <linearGradient id="figure-${t.icon}-${t.age}" x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%" stop-color="rgba(201,168,76,0.22)"/>
+            <stop offset="100%" stop-color="rgba(201,168,76,0.06)"/>
+          </linearGradient>
+          <linearGradient id="glow-${t.icon}-${t.age}" x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%" stop-color="rgba(201,168,76,0.35)"/>
+            <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
+          </linearGradient>
+        </defs>
+        <!-- Subtle glow circle -->
+        <ellipse cx="120" cy="200" rx="90" ry="40" fill="rgba(201,168,76,0.05)"/>
+        <!-- Person silhouette — head -->
+        <circle cx="120" cy="85" r="42" fill="url(#figure-${t.icon}-${t.age})" stroke="rgba(201,168,76,0.25)" stroke-width="1.5"/>
+        <!-- Inner face detail -->
+        <circle cx="120" cy="85" r="30" fill="rgba(12,17,32,0.5)"/>
+        <!-- Body/shoulders -->
+        ${genderIsMale
+          ? `<path d="M60 260 Q70 185 120 175 Q170 185 180 260Z" fill="url(#figure-${t.icon}-${t.age})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
+          : `<path d="M50 260 Q65 178 120 168 Q175 178 190 260Z" fill="url(#figure-${t.icon}-${t.age})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
+        }
+        <!-- Collar/jacket detail -->
+        <path d="M100 175 L120 195 L140 175" stroke="rgba(201,168,76,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- Initial letter centered in head -->
+        <text x="120" y="96" text-anchor="middle" dominant-baseline="middle"
+          font-family="Tajawal, Cairo, sans-serif" font-size="28" font-weight="900"
+          fill="rgba(201,168,76,0.9)">${t.icon}</text>
+        <!-- Bottom fade mask -->
+        <rect x="0" y="200" width="240" height="60" fill="url(#bg-${t.icon}-${t.age})" opacity="0.7"/>
+      </svg>
+      <div class="teacher-photo-badge">${t.subject}</div>
+    </div>
+  `;
+
+  const infoPanel = `
+    <div class="teacher-row-info">
+      <h3 class="t-name">${t.name}</h3>
+      <div class="t-location">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${t.from} — ${t.where}
+      </div>
+      <p class="t-bio-short">${t.bio.substring(0, 150)}...</p>
+      <div class="t-meta-chips">
+        <div class="t-chip">السن: <strong>${t.age} سنة</strong></div>
+        <div class="t-chip">الخبرة: <strong>${t.exp} سنة</strong></div>
+        <div class="t-chip">التخصص: <strong>${t.spec}</strong></div>
+        <div class="t-chip">المرحلة: <strong>${t.grade}</strong></div>
+      </div>
+    </div>
+  `;
+
+  // Arabic: photo on RIGHT side (RTL = grid starts right), info on left
+  // English/French: photo on LEFT, info on right (LTR)
+  if (t.lang === 'ar') {
+    // In RTL, first column in DOM = right side visually
+    row.innerHTML = photoPanel + infoPanel;
+  } else {
+    row.innerHTML = photoPanel + infoPanel;
+  }
+
+  row.onclick = () => openTModal(t);
+  return row;
+}
+
+function renderTeachersList(listId, tabsId, filter = 'all') {
+  const list = document.getElementById(listId);
+  list.innerHTML = '';
+  const filtered = filter === 'all' ? teachers : teachers.filter(t => t.cat === filter);
+  filtered.forEach((t, i) => {
+    const row = buildTeacherRow(t);
+    row.style.transitionDelay = (i * 0.05) + 's';
+    list.appendChild(row);
+  });
+  setTimeout(setupReveal, 50);
+}
+
+function filterTeachers(f, btn) {
+  document.querySelectorAll('#filterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTeachersList('teachersList','filterTabs', f);
+}
+function filterTeachers2(f, btn) {
+  document.querySelectorAll('#filterTabs2 .filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTeachersList('teachersList2','filterTabs2', f);
+}
+
+/* ============================================================
+   TEACHER MODAL
+============================================================ */
+function openTModal(t) {
+  document.getElementById('mAv').textContent   = t.icon;
+  document.getElementById('mName').textContent = t.name;
+  document.getElementById('mSub').textContent  = t.subject;
+  document.getElementById('mAge').textContent  = t.age + ' سنة';
+  document.getElementById('mExp').textContent  = t.exp + ' سنة';
+  document.getElementById('mSpec').textContent = t.spec;
+  document.getElementById('mGrade').textContent= t.grade;
+  document.getElementById('mFrom').textContent = t.from;
+  document.getElementById('mWhere').textContent= t.where;
+  document.getElementById('mBio').textContent  = t.bio;
+  document.getElementById('tModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeTModal(e) { if (e.target === document.getElementById('tModal')) closeTModalDirect(); }
+function closeTModalDirect() {
+  document.getElementById('tModal').classList.remove('open');
   document.body.style.overflow = '';
 }
 
+/* ============================================================
+   STUDENTS
+============================================================ */
+function renderStudents() {
+  const grid = document.getElementById('studentsGrid');
+  students.forEach((s, i) => {
+    const age = calcAge(s.dob);
+    const dob = new Date(s.dob);
+    const dobAr = `${dob.getFullYear()}/${String(dob.getMonth()+1).padStart(2,'0')}/${String(dob.getDate()).padStart(2,'0')}`;
+    const card = document.createElement('div');
+    card.className = 'student-card';
+    card.style.animationDelay = (i * 0.1) + 's';
+    card.innerHTML = `
+      <div class="rank-badge rank-${s.rank <= 3 ? s.rank : ''}">${s.rank}</div>
+      <div class="s-avatar">${s.icon}</div>
+      <div class="s-name">${s.name}</div>
+      <div class="s-from">من ${s.from}</div>
+      <div class="s-grade">${s.grade}</div>
+      <div class="s-score">${s.score}</div>
+      <div class="s-score-label">المجموع التراكمي</div>
+      <div class="s-age-live">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        العمر: <strong class="live-age">${age}</strong> سنة
+      </div>
+      <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.8rem;">تاريخ الميلاد: ${dobAr}</div>
+      <div class="s-quote">"${s.quote}"</div>
+    `;
+    grid.appendChild(card);
+    setTimeout(() => card.classList.add('visible'), 100 + i * 80);
+  });
+
+  // Live age updates every minute
+  setInterval(() => {
+    students.forEach((s, i) => {
+      const cards = document.querySelectorAll('#studentsGrid .student-card');
+      if (cards[i]) {
+        const el = cards[i].querySelector('.live-age');
+        if (el) el.textContent = calcAge(s.dob);
+      }
+    });
+  }, 60000);
+}
+
+/* ============================================================
+   MEMORIES
+============================================================ */
+function renderMemories() {
+  const vGrid = document.getElementById('videosGrid');
+  videos.forEach((v, i) => {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.style.animationDelay = (i * 0.12) + 's';
+    card.innerHTML = `
+      <div class="video-thumb">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta">${v.meta}</div>
+      </div>
+    `;
+    card.onclick = () => { document.getElementById('vidTitle').textContent = v.title; document.getElementById('vidModal').classList.add('open'); };
+    vGrid.appendChild(card);
+    setTimeout(() => card.classList.add('visible'), 100 + i * 100);
+  });
+
+  const pGrid = document.getElementById('photosGrid');
+  photos.forEach((label, i) => {
+    const card = document.createElement('div');
+    card.className = 'photo-card';
+    card.setAttribute('data-label', label);
+    card.style.animationDelay = (i * 0.06) + 's';
+    card.innerHTML = `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+    pGrid.appendChild(card);
+    setTimeout(() => card.classList.add('visible'), 200 + i * 50);
+  });
+}
+
+function closeVidModal() {
+  document.getElementById('vidModal').classList.remove('open');
+}
+
+/* ============================================================
+   MAHMOUD LIVE AGE
+============================================================ */
+const MAHMOUD_DOB = new Date('2010-01-27');
+function updateMahmoudAge() {
+  const age = calcAge('2010-01-27');
+  const el = document.getElementById('mahmoudAge');
+  if (el) el.textContent = age;
+}
+// update every minute
+setInterval(updateMahmoudAge, 60000);
+
+/* ============================================================
+   COUNTER ANIMATION
+============================================================ */
+function initCounters() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.target);
+
+      // Animate the cell entrance
+      const cell = el.closest('.stat-cell');
+      if (cell) {
+        const idx = Array.from(cell.parentElement.children).indexOf(cell);
+        cell.style.opacity = '0';
+        cell.style.transform = 'translateY(20px) scale(0.94)';
+        setTimeout(() => {
+          cell.style.transition = 'opacity 0.55s ease, transform 0.55s cubic-bezier(0.175,0.885,0.32,1.275)';
+          cell.style.opacity = '';
+          cell.style.transform = '';
+        }, idx * 90);
+      }
+
+      let cur = 0;
+      const step = target / 55;
+      const timer = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = Math.floor(cur);
+        if (cur >= target) clearInterval(timer);
+      }, 18);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-num').forEach(n => obs.observe(n));
+}
+
+/* ============================================================
+   SCROLL REVEAL
+============================================================ */
+function setupReveal() {
+  const els = document.querySelectorAll('.reveal:not(.visible), .reveal-left:not(.visible), .reveal-right:not(.visible)');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  els.forEach(el => obs.observe(el));
+}
+
+/* ============================================================
+   SCROLL EVENTS
+============================================================ */
 window.addEventListener('scroll', () => {
-  const btn = document.getElementById('scrollTop');
-  if (btn) btn.classList.toggle('show', window.scrollY > 400);
   const nav = document.getElementById('navbar');
-  if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+  const btn = document.getElementById('scrollTop');
+  btn.classList.toggle('show', window.scrollY > 500);
+}, { passive: true });
+
+/* ============================================================
+   KEYBOARD
+============================================================ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeTModalDirect();
+    closeVidModal();
+    closeMenu();
+  }
 });
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeMobile();
-});
-
+/* ============================================================
+   INIT
+============================================================ */
 window.addEventListener('DOMContentLoaded', () => {
+  initStars();
+  initHeroParticles();
+  initCounters();
+  setTimeout(setupReveal, 300);
+
   setTimeout(() => {
-    const loader = document.getElementById('loader');
-    if (loader) loader.classList.add('hidden');
-  }, 1200);
+    document.getElementById('loader').classList.add('gone');
+  }, 1900);
 });
 </script>
-
 </body>
 </html>
