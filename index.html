@@ -216,8 +216,22 @@ button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outli
   box-shadow:0 6px 20px rgba(160,28,28,0.35) !important;
   transform:translateY(-2px) !important;
 }
-.nav-school-btn::after { display:none !important; }
-/* MOBILE MENU — slides from LEFT */
+.nav-school-btn::after { display:none !important; opacity:0 !important; visibility:hidden !important; }
+.nav-school-btn::before { display:none !important; opacity:0 !important; visibility:hidden !important; }
+/* Mobile menu items — CSS-only stagger, no JS opacity flash */
+#mobileMenu .mobile-nav-link:nth-child(1) { animation-delay:0.05s; }
+#mobileMenu .mobile-nav-link:nth-child(2) { animation-delay:0.10s; }
+#mobileMenu .mobile-nav-link:nth-child(3) { animation-delay:0.15s; }
+#mobileMenu .mobile-nav-link:nth-child(4) { animation-delay:0.20s; }
+#mobileMenu .mobile-nav-link:nth-child(5) { animation-delay:0.25s; }
+#mobileMenu .mobile-nav-link:nth-child(6) { animation-delay:0.30s; }
+#mobileMenu.open .mobile-nav-link {
+  animation: menuItemIn 0.32s ease both;
+}
+@keyframes menuItemIn {
+  from { opacity:0; transform:translateX(-14px); }
+  to   { opacity:1; transform:translateX(0); }
+}
 #mobileMenu {
   position:fixed; top:0; left:0; bottom:0; width:82vw; max-width:320px;
   background:var(--bg2); border-right:1px solid var(--border);
@@ -248,20 +262,24 @@ button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outli
   display:flex; align-items:center; gap:12px;
   padding:0.85rem 1.5rem;
   color:rgba(232,228,220,0.65); font-size:0.88rem; font-weight:600;
-  transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
+  transition:color 0.2s, background-color 0.2s;
   border-right:3px solid transparent;
-  cursor:pointer; border-radius:0;
-  position:relative;
+  border-right-color:transparent;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  outline:none;
+  text-decoration:none;
+  background-color:transparent;
 }
-.mobile-nav-link::before {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(90deg, rgba(201,168,76,0.06), transparent);
-  opacity:0; transition:opacity 0.25s;
+.mobile-nav-link svg {
+  width:18px; height:18px; flex-shrink:0;
+  color:var(--gold); opacity:0.5; transition:opacity 0.2s;
 }
-.mobile-nav-link svg { width:18px; height:18px; flex-shrink:0; color:var(--gold); opacity:0.5; transition:all 0.3s; }
-.mobile-nav-link:hover { color:var(--gold); border-right-color:var(--gold); }
-.mobile-nav-link:hover::before { opacity:1; }
-.mobile-nav-link:hover svg { opacity:1; animation:iconBounce 0.5s ease; }
+.mobile-nav-link:hover {
+  color:var(--gold);
+  background-color:rgba(201,168,76,0.07);
+}
+.mobile-nav-link:hover svg { opacity:1; }
 
 /* ========== PAGES SYSTEM ========== */
 .page { display:none; min-height:100vh; padding-top:var(--nav-h); }
@@ -1160,6 +1178,45 @@ footer::before {
 .bnav-item.bnav-school { color:rgba(232,180,140,0.5); }
 .bnav-item.bnav-school.active, .bnav-item.bnav-school:active { color:#e8b08c; }
 .bnav-item.bnav-school::after { background:#e8b08c; }
+
+/* ========== BETA BADGE ========== */
+.beta-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  color:#fff;
+  border:1.5px solid var(--gold);
+  border-radius:999px;
+  padding:3px 10px;
+  font-family:Arial, sans-serif;
+  font-size:0.62rem;
+  font-weight:900;
+  letter-spacing:1.2px;
+  line-height:1;
+  text-transform:uppercase;
+  background:rgba(201,168,76,0.08);
+  box-shadow:0 0 12px rgba(201,168,76,0.16), inset 0 0 10px rgba(201,168,76,0.05);
+  text-shadow:0 0 8px rgba(255,255,255,0.35);
+  white-space:nowrap;
+}
+.beta-badge.beta-loader { font-size:0.7rem; padding:5px 14px; border-width:2px; }
+.beta-badge.beta-nav { margin-inline-start:8px; transform:translateY(-1px); }
+.beta-badge.beta-mobile { margin-top:9px; }
+.beta-badge.beta-hero { margin-bottom:1.15rem; font-size:0.68rem; padding:7px 16px; }
+.beta-badge.beta-footer { margin:0.5rem auto 1rem; }
+
+.beta-floating {
+  position:fixed; top:calc(var(--nav-h) + 10px); right:14px; z-index:995;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; border:1.5px solid var(--gold); border-radius:999px;
+  padding:4px 10px; min-width:52px;
+  font-family:Arial,sans-serif; font-size:0.6rem; font-weight:900;
+  letter-spacing:1.2px; line-height:1;
+  background:rgba(7,9,15,0.72); backdrop-filter:blur(10px);
+  box-shadow:0 0 16px rgba(201,168,76,0.18);
+  text-shadow:0 0 7px rgba(255,255,255,0.35);
+}
+@media (max-width:700px) {
+  .beta-floating { top:calc(var(--mobile-nav-h) + 8px); right:10px; }
+}
 </style>
 </head>
 <body>
@@ -1174,6 +1231,7 @@ footer::before {
       </svg>
     </div>
   </div>
+  <div class="beta-badge beta-loader">BETA</div>
   <div class="loader-name">مدرسة شهيد حسن حمدي</div>
   <div class="loader-sub">مدرسة ثانوية · إدارة الحسنية · جمهورية مصر العربية</div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
@@ -1194,6 +1252,7 @@ footer::before {
     <div class="nav-brand-text">
       <span>مدرسة شهيد حسن حمدي</span>
       <span>ثانوية · إدارة الحسنية</span>
+      <span class="beta-badge beta-nav">BETA</span>
     </div>
   </div>
   <ul class="nav-links" id="navLinks">
@@ -1227,12 +1286,15 @@ footer::before {
   </div>
 </nav>
 
+<div class="beta-floating" aria-label="Beta">BETA</div>
+
 <!-- MOBILE MENU -->
 <div id="mobileMenuOverlay" onclick="closeMenu()"></div>
 <div id="mobileMenu">
   <div class="mobile-menu-header">
     <div class="logo-text">مدرسة شهيد حسن حمدي</div>
     <div class="logo-sub">ثانوية — إدارة الحسنية — جمهورية مصر العربية</div>
+    <div class="beta-badge beta-mobile">BETA</div>
   </div>
   <div class="mobile-nav-link" onclick="goPage('home');closeMenu()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -1254,11 +1316,25 @@ footer::before {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
     عن الموقع
   </div>
-  <div style="margin:0.8rem 1.5rem;height:1px;background:rgba(201,168,76,0.1);"></div>
-  <a href="#" class="mobile-nav-link mobile-school-btn" style="color:#e8c96a;background:rgba(139,26,26,0.15);border-right:3px solid #8b1a1a;margin:0 0.8rem;border-radius:12px;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+  <div style="margin:1rem 1rem 0.5rem;height:1px;background:rgba(255,255,255,0.05);"></div>
+  <div onclick="window.location.href='#'" style="
+    display:flex; align-items:center; gap:12px;
+    margin:0.4rem 1rem 1rem;
+    padding:0.85rem 1.2rem;
+    background:linear-gradient(135deg,rgba(160,28,28,0.25),rgba(120,18,18,0.15));
+    border:1px solid rgba(160,28,28,0.4);
+    border-radius:12px;
+    color:#f08080;
+    font-size:0.86rem; font-weight:700;
+    cursor:pointer;
+    font-family:'Cairo',sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    transition:background 0.25s, border-color 0.25s;
+  " onmouseover="this.style.background='linear-gradient(135deg,rgba(160,28,28,0.4),rgba(120,18,18,0.3))'"
+     onmouseout="this.style.background='linear-gradient(135deg,rgba(160,28,28,0.25),rgba(120,18,18,0.15))'">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
     موقع المدرسة الرسمي
-  </a>
+  </div>
 </div>
 
 <!-- ======== PAGE: HOME ======== -->
@@ -1268,6 +1344,7 @@ footer::before {
       <div class="hero-bg-gradient"></div>
       <div class="hero-particles" id="heroParticles"></div>
       <div class="hero-content">
+        <div class="beta-badge beta-hero">BETA</div>
         <div class="hero-pill">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
           مدرسة ثانوية حكومية — إدارة الحسنية — جمهورية مصر العربية
@@ -1348,6 +1425,7 @@ footer::before {
   <!-- FOOTER for Home -->
   <footer>
     <div class="footer-inner">
+      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
       <div class="footer-links">
@@ -1480,6 +1558,7 @@ footer::before {
 
   <footer>
     <div class="footer-inner">
+      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
       <div class="footer-copy">© ٢٠٢٧ مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة</div>
@@ -1511,6 +1590,7 @@ footer::before {
   </div>
   <footer>
     <div class="footer-inner">
+      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
     </div>
@@ -1533,6 +1613,7 @@ footer::before {
   </div>
   <footer>
     <div class="footer-inner">
+      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
     </div>
@@ -1566,6 +1647,7 @@ footer::before {
   </div>
   <footer>
     <div class="footer-inner">
+      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
     </div>
@@ -1630,6 +1712,7 @@ footer::before {
   </div>
   <footer>
     <div class="footer-inner">
+      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
       <div class="footer-copy">
@@ -1942,17 +2025,20 @@ function toggleMenu() {
   ham.classList.toggle('active', !isOpen);
   document.body.classList.toggle('menu-open', !isOpen);
 
-  // Stagger animate menu items on open
   if (!isOpen) {
-    const items = menu.querySelectorAll('.mobile-nav-link, [style*="margin"]');
+    // Only animate actual clickable nav items, not dividers or wrappers
+    const items = menu.querySelectorAll('.mobile-nav-link, .mobile-menu-header, [onclick*="goPage"], [onclick*="location"]');
     items.forEach((el, i) => {
       el.style.opacity = '0';
-      el.style.transform = 'translateX(-18px)';
-      setTimeout(() => {
-        el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-        el.style.opacity = '';
-        el.style.transform = '';
-      }, 80 + i * 55);
+      el.style.transform = 'translateX(-16px)';
+      el.style.transition = 'none';
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          el.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+          el.style.opacity = '';
+          el.style.transform = '';
+        }, 60 + i * 50);
+      });
     });
   }
 }
