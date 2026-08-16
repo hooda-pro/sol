@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>مدرسة شهيد حسن حمدي | الثانوية — ادارة الحسنية</title>
+<meta name="theme-color" content="#07090f">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مدرسة شهيد حسن حمدي">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Noto+Kufi+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -31,11 +37,18 @@
   --nav-h:    68px;
   --mobile-nav-h: 60px;
   --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-press:  cubic-bezier(0.4, 0, 1, 1);
 }
 
 /* ========== RESET ========== */
 *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; font-size:16px; }
+html {
+  scroll-behavior:smooth; font-size:16px;
+  background: var(--bg);
+  -webkit-text-size-adjust:100%; text-size-adjust:100%;
+  overscroll-behavior-y: none;
+}
 body {
   font-family:'Cairo', sans-serif;
   background: var(--bg);
@@ -43,6 +56,7 @@ body {
   overflow-x: hidden;
   line-height:1.7;
   min-height:100vh;
+  overscroll-behavior-y: none;
 }
 body.menu-open { overflow:hidden; }
 ::-webkit-scrollbar { width:6px; }
@@ -77,7 +91,7 @@ a { text-decoration:none; color:inherit; }
 @keyframes cardEntrance { from{opacity:0;transform:translateY(28px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
 @keyframes rankPop { 0%{transform:scale(0.5)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
 @keyframes hoverBob  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-@keyframes pageSlide { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pageSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 @keyframes softPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
 @keyframes iconBounce{ 0%,100%{transform:translateY(0)} 40%{transform:translateY(-4px)} 60%{transform:translateY(-1px)} }
 @keyframes waveIn    { from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0% 0 0)} }
@@ -183,7 +197,9 @@ a { text-decoration:none; color:inherit; }
 /* Global: remove blue tap highlight and focus outline on all interactive elements */
 *, *::before, *::after { -webkit-tap-highlight-color: transparent !important; }
 button:focus, a:focus, [onclick]:focus { outline: none !important; box-shadow: none !important; }
-button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outline-offset: 2px; }
+button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visible {
+  outline: 2px solid rgba(201,168,76,0.6) !important; outline-offset: 2px; border-radius: 4px;
+}
 
 .hamburger {
   display:none; width:36px; height:36px;
@@ -218,72 +234,82 @@ button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outli
 }
 .nav-school-btn::after { display:none !important; opacity:0 !important; visibility:hidden !important; }
 .nav-school-btn::before { display:none !important; opacity:0 !important; visibility:hidden !important; }
-/* Mobile menu items — CSS-only stagger, no JS opacity flash */
-#mobileMenu .mobile-nav-link:nth-child(1) { animation-delay:0.05s; }
-#mobileMenu .mobile-nav-link:nth-child(2) { animation-delay:0.10s; }
-#mobileMenu .mobile-nav-link:nth-child(3) { animation-delay:0.15s; }
-#mobileMenu .mobile-nav-link:nth-child(4) { animation-delay:0.20s; }
-#mobileMenu .mobile-nav-link:nth-child(5) { animation-delay:0.25s; }
-#mobileMenu .mobile-nav-link:nth-child(6) { animation-delay:0.30s; }
-#mobileMenu.open .mobile-nav-link {
-  animation: menuItemIn 0.32s ease both;
-}
-@keyframes menuItemIn {
-  from { opacity:0; transform:translateX(-14px); }
-  to   { opacity:1; transform:translateX(0); }
-}
+/* ========== MOBILE MENU — clean rebuild, zero flash ========== */
+#mobileMenu .mobile-nav-link:nth-child(1),
+#mobileMenu .mobile-nav-link:nth-child(2),
+#mobileMenu .mobile-nav-link:nth-child(3),
+#mobileMenu .mobile-nav-link:nth-child(4),
+#mobileMenu .mobile-nav-link:nth-child(5),
+#mobileMenu .mobile-nav-link:nth-child(6) { display:none; }
 #mobileMenu {
-  position:fixed; top:0; left:0; bottom:0; width:82vw; max-width:320px;
-  background:var(--bg2); border-right:1px solid var(--border);
-  z-index:2000; padding:var(--mobile-nav-h) 0 2rem;
+  position:fixed; top:0; left:0; bottom:0;
+  width:78vw; max-width:300px;
+  background:var(--bg2);
+  border-right:1px solid rgba(201,168,76,0.1);
+  z-index:2000;
   transform:translateX(-100%);
-  transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
   display:flex; flex-direction:column;
-  overflow-y:auto;
+  overflow:hidden;
 }
 #mobileMenu.open { transform:translateX(0); }
 #mobileMenuOverlay {
-  position:fixed; inset:0; background:rgba(0,0,0,0.65);
+  position:fixed; inset:0; background:rgba(0,0,0,0.6);
   z-index:1999; opacity:0; pointer-events:none;
-  transition:opacity 0.4s;
-  backdrop-filter:blur(4px);
+  transition:opacity 0.35s; backdrop-filter:blur(3px);
 }
 #mobileMenuOverlay.show { opacity:1; pointer-events:all; }
-.mobile-menu-header {
-  padding:1.2rem 1.5rem 1.5rem;
-  border-bottom:1px solid var(--border2);
-  margin-bottom:0.8rem;
+
+/* Header */
+.mmenu-header {
+  padding:calc(var(--mobile-nav-h) + 1.2rem) 1.4rem 1.2rem;
+  border-bottom:1px solid rgba(255,255,255,0.05); flex-shrink:0;
 }
-.mobile-menu-header .logo-text {
-  font-family:'Tajawal',sans-serif; font-size:1rem; font-weight:900; color:var(--gold);
-}
-.mobile-menu-header .logo-sub { font-size:0.65rem; color:var(--text-muted); margin-top:2px; }
-.mobile-nav-link {
+.mmenu-logo { font-family:'Tajawal',sans-serif; font-size:0.92rem; font-weight:900; color:var(--gold); }
+.mmenu-sub { font-size:0.62rem; color:rgba(255,255,255,0.25); margin-top:3px; }
+
+/* Nav */
+.mmenu-nav { flex:1; padding:0.5rem 0; overflow-y:auto; display:flex; flex-direction:column; }
+.mmenu-item {
   display:flex; align-items:center; gap:12px;
-  padding:0.85rem 1.5rem;
-  color:rgba(232,228,220,0.65); font-size:0.88rem; font-weight:600;
-  transition:color 0.2s, background-color 0.2s;
+  padding:0.9rem 1.4rem;
+  background:transparent; border:none;
   border-right:3px solid transparent;
-  border-right-color:transparent;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-  outline:none;
-  text-decoration:none;
-  background-color:transparent;
+  color:rgba(232,228,220,0.55);
+  font-size:0.88rem; font-weight:600; font-family:'Cairo',sans-serif;
+  cursor:pointer; text-align:right; width:100%;
+  -webkit-tap-highlight-color:transparent; outline:none;
+  transition:color 0.18s, background-color 0.18s, border-right-color 0.18s;
 }
-.mobile-nav-link svg {
-  width:18px; height:18px; flex-shrink:0;
-  color:var(--gold); opacity:0.5; transition:opacity 0.2s;
+.mmenu-item:hover { color:var(--gold); background-color:rgba(201,168,76,0.07); border-right-color:var(--gold); }
+.mmenu-item:active { background-color:rgba(201,168,76,0.12); }
+.mmenu-icon { width:18px; height:18px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--gold); opacity:0.4; transition:opacity 0.18s; }
+.mmenu-item:hover .mmenu-icon { opacity:0.9; }
+.mmenu-icon svg { width:18px; height:18px; }
+
+/* Divider */
+.mmenu-divider { height:1px; margin:0.5rem 1.2rem; background:rgba(255,255,255,0.05); flex-shrink:0; }
+
+/* School button — completely isolated, no inheritance */
+.mmenu-school-btn {
+  display:flex; align-items:center; gap:10px;
+  margin:0.5rem 1rem 1.2rem; padding:0.85rem 1.1rem;
+  background:rgba(140,20,20,0.2); border:1px solid rgba(140,20,20,0.38);
+  border-radius:11px; color:#f09090;
+  font-size:0.84rem; font-weight:700; font-family:'Cairo',sans-serif;
+  cursor:pointer; -webkit-tap-highlight-color:transparent; outline:none;
+  transition:background-color 0.18s, border-color 0.18s; flex-shrink:0;
 }
-.mobile-nav-link:hover {
-  color:var(--gold);
-  background-color:rgba(201,168,76,0.07);
-}
-.mobile-nav-link:hover svg { opacity:1; }
+.mmenu-school-btn:hover { background:rgba(160,28,28,0.35); border-color:rgba(160,28,28,0.55); color:#ffaaaa; }
+.mmenu-school-btn:active { background:rgba(160,28,28,0.45); }
+
+/* Kill old classes */
+.mobile-menu-header, .mobile-nav-link { display:none !important; }
+
 
 /* ========== PAGES SYSTEM ========== */
 .page { display:none; min-height:100vh; padding-top:var(--nav-h); }
-.page.active { display:block; animation:pageSlide 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+.page.active { display:block; animation:pageSlide 0.26s var(--ease-out) both; }
 
 /* ========== STARS BACKGROUND ========== */
 #starsCanvas {
@@ -377,15 +403,15 @@ button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outli
 .btn-gold:hover svg { transform:translateX(-3px); }
 .btn-ghost svg { width:17px; height:17px; transition:transform 0.3s; }
 .btn-ghost:hover svg { transform:translateX(-3px); }
+.btn-ghost {
   display:inline-flex; align-items:center; gap:8px;
   background:transparent; color:var(--text);
   border:1.5px solid rgba(255,255,255,0.18);
   padding:14px 32px; border-radius:50px;
   font-size:0.9rem; font-weight:600;
-  transition:all 0.4s;
+  transition:border-color 0.35s, color 0.35s, transform 0.35s, background 0.35s;
 }
 .btn-ghost:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-4px); background:var(--gold-dim); }
-.btn-ghost svg { width:17px; height:17px; }
 
 /* STATS STRIP wrapper */
 .stats-strip {
@@ -512,7 +538,6 @@ button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outli
   padding:5px 18px; border-radius:50px; white-space:nowrap;
   box-shadow:0 4px 14px rgba(0,0,0,0.4);
 }
-.principal-role-label { display:none; }
 /* Info side */
 .principal-info {
   position:relative; z-index:1;
@@ -647,10 +672,6 @@ button:focus-visible { outline: 2px solid rgba(201,168,76,0.5) !important; outli
 .teacher-row.lang-en .teacher-row-info::before,
 .teacher-row.lang-fr .teacher-row-info::before { right:auto; left:0; }
 
-.t-gender-dot {
-  display:none; /* hidden — replaced by photo badge */
-}
-.teacher-row-info { position:relative; z-index:1; }
 .t-subject-tag {
   display:inline-flex; align-items:center; gap:5px;
   background:var(--gold-dim); border:1px solid var(--border);
@@ -979,7 +1000,7 @@ footer::before {
 .footer-links button::after { content:''; position:absolute; bottom:0; left:0; width:0; height:1px; background:var(--gold); transition:width 0.3s; }
 .footer-links button:hover { color:var(--gold); }
 .footer-links button:hover::after { width:100%; }
-.footer-copy { color:rgba(255,255,255,0.12); font-size:0.72rem; border-top:1px solid rgba(255,255,255,0.04); padding-top:1.5rem; line-height:1.9; }
+.footer-copy { color:rgba(255,255,255,0.26); font-size:0.72rem; border-top:1px solid rgba(255,255,255,0.04); padding-top:1.5rem; line-height:1.9; }
 .footer-copy strong { color:rgba(255,255,255,0.3); }
 
 /* SCROLL TOP */
@@ -1004,6 +1025,59 @@ footer::before {
 }
 .info-block h4 { font-family:'Tajawal',sans-serif; font-size:0.95rem; font-weight:900; color:var(--gold); margin-bottom:0.6rem; }
 .info-block p { color:var(--text-dim); font-size:0.82rem; line-height:1.8; }
+
+/* ========== TOUCH / APP-LIKE PRESS FEEDBACK ==========
+   A native app always gives an instant press response and never leaves a
+   hover state "stuck" mid-air after a finger lifts. These rules add snappy
+   :active feedback to every tappable element that was missing it, and
+   cancel the desktop hover-lift specifically on touch/coarse-pointer
+   devices so cards can't stay floating after a tap. */
+.teacher-row:active         { transform:scale(0.985); transition:transform 0.13s var(--ease-press); }
+.video-card:active          { transform:scale(0.97);  transition:transform 0.13s var(--ease-press); }
+.photo-card:active          { transform:scale(0.94);  transition:transform 0.13s var(--ease-press); }
+.filter-tab:active          { transform:scale(0.94);  transition:transform 0.12s var(--ease-press); }
+.fdrop-item:active          { background:rgba(201,168,76,0.18); }
+.filter-dropdown-btn:active { transform:scale(0.95);  transition:transform 0.12s var(--ease-press); }
+.nav-school-btn:active      { transform:scale(0.96) !important; transition:transform 0.12s var(--ease-press) !important; }
+.hamburger:active           { transform:scale(0.92);  transition:transform 0.12s var(--ease-press); }
+#scrollTop:active           { transform:translateY(0) scale(0.9); }
+.t-modal-close:active       { transform:scale(0.88);  transition:transform 0.12s var(--ease-press); }
+.vid-modal-close:active     { transform:scale(0.95);  transition:transform 0.12s var(--ease-press); }
+.footer-links button:active { color:var(--gold); }
+
+@media (hover: none) and (pointer: coarse) {
+  .stat-cell:hover, .teacher-row:hover, .student-card:hover, .video-card:hover,
+  .photo-card:hover, .team-member:hover, .p-chip:hover, .t-modal-cell:hover,
+  .filter-tab:hover {
+    transform:none;
+  }
+  .teacher-row:hover, .student-card:hover, .video-card:hover, .photo-card:hover {
+    box-shadow:none;
+  }
+  .stat-cell:hover::before, .stat-cell:hover::after { opacity:0; }
+  .stat-cell:hover .stat-icon, .stat-cell:hover .stat-num { transform:none; }
+  .video-card:hover .play-btn { transform:none; background:rgba(201,168,76,0.85); box-shadow:none; }
+  .student-card:hover .s-avatar { transform:none; box-shadow:none; border-color:rgba(201,168,76,0.25); }
+  .teacher-row:hover .teacher-photo-letter { transform:none; }
+}
+
+/* ========== REDUCED MOTION ========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  html { scroll-behavior:auto; }
+}
+
+/* ========== SHORT / LANDSCAPE PHONES ========== */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .hero-section { min-height:auto; padding:5rem 2rem 1.5rem; }
+  .hero-title { margin-bottom:0.8rem; }
+  .hero-desc { margin-bottom:1.5rem; }
+  .stats-strip { padding:0 2rem 2.5rem; }
+}
 
 /* ========== MOBILE — RESPONSIVE ========== */
 @media (max-width: 900px) {
@@ -1131,91 +1205,110 @@ footer::before {
   #scrollTop { bottom:5rem; left:1rem; width:40px; height:40px; }
 }
 
-/* ========== MOBILE BOTTOM APP NAV ========== */
+/* ========== BOTTOM APP NAV — SVG notch bar ========== */
 #bottomNav {
   display:none;
   position:fixed; bottom:0; left:0; right:0; z-index:900;
-  background:rgba(10,14,26,0.96);
-  backdrop-filter:blur(20px) saturate(1.4);
-  border-top:1px solid rgba(201,168,76,0.12);
-  padding:0.4rem 0 max(0.5rem, env(safe-area-inset-bottom));
-  padding-bottom:calc(0.5rem + env(safe-area-inset-bottom));
+  pointer-events:none;
 }
-@media (max-width: 600px) {
-  #bottomNav { display:flex; }
+@media (max-width:600px) { #bottomNav { display:block; } }
+
+.bnav-wrap {
+  position:relative; width:100%;
+  height:calc(70px + env(safe-area-inset-bottom));
+  pointer-events:none;
 }
-.bottom-nav-inner {
-  display:grid; grid-template-columns:repeat(5,1fr);
-  width:100%; max-width:480px; margin:0 auto;
+
+/* SVG notch background */
+.bnav-svg {
+  position:absolute; bottom:0; left:0; right:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  filter:drop-shadow(0 -3px 14px rgba(0,0,0,0.6));
 }
+.bnav-svg path { fill:rgba(8,11,20,0.98); }
+
+/* Items row */
+.bnav-inner {
+  position:absolute; bottom:0; left:0; right:0;
+  height:calc(64px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  display:flex; align-items:center;
+  pointer-events:all;
+}
+
+/* Left and right groups — 2 items each */
+.bnav-group {
+  flex:1; display:flex; align-items:center; justify-content:space-evenly;
+  height:64px;
+}
+
+/* Center gap for home */
+.bnav-gap { width:88px; flex-shrink:0; }
+
+/* Regular items */
 .bnav-item {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:3px; padding:0.4rem 0.3rem;
-  color:rgba(232,228,220,0.38); font-size:0.56rem; font-weight:700;
-  cursor:pointer; position:relative; transition:color 0.25s;
-  letter-spacing:0.2px; text-align:center; border:none; background:none;
-  font-family:'Cairo', sans-serif;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
+  display:flex; flex-direction:column; align-items:center;
+  gap:3px; padding:4px 10px;
+  border:none; background:transparent; cursor:pointer;
+  -webkit-tap-highlight-color:transparent; outline:none; user-select:none;
 }
-.bnav-item svg {
-  width:21px; height:21px;
-  transition:transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), color 0.25s;
-  flex-shrink:0;
-}
-.bnav-item.active { color:var(--gold); }
-.bnav-item.active svg { transform:translateY(-2px) scale(1.12); }
-.bnav-item::after {
-  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
-  width:20px; height:2px; border-radius:0 0 2px 2px;
-  background:var(--gold);
-  opacity:0; transition:opacity 0.3s;
-}
-.bnav-item.active::after { opacity:1; }
-/* Tap ripple */
-.bnav-item:active svg { transform:scale(0.88); }
-/* School link special */
-.bnav-item.bnav-school { color:rgba(232,180,140,0.5); }
-.bnav-item.bnav-school.active, .bnav-item.bnav-school:active { color:#e8b08c; }
-.bnav-item.bnav-school::after { background:#e8b08c; }
-
-/* ========== BETA BADGE ========== */
-.beta-badge {
-  display:inline-flex; align-items:center; justify-content:center;
-  color:#fff;
-  border:1.5px solid var(--gold);
-  border-radius:999px;
-  padding:3px 10px;
-  font-family:Arial, sans-serif;
-  font-size:0.62rem;
-  font-weight:900;
-  letter-spacing:1.2px;
-  line-height:1;
-  text-transform:uppercase;
-  background:rgba(201,168,76,0.08);
-  box-shadow:0 0 12px rgba(201,168,76,0.16), inset 0 0 10px rgba(201,168,76,0.05);
-  text-shadow:0 0 8px rgba(255,255,255,0.35);
-  white-space:nowrap;
-}
-.beta-badge.beta-loader { font-size:0.7rem; padding:5px 14px; border-width:2px; }
-.beta-badge.beta-nav { margin-inline-start:8px; transform:translateY(-1px); }
-.beta-badge.beta-mobile { margin-top:9px; }
-.beta-badge.beta-hero { margin-bottom:1.15rem; font-size:0.68rem; padding:7px 16px; }
-.beta-badge.beta-footer { margin:0.5rem auto 1rem; }
-
-.beta-floating {
-  position:fixed; top:calc(var(--nav-h) + 10px); right:14px; z-index:995;
+.bnav-icon {
+  width:36px; height:36px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  color:#fff; border:1.5px solid var(--gold); border-radius:999px;
-  padding:4px 10px; min-width:52px;
-  font-family:Arial,sans-serif; font-size:0.6rem; font-weight:900;
-  letter-spacing:1.2px; line-height:1;
-  background:rgba(7,9,15,0.72); backdrop-filter:blur(10px);
-  box-shadow:0 0 16px rgba(201,168,76,0.18);
-  text-shadow:0 0 7px rgba(255,255,255,0.35);
+  transition:background 0.28s, box-shadow 0.28s, width 0.28s, height 0.28s;
 }
-@media (max-width:700px) {
-  .beta-floating { top:calc(var(--mobile-nav-h) + 8px); right:10px; }
+.bnav-item.active .bnav-icon {
+  width:42px; height:42px;
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  box-shadow:0 3px 12px rgba(201,168,76,0.32);
+}
+.bnav-icon svg { width:18px; height:18px; color:rgba(255,255,255,0.25); transition:color 0.28s; }
+.bnav-item.active .bnav-icon svg { color:var(--bg); }
+.bnav-label {
+  font-size:0.51rem; font-weight:700; font-family:'Cairo',sans-serif;
+  color:rgba(255,255,255,0.32); line-height:1; transition:color 0.28s;
+}
+.bnav-item.active .bnav-label { color:var(--gold); }
+.bnav-item:active .bnav-icon { transform:scale(0.9); transition:transform 0.08s; }
+
+/* HOME — floats above notch, same color as bar */
+.bnav-home {
+  position:absolute; left:50%; bottom:calc(22px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  width:58px; height:58px; border-radius:50%;
+  background:rgba(8,11,20,0.98);
+  border:none; cursor:pointer; pointer-events:all;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:2px;
+  -webkit-tap-highlight-color:transparent; outline:none;
+  transition:transform 0.18s;
+  box-shadow:none;
+}
+.bnav-home:active { transform:translateX(-50%) scale(0.91); }
+.bnav-home-inner {
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0.05);
+  transition:background 0.28s, box-shadow 0.28s;
+}
+.bnav-home.active .bnav-home-inner {
+  background:linear-gradient(135deg, var(--gold), var(--gold2));
+  box-shadow:0 3px 14px rgba(201,168,76,0.38);
+}
+.bnav-home svg { width:20px; height:20px; color:rgba(255,255,255,0.25); transition:color 0.28s; }
+.bnav-home.active svg { color:var(--bg); }
+.bnav-home-label {
+  font-size:0.5rem; font-weight:700; font-family:'Cairo',sans-serif;
+  color:rgba(255,255,255,0.32); white-space:nowrap; transition:color 0.28s;
+  line-height:1;
+}
+.bnav-home.active .bnav-home-label { color:var(--gold); }
+
+@media (max-width:600px) {
+  .section-wrap { padding-bottom:calc(78px + env(safe-area-inset-bottom) + 0.5rem) !important; }
+  footer { padding-bottom:calc(78px + env(safe-area-inset-bottom) + 0.5rem) !important; }
+  #scrollTop { bottom:calc(76px + env(safe-area-inset-bottom) + 0.4rem); }
 }
 </style>
 </head>
@@ -1231,7 +1324,6 @@ footer::before {
       </svg>
     </div>
   </div>
-  <div class="beta-badge beta-loader">BETA</div>
   <div class="loader-name">مدرسة شهيد حسن حمدي</div>
   <div class="loader-sub">مدرسة ثانوية · إدارة الحسنية · جمهورية مصر العربية</div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
@@ -1252,7 +1344,6 @@ footer::before {
     <div class="nav-brand-text">
       <span>مدرسة شهيد حسن حمدي</span>
       <span>ثانوية · إدارة الحسنية</span>
-      <span class="beta-badge beta-nav">BETA</span>
     </div>
   </div>
   <ul class="nav-links" id="navLinks">
@@ -1286,53 +1377,48 @@ footer::before {
   </div>
 </nav>
 
-<div class="beta-floating" aria-label="Beta">BETA</div>
-
-<!-- MOBILE MENU -->
+<!-- ======== MOBILE MENU ======== -->
 <div id="mobileMenuOverlay" onclick="closeMenu()"></div>
 <div id="mobileMenu">
-  <div class="mobile-menu-header">
-    <div class="logo-text">مدرسة شهيد حسن حمدي</div>
-    <div class="logo-sub">ثانوية — إدارة الحسنية — جمهورية مصر العربية</div>
-    <div class="beta-badge beta-mobile">BETA</div>
+  <div class="mmenu-header">
+    <div class="mmenu-logo">مدرسة شهيد حسن حمدي</div>
+    <div class="mmenu-sub">ثانوية — إدارة الحسنية</div>
   </div>
-  <div class="mobile-nav-link" onclick="goPage('home');closeMenu()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    الرئيسية
-  </div>
-  <div class="mobile-nav-link" onclick="goPage('principal');closeMenu()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    المدير والمدرسون
-  </div>
-  <div class="mobile-nav-link" onclick="goPage('students');closeMenu()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    الطلاب المتفوقون
-  </div>
-  <div class="mobile-nav-link" onclick="goPage('memories');closeMenu()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    ذكريات
-  </div>
-  <div class="mobile-nav-link" onclick="goPage('about');closeMenu()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-    عن الموقع
-  </div>
-  <div style="margin:1rem 1rem 0.5rem;height:1px;background:rgba(255,255,255,0.05);"></div>
-  <div onclick="window.location.href='#'" style="
-    display:flex; align-items:center; gap:12px;
-    margin:0.4rem 1rem 1rem;
-    padding:0.85rem 1.2rem;
-    background:linear-gradient(135deg,rgba(160,28,28,0.25),rgba(120,18,18,0.15));
-    border:1px solid rgba(160,28,28,0.4);
-    border-radius:12px;
-    color:#f08080;
-    font-size:0.86rem; font-weight:700;
-    cursor:pointer;
-    font-family:'Cairo',sans-serif;
-    -webkit-tap-highlight-color:transparent;
-    transition:background 0.25s, border-color 0.25s;
-  " onmouseover="this.style.background='linear-gradient(135deg,rgba(160,28,28,0.4),rgba(120,18,18,0.3))'"
-     onmouseout="this.style.background='linear-gradient(135deg,rgba(160,28,28,0.25),rgba(120,18,18,0.15))'">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+  <nav class="mmenu-nav">
+    <button class="mmenu-item" onclick="goPage('home');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </span>
+      <span>الرئيسية</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('principal');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </span>
+      <span>المدير والمدرسون</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('students');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </span>
+      <span>الطلاب المتفوقون</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('memories');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </span>
+      <span>ذكريات</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('about');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </span>
+      <span>عن الموقع</span>
+    </button>
+  </nav>
+  <div class="mmenu-divider"></div>
+  <div class="mmenu-school-btn" onclick="window.location.href='#'">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
     موقع المدرسة الرسمي
   </div>
 </div>
@@ -1344,7 +1430,6 @@ footer::before {
       <div class="hero-bg-gradient"></div>
       <div class="hero-particles" id="heroParticles"></div>
       <div class="hero-content">
-        <div class="beta-badge beta-hero">BETA</div>
         <div class="hero-pill">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
           مدرسة ثانوية حكومية — إدارة الحسنية — جمهورية مصر العربية
@@ -1425,7 +1510,6 @@ footer::before {
   <!-- FOOTER for Home -->
   <footer>
     <div class="footer-inner">
-      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
       <div class="footer-links">
@@ -1558,41 +1642,9 @@ footer::before {
 
   <footer>
     <div class="footer-inner">
-      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
       <div class="footer-copy">© ٢٠٢٧ مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة</div>
-    </div>
-  </footer>
-</div>
-
-<!-- ======== PAGE: TEACHERS (merged into principal, hidden) ======== -->
-<div class="page" id="page-teachers" style="display:none!important">
-  <div class="section-wrap">
-    <div class="section-head">
-      <div class="section-tag">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        الهيئة التدريسية
-      </div>
-      <h2 class="section-title">كادر <span>المدرسين</span></h2>
-      <div class="section-line"></div>
-      <p class="section-desc">المرحلة الثانوية — إدارة الحسنية</p>
-    </div>
-    <div class="filter-tabs" id="filterTabs2">
-      <button class="filter-tab active" onclick="filterTeachers2('all',this)">الكل</button>
-      <button class="filter-tab" onclick="filterTeachers2('علوم',this)">علوم</button>
-      <button class="filter-tab" onclick="filterTeachers2('لغات',this)">لغات</button>
-      <button class="filter-tab" onclick="filterTeachers2('رياضيات',this)">رياضيات</button>
-      <button class="filter-tab" onclick="filterTeachers2('انسانيات',this)">انسانيات</button>
-      <button class="filter-tab" onclick="filterTeachers2('فنون',this)">فنون</button>
-    </div>
-    <div id="teachersList2"></div>
-  </div>
-  <footer>
-    <div class="footer-inner">
-      <div class="beta-badge beta-footer">BETA</div>
-      <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
-      <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
     </div>
   </footer>
 </div>
@@ -1613,7 +1665,6 @@ footer::before {
   </div>
   <footer>
     <div class="footer-inner">
-      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
     </div>
@@ -1647,7 +1698,6 @@ footer::before {
   </div>
   <footer>
     <div class="footer-inner">
-      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-copy">© ٢٠٢٧ جميع الحقوق محفوظة</div>
     </div>
@@ -1712,7 +1762,6 @@ footer::before {
   </div>
   <footer>
     <div class="footer-inner">
-      <div class="beta-badge beta-footer">BETA</div>
       <div class="footer-logo">مدرسة شهيد حسن حمدي</div>
       <div class="footer-tagline">نبني الأجيال · نصنع المستقبل</div>
       <div class="footer-copy">
@@ -1763,28 +1812,53 @@ footer::before {
   </div>
 </div>
 
-<!-- ======== MOBILE BOTTOM APP NAV ======== -->
+<!-- PHOTO MODAL -->
+<div class="vid-modal" id="photoModal" onclick="closePhotoModal()">
+  <div class="vid-modal-inner" onclick="event.stopPropagation()">
+    <button class="vid-modal-close" onclick="closePhotoModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      إغلاق
+    </button>
+    <div class="vid-placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <p id="photoTitle">الصورة</p>
+      <p class="sub">أضف رابط الصورة الخاصة بك هنا</p>
+    </div>
+  </div>
+</div>
+
+<!-- ======== MOBILE BOTTOM APP NAV — notch ======== -->
 <nav id="bottomNav" aria-label="التنقل السريع">
-  <div class="bottom-nav-inner">
-    <button class="bnav-item active" data-page="home" onclick="goPage('home'); setBNav(this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      الرئيسية
-    </button>
-    <button class="bnav-item" data-page="principal" onclick="goPage('principal'); setBNav(this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      المدرسون
-    </button>
-    <button class="bnav-item" data-page="students" onclick="goPage('students'); setBNav(this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      المتفوقون
-    </button>
-    <button class="bnav-item" data-page="memories" onclick="goPage('memories'); setBNav(this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      ذكريات
-    </button>
-    <button class="bnav-item bnav-school" onclick="goPage('about'); setBNav(this)" data-page="about">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      عن الموقع
+  <div class="bnav-wrap">
+    <svg class="bnav-svg" viewBox="0 0 375 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,0 L138,0 Q150,0 154,10 Q160,26 187.5,26 Q215,26 221,10 Q225,0 237,0 L375,0 L375,70 L0,70 Z"/>
+    </svg>
+    <div class="bnav-inner">
+      <div class="bnav-group">
+        <button class="bnav-item" data-page="principal" onclick="goPage('principal');setBNavItem(this)">
+          <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <span class="bnav-label">مدرسون</span>
+        </button>
+        <button class="bnav-item" data-page="memories" onclick="goPage('memories');setBNavItem(this)">
+          <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <span class="bnav-label">ذكريات</span>
+        </button>
+      </div>
+      <div class="bnav-gap"></div>
+      <div class="bnav-group">
+        <button class="bnav-item" data-page="students" onclick="goPage('students');setBNavItem(this)">
+          <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <span class="bnav-label">متفوقون</span>
+        </button>
+        <button class="bnav-item" data-page="about" onclick="goPage('about');setBNavItem(this)">
+          <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+          <span class="bnav-label">عن الموقع</span>
+        </button>
+      </div>
+    </div>
+    <button class="bnav-home active" id="bnavHome" data-page="home" onclick="goPage('home');setBNavHome()">
+      <div class="bnav-home-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <span class="bnav-home-label">رئيسية</span>
     </button>
   </div>
 </nav>
@@ -1793,12 +1867,12 @@ footer::before {
 /* ============================================================
    DATA
 ============================================================ */
-const NOW = new Date();
 function calcAge(dob) {
+  const now = new Date();
   const d = new Date(dob);
-  let age = NOW.getFullYear() - d.getFullYear();
-  const m = NOW.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && NOW.getDate() < d.getDate())) age--;
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
   return age;
 }
 
@@ -1974,15 +2048,26 @@ const photos = [
 ============================================================ */
 const PAGE_IDS = ['home','principal','students','memories','about'];
 
-function setBNav(activeEl) {
+function setBNavItem(el) {
+  // deactivate all items and home
   document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
-  if (activeEl) activeEl.classList.add('active');
+  const home = document.getElementById('bnavHome');
+  if (home) home.classList.remove('active');
+  if (el) el.classList.add('active');
+}
+
+function setBNavHome() {
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  const home = document.getElementById('bnavHome');
+  if (home) home.classList.add('active');
 }
 
 function syncBNav(id) {
   document.querySelectorAll('.bnav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.page === id);
   });
+  const home = document.getElementById('bnavHome');
+  if (home) home.classList.toggle('active', id === 'home');
 }
 
 function goPage(id, linkEl) {
@@ -2024,23 +2109,6 @@ function toggleMenu() {
   overlay.classList.toggle('show', !isOpen);
   ham.classList.toggle('active', !isOpen);
   document.body.classList.toggle('menu-open', !isOpen);
-
-  if (!isOpen) {
-    // Only animate actual clickable nav items, not dividers or wrappers
-    const items = menu.querySelectorAll('.mobile-nav-link, .mobile-menu-header, [onclick*="goPage"], [onclick*="location"]');
-    items.forEach((el, i) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateX(-16px)';
-      el.style.transition = 'none';
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          el.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
-          el.style.opacity = '';
-          el.style.transform = '';
-        }, 60 + i * 50);
-      });
-    });
-  }
 }
 function closeMenu() {
   document.getElementById('mobileMenu').classList.remove('open');
@@ -2055,6 +2123,7 @@ function closeMenu() {
 function initStars() {
   const canvas = document.getElementById('starsCanvas');
   const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let W, H, stars = [];
   function resize() {
     W = canvas.width = window.innerWidth;
@@ -2074,16 +2143,23 @@ function initStars() {
   function draw() {
     ctx.clearRect(0, 0, W, H);
     stars.forEach(s => {
-      s.a += s.speed * s.dir;
-      if (s.a >= 1 || s.a <= 0.05) s.dir *= -1;
+      if (!reduceMotion) {
+        s.a += s.speed * s.dir;
+        if (s.a >= 1 || s.a <= 0.05) s.dir *= -1;
+      }
       ctx.beginPath();
       ctx.arc(s.x % W, s.y % H, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(201,168,76,${s.a * 0.7})`;
       ctx.fill();
     });
-    requestAnimationFrame(draw);
+    // Pause the loop while the tab isn't visible — no point burning battery
+    // redrawing a canvas nobody can see.
+    if (!document.hidden) requestAnimationFrame(draw);
   }
   draw();
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) requestAnimationFrame(draw);
+  });
 }
 
 /* ============================================================
@@ -2344,6 +2420,7 @@ function renderMemories() {
     card.setAttribute('data-label', label);
     card.style.animationDelay = (i * 0.06) + 's';
     card.innerHTML = `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+    card.onclick = () => openPhotoModal(label);
     pGrid.appendChild(card);
     setTimeout(() => card.classList.add('visible'), 200 + i * 50);
   });
@@ -2353,12 +2430,20 @@ function closeVidModal() {
   document.getElementById('vidModal').classList.remove('open');
 }
 
+function openPhotoModal(label) {
+  document.getElementById('photoTitle').textContent = label;
+  document.getElementById('photoModal').classList.add('open');
+}
+function closePhotoModal() {
+  document.getElementById('photoModal').classList.remove('open');
+}
+
 /* ============================================================
    MAHMOUD LIVE AGE
 ============================================================ */
-const MAHMOUD_DOB = new Date('2010-01-27');
+const MAHMOUD_DOB = '2010-01-27';
 function updateMahmoudAge() {
-  const age = calcAge('2010-01-27');
+  const age = calcAge(MAHMOUD_DOB);
   const el = document.getElementById('mahmoudAge');
   if (el) el.textContent = age;
 }
@@ -2431,6 +2516,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeTModalDirect();
     closeVidModal();
+    closePhotoModal();
     closeMenu();
   }
 });
@@ -2439,14 +2525,17 @@ document.addEventListener('keydown', e => {
    INIT
 ============================================================ */
 window.addEventListener('DOMContentLoaded', () => {
-  initStars();
-  initHeroParticles();
-  initCounters();
-  setTimeout(setupReveal, 300);
-
+  // Hide the loader on a guaranteed timer FIRST, so a future error in any
+  // init function below can never leave the whole site stuck on the splash screen.
   setTimeout(() => {
-    document.getElementById('loader').classList.add('gone');
-  }, 1900);
+    const l = document.getElementById('loader');
+    if (l) l.classList.add('gone');
+  }, 1400);
+
+  try { initStars(); } catch (err) { console.error('initStars failed:', err); }
+  try { initHeroParticles(); } catch (err) { console.error('initHeroParticles failed:', err); }
+  try { initCounters(); } catch (err) { console.error('initCounters failed:', err); }
+  setTimeout(setupReveal, 300);
 });
 </script>
 </body>
