@@ -38,7 +38,7 @@
   --mobile-nav-h: 60px;
   --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-press:  cubic-bezier(0.4, 0, 1, 1);
+  --ease-press:  cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ========== RESET ========== */
@@ -1256,7 +1256,8 @@ footer::before {
 .bnav-icon {
   width:36px; height:36px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  transition:background 0.28s, box-shadow 0.28s, width 0.28s, height 0.28s;
+  transition:background 0.3s ease, box-shadow 0.3s ease,
+             width 0.36s cubic-bezier(0.34,1.56,0.64,1), height 0.36s cubic-bezier(0.34,1.56,0.64,1);
 }
 .bnav-item.active .bnav-icon {
   width:42px; height:42px;
@@ -1270,7 +1271,7 @@ footer::before {
   color:rgba(255,255,255,0.32); line-height:1; transition:color 0.28s;
 }
 .bnav-item.active .bnav-label { color:var(--gold); }
-.bnav-item:active .bnav-icon { transform:scale(0.9); transition:transform 0.08s; }
+.bnav-item:active .bnav-icon { transform:scale(0.9); transition:transform 0.1s var(--ease-press); }
 
 /* HOME — floats above notch, same color as bar */
 .bnav-home {
@@ -1282,7 +1283,7 @@ footer::before {
   display:flex; align-items:center; justify-content:center;
   flex-direction:column; gap:2px;
   -webkit-tap-highlight-color:transparent; outline:none;
-  transition:transform 0.18s;
+  transition:transform 0.15s var(--ease-press);
   box-shadow:none;
 }
 .bnav-home:active { transform:translateX(-50%) scale(0.91); }
