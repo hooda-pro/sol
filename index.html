@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="مدرسة شهيد حسن حمدي">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Noto+Kufi+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <style>
 /* ========== CSS VARS ========== */
 :root {
@@ -95,6 +96,18 @@ a { text-decoration:none; color:inherit; }
 @keyframes softPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
 @keyframes iconBounce{ 0%,100%{transform:translateY(0)} 40%{transform:translateY(-4px)} 60%{transform:translateY(-1px)} }
 @keyframes waveIn    { from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0% 0 0)} }
+@keyframes wordDrop3D {
+  0%   { opacity:0; transform:translateY(-190px) rotateX(-386deg) scale(0.68); }
+  50%  { opacity:1; }
+  58%  { transform:translateY(6px) rotateX(6deg) scale(1.06); }
+  72%  { transform:translateY(-7px) rotateX(-4deg) scaleY(0.72) scaleX(1.16); }
+  86%  { transform:translateY(2px) rotateX(2deg) scaleY(1.06) scaleX(0.96); }
+  100% { opacity:1; transform:translateY(0) rotateX(0deg) scale(1); }
+}
+.sr-only {
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
 
 /* ========== LOADER ========== */
 #loader {
@@ -126,6 +139,18 @@ a { text-decoration:none; color:inherit; }
 .loader-name {
   font-family:'Tajawal',sans-serif; font-size:1.1rem; font-weight:900;
   color:var(--gold); letter-spacing:2px;
+  perspective:700px;
+}
+.loader-name .lw-wrap { display:inline-flex; gap:0.5em; }
+.loader-name .lw {
+  display:inline-block; transform-style:preserve-3d;
+  transform-origin:center 120%;
+  opacity:0;
+  animation:wordDrop3D 0.9s cubic-bezier(0.32,0.02,0.4,1) both;
+  animation-delay:calc(var(--i) * 0.17s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .loader-name .lw { opacity:1; animation:none; transform:none; }
 }
 .loader-sub { font-size:0.72rem; color:var(--text-muted); }
 .loader-bar {
@@ -134,7 +159,7 @@ a { text-decoration:none; color:inherit; }
 .loader-fill {
   height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2));
   border-radius:2px; transform-origin:left;
-  animation:progressLoad 1.6s ease forwards;
+  animation:progressLoad 1.95s ease forwards;
 }
 
 /* ========== NAVBAR ========== */
@@ -328,14 +353,23 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   padding:4rem 2rem 2rem;
 }
 .hero-bg-gradient {
-  position:absolute; inset:0;
+  position:absolute; inset:0; z-index:0;
   background:
     radial-gradient(ellipse 70% 60% at 50% -5%, rgba(15,22,40,0.95) 0%, transparent 70%),
     radial-gradient(ellipse 50% 45% at 85% 90%, rgba(201,168,76,0.055) 0%, transparent 55%),
     radial-gradient(ellipse 40% 38% at 10% 80%, rgba(100,20,20,0.04) 0%, transparent 55%),
     linear-gradient(175deg, #07090f 0%, #0b1322 45%, #07090f 100%);
 }
-.hero-particles { position:absolute; inset:0; overflow:hidden; }
+/* ========== HERO 3D (Three.js) ========== */
+.hero-3d-wrap {
+  position:absolute; inset:0; z-index:1;
+  overflow:hidden; pointer-events:none;
+  mask-image:radial-gradient(ellipse 75% 80% at 50% 40%, #000 45%, transparent 92%);
+  -webkit-mask-image:radial-gradient(ellipse 75% 80% at 50% 40%, #000 45%, transparent 92%);
+}
+.hero-3d-wrap canvas { display:block; width:100%; height:100%; opacity:0; transition:opacity 1.6s ease; }
+.hero-3d-wrap canvas.ready { opacity:1; }
+.hero-particles { position:absolute; inset:0; overflow:hidden; z-index:2; }
 .hero-particle {
   position:absolute; border-radius:50%; background:var(--gold2);
   animation:particleDrift var(--d) var(--del) infinite alternate ease-in-out;
@@ -492,6 +526,32 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .reveal-left.visible { opacity:1; transform:translateX(0); }
 .reveal-right { opacity:0; transform:translateX(35px); transition:opacity 0.7s ease, transform 0.7s ease; }
 .reveal-right.visible { opacity:1; transform:translateX(0); }
+
+/* ========== TEACHER ROWS — REVERSIBLE 3D SCROLL REVEAL ==========
+   Unlike .reveal (fires once and stays), this toggles every time a row
+   crosses the viewport edge: it flips/fades IN on the way down and
+   flips/fades back OUT on the way back up — never a page jump. */
+#teachersList { perspective:1600px; }
+.teacher-row.teacher-reveal {
+  opacity:0;
+  transform:perspective(1600px) translateY(70px) rotateX(-16deg) scale(0.92);
+  transform-style:preserve-3d;
+  transition:opacity 0.75s cubic-bezier(0.23,1,0.32,1), transform 0.75s cubic-bezier(0.23,1,0.32,1);
+  will-change:transform, opacity;
+}
+.teacher-row.teacher-reveal.exiting {
+  transform:perspective(1600px) translateY(-50px) rotateX(14deg) scale(0.94);
+  transition:opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1);
+}
+.teacher-row.teacher-reveal.visible {
+  opacity:1;
+  transform:perspective(1600px) translateY(0) rotateX(0deg) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .teacher-row.teacher-reveal,
+  .teacher-row.teacher-reveal.exiting,
+  .teacher-row.teacher-reveal.visible { opacity:1; transform:none; transition:none; }
+}
 
 /* ========== PRINCIPAL PAGE ========== */
 .principal-hero-row {
@@ -1325,7 +1385,15 @@ footer::before {
       </svg>
     </div>
   </div>
-  <div class="loader-name">مدرسة شهيد حسن حمدي</div>
+  <div class="loader-name">
+    <span class="sr-only">مدرسة شهيد حسن حمدي</span>
+    <span class="lw-wrap" aria-hidden="true">
+      <span class="lw" style="--i:0">مدرسة</span>
+      <span class="lw" style="--i:1">شهيد</span>
+      <span class="lw" style="--i:2">حسن</span>
+      <span class="lw" style="--i:3">حمدي</span>
+    </span>
+  </div>
   <div class="loader-sub">مدرسة ثانوية · إدارة الحسنية · جمهورية مصر العربية</div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
@@ -1429,6 +1497,7 @@ footer::before {
   <div id="heroPage">
     <section class="hero-section">
       <div class="hero-bg-gradient"></div>
+      <div class="hero-3d-wrap"><canvas id="hero3d"></canvas></div>
       <div class="hero-particles" id="heroParticles"></div>
       <div class="hero-content">
         <div class="hero-pill">
@@ -2184,13 +2253,236 @@ function initHeroParticles() {
 }
 
 /* ============================================================
+   HERO 3D SCENE (Three.js)
+   Real, recognizable low-poly models — graduation caps + open books,
+   solid-shaded with actual lights (not wireframe outlines) — tumbling
+   slowly with real depth and a gentle mouse-parallax look.
+   Scales itself down automatically on small / low-core devices so it
+   stays light on weaker phones.
+============================================================ */
+function initHero3D() {
+  if (typeof THREE === 'undefined') return;
+  const canvas = document.getElementById('hero3d');
+  const heroSection = document.querySelector('.hero-section');
+  if (!canvas || !heroSection) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Device tier: fewer objects, lower pixel ratio, no AA on weak/small devices ----
+  const cores = navigator.hardwareConcurrency || 4;
+  const narrowScreen = window.innerWidth < 700;
+  const lowTier = narrowScreen || cores <= 4;
+  const capCount  = lowTier ? 3  : 6;
+  const bookCount = lowTier ? 2  : 4;
+  const dustCount = lowTier ? 90 : 260;
+  const pixelRatioCap = lowTier ? 1.3 : 2;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+  camera.position.set(0, 0, 20);
+
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas, alpha: true, antialias: !lowTier, powerPreference: 'low-power'
+    });
+  } catch (e) { return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, pixelRatioCap));
+
+  const GOLD = 0xc9a84c, GOLD2 = 0xe8c96a, CRIMSON = 0x8b1a1a, PAGE = 0xe8e4dc;
+  const materials = {
+    board: new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.55, roughness: 0.32 }),
+    board2: new THREE.MeshStandardMaterial({ color: GOLD2, metalness: 0.5, roughness: 0.38 }),
+    cord: new THREE.MeshStandardMaterial({ color: CRIMSON, metalness: 0.15, roughness: 0.5 }),
+    page: new THREE.MeshStandardMaterial({ color: PAGE, metalness: 0.04, roughness: 0.75 })
+  };
+
+  // Soft studio lighting — no shadow maps, cheap but gives real shaded form
+  scene.add(new THREE.AmbientLight(0x8f86a8, 0.55));
+  const keyLight = new THREE.DirectionalLight(0xfff2d0, 1.15);
+  keyLight.position.set(4, 6, 5);
+  scene.add(keyLight);
+  const rimLight = new THREE.DirectionalLight(GOLD, 0.4);
+  rimLight.position.set(-5, -3, -4);
+  scene.add(rimLight);
+
+  // ---- Graduation cap: dome + flat board + button + hanging tassel ----
+  function createGraduationCap(boardMat) {
+    const g = new THREE.Group();
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.62, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2.1), boardMat);
+    dome.position.y = -0.08;
+    g.add(dome);
+    const board = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.1, 1.9), boardMat);
+    board.position.y = 0.22; board.rotation.y = Math.PI / 4;
+    g.add(board);
+    const button = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 8), materials.cord);
+    button.position.y = 0.29;
+    g.add(button);
+    const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.75, 6), materials.cord);
+    cord.position.set(0.55, -0.1, 0.55); cord.rotation.set(0.1, 0, 0.35);
+    g.add(cord);
+    const knot = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.16, 8), materials.cord);
+    knot.position.set(0.78, -0.46, 0.62); knot.rotation.z = Math.PI;
+    g.add(knot);
+    return g;
+  }
+
+  // ---- Open book: two pages hinged at a central spine ----
+  function createOpenBook() {
+    const g = new THREE.Group();
+    const pageGeo = new THREE.BoxGeometry(1.0, 0.05, 0.75);
+    pageGeo.translate(0.5, 0, 0); // pivot at the spine edge
+    const left = new THREE.Mesh(pageGeo, materials.page);
+    left.rotation.z = Math.PI - 0.35;
+    g.add(left);
+    const right = new THREE.Mesh(pageGeo, materials.page);
+    right.rotation.z = 0.35;
+    g.add(right);
+    const spineGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.78, 8);
+    spineGeo.rotateX(Math.PI / 2);
+    g.add(new THREE.Mesh(spineGeo, materials.cord));
+    return g;
+  }
+
+  const models = [];
+  function place(obj, scale) {
+    obj.scale.setScalar(scale);
+    obj.position.set((Math.random() - 0.5) * 24, (Math.random() - 0.5) * 14, (Math.random() - 0.5) * 14 - 4);
+    obj.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * 0.6 - 0.3);
+    obj.userData.spin = { x: (Math.random() - 0.5) * 0.12, y: (Math.random() - 0.5) * 0.12 };
+    obj.userData.bob = { amp: 0.35 + Math.random() * 0.55, speed: 0.22 + Math.random() * 0.3, phase: Math.random() * Math.PI * 2, baseY: obj.position.y };
+    scene.add(obj);
+    models.push(obj);
+  }
+  for (let i = 0; i < capCount; i++) place(createGraduationCap(Math.random() > 0.5 ? materials.board : materials.board2), 0.9 + Math.random() * 1.1);
+  for (let i = 0; i < bookCount; i++) place(createOpenBook(), 1.0 + Math.random() * 1.0);
+
+  // Fine gold dust — a soft, sparse point field for depth
+  const dustGeo = new THREE.BufferGeometry();
+  const dustPos = new Float32Array(dustCount * 3);
+  for (let i = 0; i < dustCount; i++) {
+    dustPos[i * 3] = (Math.random() - 0.5) * 32;
+    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 20;
+    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 20 - 6;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({ color: GOLD2, size: 0.055, transparent: true, opacity: 0.55, sizeAttenuation: true });
+  const dust = new THREE.Points(dustGeo, dustMat);
+  scene.add(dust);
+
+  // Mouse parallax target (lerped toward each frame)
+  let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
+  window.addEventListener('pointermove', e => {
+    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+  }, { passive: true });
+
+  function resize() {
+    const r = heroSection.getBoundingClientRect();
+    const w = Math.max(r.width, 1), h = Math.max(r.height, 1);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Only animate while the hero is actually visible — cheap when scrolled away
+  let isVisible = true;
+  new IntersectionObserver(entries => {
+    entries.forEach(en => { isVisible = en.isIntersecting; if (isVisible && !reduceMotion) requestAnimationFrame(tick); });
+  }, { threshold: 0.01 }).observe(heroSection);
+
+  const clock = new THREE.Clock();
+  function tick() {
+    if (!isVisible || document.hidden) return;
+    const t = clock.getElapsedTime();
+
+    curX += (mouseX - curX) * 0.04;
+    curY += (mouseY - curY) * 0.04;
+    scene.rotation.y = curX * 0.18;
+    scene.rotation.x = curY * 0.1;
+
+    models.forEach(m => {
+      m.rotation.x += m.userData.spin.x * 0.01;
+      m.rotation.y += m.userData.spin.y * 0.01;
+      m.position.y = m.userData.bob.baseY + Math.sin(t * m.userData.bob.speed + m.userData.bob.phase) * m.userData.bob.amp;
+    });
+    dust.rotation.y = t * 0.01;
+
+    renderer.render(scene, camera);
+    if (!reduceMotion) requestAnimationFrame(tick);
+  }
+
+  if (reduceMotion) {
+    renderer.render(scene, camera);
+    canvas.classList.add('ready');
+  } else {
+    tick();
+    requestAnimationFrame(() => canvas.classList.add('ready'));
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && isVisible && !reduceMotion) requestAnimationFrame(tick);
+  });
+}
+
+/* ============================================================
+   3D TILT — pointer-driven card tilt, applied via delegation so it
+   works on cards rendered later (teachers, students, memories...).
+   Skipped entirely on touch devices and prefers-reduced-motion.
+============================================================ */
+function initTiltCards() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const TILT_TARGETS = [
+    { sel: '.teacher-row',        max: 6, persp: 1500 },
+    { sel: '.principal-hero-row', max: 4, persp: 1800 },
+    { sel: '.stat-cell',          max: 9, persp: 900  },
+    { sel: '.student-card',       max: 7, persp: 1000 },
+    { sel: '.video-card',         max: 6, persp: 1000 },
+    { sel: '.photo-card',         max: 8, persp: 800  }
+  ];
+  let activeEl = null;
+
+  function resetTilt(el) {
+    el.style.transition = 'transform 0.5s cubic-bezier(0.23,1,0.32,1)';
+    el.style.transform = '';
+  }
+
+  document.addEventListener('pointermove', e => {
+    let el = null, cfg = null;
+    for (const c of TILT_TARGETS) {
+      const found = e.target.closest(c.sel);
+      if (found) { el = found; cfg = c; break; }
+    }
+    if (el !== activeEl) {
+      if (activeEl) resetTilt(activeEl);
+      activeEl = el;
+    }
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    const rx = (0.5 - py) * cfg.max;
+    const ry = (px - 0.5) * cfg.max;
+    el.style.transition = 'transform 0.08s linear';
+    el.style.transform = `perspective(${cfg.persp}px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+  }, { passive: true });
+
+  window.addEventListener('blur', () => { if (activeEl) { resetTilt(activeEl); activeEl = null; } });
+}
+
+/* ============================================================
    TEACHER ROWS
 ============================================================ */
 function buildTeacherRow(t) {
   const row = document.createElement('div');
   const isLangEn = t.lang === 'en';
   const isLangFr = t.lang === 'fr';
-  row.className = `teacher-row reveal ${isLangEn ? 'lang-en' : isLangFr ? 'lang-fr' : ''}`;
+  row.className = `teacher-row teacher-reveal ${isLangEn ? 'lang-en' : isLangFr ? 'lang-fr' : ''}`;
 
   // Generate a stylized SVG "portrait" using the teacher's initial
   // The image panel — full-height colored panel with large SVG figure silhouette + initial
@@ -2274,10 +2566,10 @@ function renderTeachersList(listId, tabsId, filter = 'all') {
   const filtered = filter === 'all' ? teachers : teachers.filter(t => t.cat === filter);
   filtered.forEach((t, i) => {
     const row = buildTeacherRow(t);
-    row.style.transitionDelay = (i * 0.05) + 's';
+    row.style.transitionDelay = Math.min(i * 0.05, 0.4) + 's';
     list.appendChild(row);
   });
-  setTimeout(setupReveal, 50);
+  setTimeout(setupTeacherReveal, 50);
 }
 
 function toggleFilterDropdown(id) {
@@ -2501,6 +2793,39 @@ function setupReveal() {
 }
 
 /* ============================================================
+   TEACHERS — REVERSIBLE SCROLL REVEAL
+   Never unobserves: each row shows itself as it scrolls into view
+   and hides itself again as it scrolls out — in EITHER direction.
+   No page navigation involved, purely a scroll-linked toggle.
+============================================================ */
+let _teacherRevealObs = null;
+function setupTeacherReveal() {
+  const rows = document.querySelectorAll('#teachersList .teacher-row.teacher-reveal');
+  if (!rows.length) return;
+  if (_teacherRevealObs) _teacherRevealObs.disconnect();
+
+  _teacherRevealObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const el = entry.target;
+      if (entry.isIntersecting) {
+        el.classList.add('visible');
+        el.classList.remove('exiting');
+      } else {
+        el.classList.remove('visible');
+        // Only play the "exit forward" motion when it left past the TOP
+        // (scrolling down through it). If it's below the viewport again
+        // (scrolled back up past its entrance point), let it reset to the
+        // normal entrance pose so scrolling back down replays the same way.
+        const leftFromTop = entry.boundingClientRect.top < 0;
+        el.classList.toggle('exiting', leftFromTop);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '-10% 0px -10% 0px' });
+
+  rows.forEach(row => _teacherRevealObs.observe(row));
+}
+
+/* ============================================================
    SCROLL EVENTS
 ============================================================ */
 window.addEventListener('scroll', () => {
@@ -2528,13 +2853,16 @@ document.addEventListener('keydown', e => {
 window.addEventListener('DOMContentLoaded', () => {
   // Hide the loader on a guaranteed timer FIRST, so a future error in any
   // init function below can never leave the whole site stuck on the splash screen.
+  // 1900ms gives the staggered word-drop animation (last word lands ~1.4s in) a beat to breathe.
   setTimeout(() => {
     const l = document.getElementById('loader');
     if (l) l.classList.add('gone');
-  }, 1400);
+  }, 1900);
 
   try { initStars(); } catch (err) { console.error('initStars failed:', err); }
   try { initHeroParticles(); } catch (err) { console.error('initHeroParticles failed:', err); }
+  try { initHero3D(); } catch (err) { console.error('initHero3D failed:', err); }
+  try { initTiltCards(); } catch (err) { console.error('initTiltCards failed:', err); }
   try { initCounters(); } catch (err) { console.error('initCounters failed:', err); }
   setTimeout(setupReveal, 300);
 });
