@@ -42,6 +42,25 @@
   --ease-press:  cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ========== SETTINGS: ACCENT COLOR THEMES ==========
+   Only touches the gold-family variables — never overlaps with
+   .light-mode below, so both can be toggled independently. */
+html[data-theme="crimson"]  { --gold:#c9615a; --gold2:#e08a80; --gold-dim:rgba(201,97,90,0.12);  --gold-glow:rgba(201,97,90,0.22); }
+html[data-theme="emerald"]  { --gold:#3fa06a; --gold2:#63c98d; --gold-dim:rgba(63,160,106,0.12);  --gold-glow:rgba(63,160,106,0.22); }
+html[data-theme="sapphire"] { --gold:#4a7fc1; --gold2:#74a3d8; --gold-dim:rgba(74,127,193,0.12);  --gold-glow:rgba(74,127,193,0.22); }
+html[data-theme="amethyst"] { --gold:#8d68b8; --gold2:#ab8bd0; --gold-dim:rgba(141,104,184,0.12); --gold-glow:rgba(141,104,184,0.22); }
+
+/* ========== SETTINGS: LIGHT / DARK APPEARANCE ==========
+   Only touches bg/surface/border/text variables — leaves the accent
+   (gold) variables alone so the chosen theme color still applies. */
+html.light-mode {
+  --bg:#f7f4ee; --bg2:#efe9db; --bg3:#e6ded0;
+  --surface:rgba(20,15,5,0.035); --surface2:rgba(20,15,5,0.06);
+  --border:rgba(120,90,20,0.22); --border2:rgba(20,15,5,0.09);
+  --text:#241d10; --text-dim:rgba(36,29,16,0.62); --text-muted:rgba(36,29,16,0.4);
+  --white:#171310;
+}
+
 /* ========== RESET ========== */
 *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
 html {
@@ -314,6 +333,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 
 /* Divider */
 .mmenu-divider { height:1px; margin:0.5rem 1.2rem; background:rgba(255,255,255,0.05); flex-shrink:0; }
+.mmenu-utility { flex-shrink:0; display:flex; flex-direction:column; }
 
 /* School button — completely isolated, no inheritance */
 .mmenu-school-btn {
@@ -877,11 +897,6 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   background:var(--surface); border:1px solid var(--border2);
   border-radius:var(--radius); padding:2.2rem; text-align:center;
   position:relative; overflow:hidden;
-  transition:all 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
-  opacity:0; transform:translateY(28px);
-}
-.student-card.visible {
-  animation:cardEntrance 0.6s ease forwards;
 }
 .student-card:hover { transform:translateY(-8px) scale(1.02); border-color:var(--border); box-shadow:0 24px 60px rgba(0,0,0,0.5); }
 .student-card::before {
@@ -936,15 +951,38 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .s-age-live svg { width:12px; height:12px; }
 .s-quote { font-size:0.8rem; color:var(--text-dim); font-style:italic; line-height:1.7; border-top:1px solid var(--border2); padding-top:0.9rem; position:relative; z-index:1; }
 
+/* ========== STUDENTS — REVERSIBLE 3D "PODIUM TURN" SCROLL REVEAL ==========
+   Distinct from teachers' forward flip: cards turn in on the Y-axis like
+   stepping onto a podium to be presented, and turn back away on exit —
+   toggles every crossing, in either scroll direction. */
+.student-card.student-reveal {
+  opacity:0;
+  transform:perspective(1300px) translateY(46px) rotateY(-34deg) scale(0.86);
+  transform-style:preserve-3d;
+  transition:opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1), border-color 0.4s, box-shadow 0.4s;
+  will-change:transform, opacity;
+}
+.student-card.student-reveal.exiting {
+  transform:perspective(1300px) translateY(-34px) rotateY(28deg) scale(0.9);
+  transition:opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.student-card.student-reveal.visible {
+  opacity:1;
+  transform:perspective(1300px) translateY(0) rotateY(0deg) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .student-card.student-reveal,
+  .student-card.student-reveal.exiting,
+  .student-card.student-reveal.visible { opacity:1; transform:none; transition:none; }
+}
+
 /* ========== MEMORIES PAGE ========== */
 .videos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-bottom:3.5rem; }
 .video-card {
   border-radius:var(--radius-sm); overflow:hidden;
   background:rgba(12,17,32,0.5); border:1px solid var(--border2);
-  cursor:pointer; transition:all 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
-  opacity:0; transform:translateY(30px);
+  cursor:pointer;
 }
-.video-card.visible { animation:cardEntrance 0.6s ease forwards; }
 .video-card:hover { border-color:var(--border); transform:translateY(-6px) scale(1.02); box-shadow:0 20px 50px rgba(0,0,0,0.5); }
 .video-thumb { aspect-ratio:16/9; background:linear-gradient(135deg,var(--bg2),var(--bg3)); display:flex; align-items:center; justify-content:center; position:relative; }
 .video-thumb::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--gold-dim),rgba(12,17,32,0.8)); }
@@ -960,16 +998,40 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .video-info { padding:1rem 1.3rem; }
 .video-title { font-size:0.9rem; font-weight:700; margin-bottom:0.3rem; }
 .video-meta { font-size:0.72rem; color:var(--text-muted); }
+
+/* ========== MEMORIES — VIDEOS: REVERSIBLE "FILMSTRIP SLIDE" ==========
+   Alternating tilt direction per card (even/odd) for an organic,
+   scattered-photos feel rather than a uniform grid pop. */
+.video-card.video-reveal {
+  opacity:0;
+  transform:translateY(42px) scale(0.88) rotate(-3.5deg);
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1), border-color 0.4s, box-shadow 0.4s;
+  will-change:transform, opacity;
+}
+.video-card.video-reveal:nth-child(even) { transform:translateY(42px) scale(0.88) rotate(3.5deg); }
+.video-card.video-reveal.exiting {
+  transform:translateY(-32px) scale(0.92) rotate(4deg);
+  transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.video-card.video-reveal:nth-child(even).exiting { transform:translateY(-32px) scale(0.92) rotate(-4deg); }
+.video-card.video-reveal.visible {
+  opacity:1; transform:translateY(0) scale(1) rotate(0deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .video-card.video-reveal,
+  .video-card.video-reveal.exiting,
+  .video-card.video-reveal.visible,
+  .video-card.video-reveal:nth-child(even),
+  .video-card.video-reveal:nth-child(even).exiting { opacity:1; transform:none; transition:none; }
+}
 .photos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; }
 .photo-card {
   aspect-ratio:4/3; border-radius:var(--radius-sm); overflow:hidden;
   background:linear-gradient(135deg,var(--bg2),var(--bg3));
   border:1px solid var(--border2);
   display:flex; align-items:center; justify-content:center;
-  cursor:pointer; transition:all 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
-  position:relative; opacity:0; transform:scale(0.9);
+  cursor:pointer; position:relative;
 }
-.photo-card.visible { animation:scaleIn 0.5s ease forwards; }
 .photo-card:hover { border-color:var(--border); transform:scale(1.05); z-index:2; box-shadow:0 16px 40px rgba(0,0,0,0.5); }
 .photo-card svg { opacity:0.35; transition:all 0.3s; }
 .photo-card:hover svg { opacity:0.65; transform:scale(1.1); }
@@ -982,6 +1044,30 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   transform:translateY(100%); transition:transform 0.4s;
 }
 .photo-card:hover::after { transform:translateY(0); }
+
+/* ========== MEMORIES — PHOTOS: REVERSIBLE "CAMERA FOCUS" ==========
+   Zooms in slightly out-of-focus, then sharpens into place like a lens
+   focusing — and softens back out of focus on exit, either direction. */
+.photo-card.photo-reveal {
+  opacity:0;
+  transform:scale(1.16);
+  filter:blur(7px);
+  transition:opacity 0.55s ease, transform 0.55s cubic-bezier(0.16,1,0.3,1), filter 0.55s ease, border-color 0.4s, box-shadow 0.4s;
+  will-change:transform, opacity, filter;
+}
+.photo-card.photo-reveal.exiting {
+  transform:scale(0.9);
+  filter:blur(5px);
+  transition:opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease;
+}
+.photo-card.photo-reveal.visible {
+  opacity:1; transform:scale(1); filter:blur(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-card.photo-reveal,
+  .photo-card.photo-reveal.exiting,
+  .photo-card.photo-reveal.visible { opacity:1; transform:none; filter:none; transition:none; }
+}
 
 /* VIDEO MODAL */
 .vid-modal {
@@ -1008,6 +1094,157 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .vid-placeholder svg { width:56px; height:56px; opacity:0.45; }
 .vid-placeholder p { font-size:1rem; color:var(--text-dim); font-weight:600; }
 .vid-placeholder .sub { font-size:0.78rem; color:var(--text-muted); }
+
+/* ========== MOBILE MENU — NEW BADGE ========== */
+.mmenu-new-badge {
+  display:inline-block; margin-right:6px; padding:1px 8px;
+  font-size:0.58rem; font-weight:800; letter-spacing:0.3px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--bg); border-radius:20px; vertical-align:2px;
+  animation:badgePulse 2.4s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%,100% { box-shadow:0 0 0 0 var(--gold-glow); }
+  50%     { box-shadow:0 0 0 5px transparent; }
+}
+
+/* ========== SETTINGS MODAL ========== */
+.settings-modal {
+  position:fixed; inset:0; background:rgba(0,0,0,0.7);
+  z-index:4200; display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.35s; padding:1.2rem;
+}
+.settings-modal.open { opacity:1; pointer-events:all; }
+.settings-box {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:1.8rem; width:100%; max-width:420px;
+  max-height:85vh; overflow-y:auto;
+  transform:scale(0.92) translateY(14px); opacity:0;
+  transition:transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out);
+}
+.settings-modal.open .settings-box { transform:scale(1) translateY(0); opacity:1; }
+.settings-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.4rem; }
+.settings-head h3 { font-family:'Tajawal',sans-serif; font-size:1.15rem; font-weight:900; color:var(--gold); }
+.settings-close {
+  width:32px; height:32px; border-radius:50%; border:1px solid var(--border2); flex-shrink:0;
+  background:transparent; color:var(--text-dim); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:0.9rem;
+  transition:all 0.25s;
+}
+.settings-close:hover { border-color:var(--gold); color:var(--gold); }
+.settings-section { margin-bottom:1.5rem; }
+.settings-section:last-of-type { margin-bottom:0.6rem; }
+.settings-label { font-size:0.8rem; font-weight:700; color:var(--text-dim); margin-bottom:0.7rem; }
+.theme-swatches { display:flex; gap:0.7rem; }
+.theme-swatch {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--sw); border:2px solid rgba(255,255,255,0.15);
+  cursor:pointer; position:relative; transition:transform 0.25s, border-color 0.25s;
+  padding:0;
+}
+.theme-swatch:hover { transform:scale(1.1); }
+.theme-swatch.active { border-color:var(--white); }
+.theme-swatch.active::after {
+  content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:0.8rem; font-weight:900; text-shadow:0 1px 3px rgba(0,0,0,0.6);
+}
+.font-size-control { display:flex; align-items:center; gap:1rem; }
+.fs-btn {
+  width:38px; height:38px; border-radius:10px; border:1px solid var(--border2);
+  background:var(--surface); color:var(--text); font-weight:800; font-size:0.85rem;
+  cursor:pointer; transition:all 0.25s; font-family:'Cairo',sans-serif;
+}
+.fs-btn:hover { border-color:var(--gold); color:var(--gold); }
+.fs-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.fs-current { flex:1; text-align:center; font-size:0.85rem; font-weight:700; color:var(--gold); }
+.appearance-toggle { display:flex; gap:0.7rem; }
+.app-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:0.4rem;
+  padding:0.8rem 0.5rem; border-radius:12px; border:1px solid var(--border2);
+  background:var(--surface); color:var(--text-dim); font-size:0.78rem; font-weight:700;
+  cursor:pointer; transition:all 0.25s; font-family:'Cairo',sans-serif;
+}
+.app-btn svg { width:20px; height:20px; }
+.app-btn:hover { border-color:var(--gold); color:var(--gold); }
+.app-btn.active { border-color:var(--gold); background:var(--gold-dim); color:var(--gold); }
+.settings-note { font-size:0.68rem; color:var(--text-muted); line-height:1.6; border-top:1px solid var(--border2); padding-top:1rem; }
+
+/* ========== SUPPORT MODAL — full-screen, sequential "story" reveal ========== */
+.support-modal {
+  position:fixed; inset:0; z-index:4500;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 15%, rgba(201,168,76,0.09), transparent 60%),
+    linear-gradient(175deg, #05070c 0%, #0b1322 50%, #05070c 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.45s ease;
+  padding:2rem 1.5rem;
+}
+.support-modal.open { opacity:1; pointer-events:all; }
+.support-topbar {
+  position:absolute; top:1.2rem; left:1.5rem; right:1.5rem;
+  display:flex; align-items:center; gap:0.9rem; max-width:520px; margin:0 auto;
+}
+.support-close {
+  width:30px; height:30px; border-radius:50%; flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.6); font-size:0.85rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all 0.25s;
+}
+.support-close:hover { border-color:var(--gold); color:var(--gold); }
+.support-progress-track { flex:1; display:flex; gap:6px; }
+.support-progress-seg { flex:1; height:3px; border-radius:3px; background:rgba(255,255,255,0.14); overflow:hidden; }
+.support-progress-fill { display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--gold2)); border-radius:3px; }
+.support-stage {
+  position:relative; width:100%; max-width:480px; min-height:230px;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+}
+.support-slide {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.1rem;
+  opacity:0; transform:translateY(24px) scale(0.96);
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  pointer-events:none; padding:0 0.5rem;
+}
+.support-slide.active { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+.support-icon {
+  width:64px; height:64px; border-radius:50%;
+  background:var(--gold-dim); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; color:var(--gold);
+  animation:float 4s ease-in-out infinite;
+}
+.support-icon svg { width:28px; height:28px; }
+.support-slide p { font-size:1.05rem; line-height:2; color:#e8e4dc; font-weight:500; }
+.support-slide p strong { color:var(--gold); font-weight:800; }
+.support-actions {
+  display:flex; gap:1rem; margin-top:2.4rem;
+  opacity:0; transform:translateY(16px); pointer-events:none;
+  transition:opacity 0.55s ease, transform 0.55s ease;
+}
+.support-actions.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+.support-btn-back {
+  padding:0.85rem 1.6rem; border-radius:50px; border:1px solid rgba(255,255,255,0.15);
+  background:transparent; color:rgba(255,255,255,0.7); font-weight:700; font-size:0.9rem;
+  cursor:pointer; transition:all 0.25s; font-family:'Cairo',sans-serif;
+}
+.support-btn-back:hover { border-color:var(--gold); color:var(--gold); }
+.support-btn-whatsapp {
+  display:flex; align-items:center; gap:0.55rem;
+  padding:0.85rem 1.8rem; border-radius:50px; border:none;
+  background:linear-gradient(135deg,#25d366,#1ebe5b); color:#fff;
+  font-weight:800; font-size:0.9rem; text-decoration:none;
+  box-shadow:0 10px 30px rgba(37,211,102,0.3);
+  transition:transform 0.25s, box-shadow 0.25s;
+}
+.support-btn-whatsapp:hover { transform:translateY(-2px); box-shadow:0 14px 36px rgba(37,211,102,0.4); }
+.support-btn-whatsapp svg { width:18px; height:18px; }
+
+.support-modal.no-motion .support-slide,
+.support-modal.no-motion .support-icon,
+.support-modal.no-motion .support-progress-fill,
+.support-modal.no-motion .support-actions { transition:none !important; animation:none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .support-slide, .support-actions { transition:none; }
+  .support-icon { animation:none; }
+}
 
 /* ========== ABOUT SITE PAGE ========== */
 .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
@@ -1041,6 +1278,49 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 }
 .team-info h4 { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:2px; }
 .team-info span { font-size:0.72rem; color:var(--text-muted); }
+
+/* ========== ABOUT — REVERSIBLE "DOCUMENT UNVEIL" ==========
+   The two halves slide in from opposite sides with a slight rotate,
+   like unfolding an official letter — and fold back on exit, either
+   scroll direction. Distinct from every other section's motion. */
+.about-visual.about-reveal-left,
+.about-content.about-reveal-right {
+  transition:opacity 0.75s cubic-bezier(0.16,1,0.3,1), transform 0.75s cubic-bezier(0.16,1,0.3,1);
+  will-change:transform, opacity;
+}
+.about-visual.about-reveal-left   { opacity:0; transform:translateX(-70px) rotate(-6deg) scale(0.88); }
+.about-content.about-reveal-right { opacity:0; transform:translateX(70px)  rotate(4deg)  scale(0.92); }
+.about-visual.about-reveal-left.exiting {
+  transform:translateX(-46px) rotate(5deg) scale(0.93);
+  transition:opacity 0.5s ease, transform 0.5s ease;
+}
+.about-content.about-reveal-right.exiting {
+  transform:translateX(46px) rotate(-4deg) scale(0.95);
+  transition:opacity 0.5s ease, transform 0.5s ease;
+}
+.about-visual.about-reveal-left.visible,
+.about-content.about-reveal-right.visible { opacity:1; transform:translateX(0) rotate(0deg) scale(1); }
+
+/* ---- Team list: cascading slide-up, one after another ---- */
+.team-member.team-reveal {
+  opacity:0;
+  transform:translateY(22px) scale(0.95);
+  transition:opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, background 0.3s;
+  will-change:transform, opacity;
+}
+.team-member.team-reveal.exiting {
+  transform:translateY(-16px) scale(0.97);
+  transition:opacity 0.4s ease, transform 0.4s ease;
+}
+.team-member.team-reveal.visible { opacity:1; transform:translateY(0) scale(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .about-visual.about-reveal-left, .about-visual.about-reveal-left.exiting, .about-visual.about-reveal-left.visible,
+  .about-content.about-reveal-right, .about-content.about-reveal-right.exiting, .about-content.about-reveal-right.visible,
+  .team-member.team-reveal, .team-member.team-reveal.exiting, .team-member.team-reveal.visible {
+    opacity:1; transform:none; transition:none;
+  }
+}
 
 /* ========== FOOTER ========== */
 footer {
@@ -1486,6 +1766,21 @@ footer::before {
     </button>
   </nav>
   <div class="mmenu-divider"></div>
+  <div class="mmenu-utility">
+    <button class="mmenu-item" onclick="openSettingsModal();closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </span>
+      <span>الإعدادات<span class="mmenu-new-badge">جديد</span></span>
+    </button>
+    <button class="mmenu-item" onclick="openSupportModal();closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>تواصل مع دعم</span>
+    </button>
+  </div>
+  <div class="mmenu-divider"></div>
   <div class="mmenu-school-btn" onclick="window.location.href='#'">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
     موقع المدرسة الرسمي
@@ -1786,7 +2081,7 @@ footer::before {
       <div class="section-line"></div>
     </div>
     <div class="about-grid">
-      <div class="about-visual reveal-left">
+      <div class="about-visual about-reveal-left">
         <div class="about-orb">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
@@ -1796,7 +2091,7 @@ footer::before {
           </svg>
         </div>
       </div>
-      <div class="about-content reveal-right">
+      <div class="about-content about-reveal-right">
         <h3>من نحن</h3>
         <p>
           تم إنشاء هذا الموقع بهدف تقديم واجهة رقمية رسمية ومتكاملة لمدرسة شهيد حسن حمدي الثانوية التابعة لإدارة الحسنية، ليكون منصة تواصل فعّالة بين المدرسة وأولياء الأمور والطلاب.
@@ -1805,21 +2100,21 @@ footer::before {
           يجمع الموقع بين التصميم العصري والمحتوى الوافي، مع التركيز على تجربة المستخدم السلسة والوصول السريع للمعلومات عبر جميع الأجهزة.
         </p>
         <div class="team-list">
-          <div class="team-member">
+          <div class="team-member team-reveal" style="transition-delay:0s">
             <div class="team-av">م</div>
             <div class="team-info">
               <h4>محمود أحمد سعيد</h4>
               <span>مطور الموقع · التفكير التصميمي والديزاين · العمر: <strong id="mahmoudAge" style="color:var(--gold)">16</strong> سنة (27 يناير 2010)</span>
             </div>
           </div>
-          <div class="team-member">
+          <div class="team-member team-reveal" style="transition-delay:0.1s">
             <div class="team-av">س</div>
             <div class="team-info">
               <h4>سلمى سخيلي</h4>
               <span>المساهمة في التفكير والتخطيط</span>
             </div>
           </div>
-          <div class="team-member">
+          <div class="team-member team-reveal" style="transition-delay:0.2s">
             <div class="team-av">ر</div>
             <div class="team-info">
               <h4>ريماس حبيب</h4>
@@ -1894,6 +2189,100 @@ footer::before {
       <p id="photoTitle">الصورة</p>
       <p class="sub">أضف رابط الصورة الخاصة بك هنا</p>
     </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="settings-modal" id="settingsModal" onclick="if(event.target.id==='settingsModal') closeSettingsModalDirect()">
+  <div class="settings-box" onclick="event.stopPropagation()">
+    <div class="settings-head">
+      <h3>الإعدادات</h3>
+      <button class="settings-close" onclick="closeSettingsModalDirect()" aria-label="إغلاق">✕</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">لون الموقع</div>
+      <div class="theme-swatches" id="themeSwatches">
+        <button class="theme-swatch" data-theme="gold"     style="--sw:#c9a84c" onclick="setSiteTheme('gold')"     aria-label="ذهبي"></button>
+        <button class="theme-swatch" data-theme="crimson"  style="--sw:#c9615a" onclick="setSiteTheme('crimson')"  aria-label="عنابي"></button>
+        <button class="theme-swatch" data-theme="emerald"  style="--sw:#3fa06a" onclick="setSiteTheme('emerald')"  aria-label="أخضر"></button>
+        <button class="theme-swatch" data-theme="sapphire" style="--sw:#4a7fc1" onclick="setSiteTheme('sapphire')" aria-label="أزرق"></button>
+        <button class="theme-swatch" data-theme="amethyst" style="--sw:#8d68b8" onclick="setSiteTheme('amethyst')" aria-label="بنفسجي"></button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">حجم الخط</div>
+      <div class="font-size-control">
+        <button class="fs-btn" id="fsMinusBtn" onclick="changeFontSize(-1)" aria-label="تصغير الخط">A-</button>
+        <span class="fs-current" id="fsCurrentLabel">عادي</span>
+        <button class="fs-btn" id="fsPlusBtn" onclick="changeFontSize(1)" aria-label="تكبير الخط">A+</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">المظهر</div>
+      <div class="appearance-toggle">
+        <button class="app-btn" id="appLightBtn" onclick="setAppearance('light')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          فاتح
+        </button>
+        <button class="app-btn" id="appDarkBtn" onclick="setAppearance('dark')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          داكن
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-note">التفضيلات دي بتتحفظ على جهازك، وهتفضل زي ما هي في زيارتك الجاية.</div>
+  </div>
+</div>
+
+<!-- SUPPORT MODAL — full-screen, sequential "story" reveal -->
+<div class="support-modal" id="supportModal">
+  <div class="support-topbar">
+    <button class="support-close" onclick="closeSupportModal()" aria-label="إغلاق">✕</button>
+    <div class="support-progress-track" id="supportProgressTrack">
+      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
+      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
+      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
+      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
+    </div>
+  </div>
+
+  <div class="support-stage">
+    <div class="support-slide" data-slide="0">
+      <div class="support-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <p>أهلاً بيك 👋<br>إحنا سعداء إنك بتزور موقع مدرسة شهيد حسن حمدي.</p>
+    </div>
+    <div class="support-slide" data-slide="1">
+      <div class="support-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <p>لو عندك أي اقتراح لتطوير الموقع، أو حابب تبلّغ عن مشكلة تقنية واجهتك وانت بتستخدمه...</p>
+    </div>
+    <div class="support-slide" data-slide="2">
+      <div class="support-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+      </div>
+      <p>إحنا في انتظار رسالتك، وهنحاول نحل مشكلتك ونرد عليك في أقرب وقت ممكن.</p>
+    </div>
+    <div class="support-slide" data-slide="3">
+      <div class="support-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <p>ولو انت حد صورته اتنزلت على الموقع وحابب نشيلها، تقدر تطلب منا كده وهتتشال فورًا.<br><strong>خصوصيتك بالنسبالنا حاجة مهمة قوي.</strong></p>
+    </div>
+  </div>
+
+  <div class="support-actions" id="supportActions">
+    <button class="support-btn-back" onclick="closeSupportModal()">رجوع</button>
+    <a class="support-btn-whatsapp" href="https://wa.me/GM_Y16" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.33 4.95L2 22l5.24-1.37a9.94 9.94 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm5.86 14.24c-.25.7-1.45 1.34-2 1.42-.53.08-1.15.11-1.86-.12-.43-.14-.98-.32-1.68-.63-2.96-1.28-4.9-4.25-5.04-4.45-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.3.6-.37.8-.37h.57c.18 0 .43-.03.66.5.25.6.85 2.05.92 2.2.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.6.17.3.77 1.27 1.66 2.06 1.14 1.02 2.1 1.34 2.4 1.49.3.15.47.13.65-.08.18-.2.75-.88.95-1.18.2-.3.4-.25.66-.15.27.1 1.7.8 1.99.95.3.15.5.22.57.35.07.13.07.75-.18 1.45z"/></svg>
+      تواصل معانا
+    </a>
   </div>
 </div>
 
@@ -2254,9 +2643,10 @@ function initHeroParticles() {
 
 /* ============================================================
    HERO 3D SCENE (Three.js)
-   Real, recognizable low-poly models — graduation caps + open books,
-   solid-shaded with actual lights (not wireframe outlines) — tumbling
-   slowly with real depth and a gentle mouse-parallax look.
+   A bespoke signature shape — a faceted 8-point gold star medallion
+   (نجمة), tied to the site's own "نجوم المدرسة" language — instead of
+   generic stock "education" clipart. Solid-shaded with real lights,
+   tumbling slowly with real depth and a gentle mouse-parallax look.
    Scales itself down automatically on small / low-core devices so it
    stays light on weaker phones.
 ============================================================ */
@@ -2272,8 +2662,7 @@ function initHero3D() {
   const cores = navigator.hardwareConcurrency || 4;
   const narrowScreen = window.innerWidth < 700;
   const lowTier = narrowScreen || cores <= 4;
-  const capCount  = lowTier ? 3  : 6;
-  const bookCount = lowTier ? 2  : 4;
+  const starCount = lowTier ? 5 : 10;
   const dustCount = lowTier ? 90 : 260;
   const pixelRatioCap = lowTier ? 1.3 : 2;
 
@@ -2289,13 +2678,13 @@ function initHero3D() {
   } catch (e) { return; }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, pixelRatioCap));
 
-  const GOLD = 0xc9a84c, GOLD2 = 0xe8c96a, CRIMSON = 0x8b1a1a, PAGE = 0xe8e4dc;
-  const materials = {
-    board: new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.55, roughness: 0.32 }),
-    board2: new THREE.MeshStandardMaterial({ color: GOLD2, metalness: 0.5, roughness: 0.38 }),
-    cord: new THREE.MeshStandardMaterial({ color: CRIMSON, metalness: 0.15, roughness: 0.5 }),
-    page: new THREE.MeshStandardMaterial({ color: PAGE, metalness: 0.04, roughness: 0.75 })
-  };
+  const GOLD = 0xc9a84c, GOLD2 = 0xe8c96a, GOLD3 = 0xb8944a, CRIMSON = 0x8b1a1a;
+  const starMats = [
+    new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.72, roughness: 0.24 }),
+    new THREE.MeshStandardMaterial({ color: GOLD2, metalness: 0.68, roughness: 0.28 }),
+    new THREE.MeshStandardMaterial({ color: GOLD3, metalness: 0.75, roughness: 0.22 })
+  ];
+  const bossMat = new THREE.MeshStandardMaterial({ color: CRIMSON, metalness: 0.3, roughness: 0.45 });
 
   // Soft studio lighting — no shadow maps, cheap but gives real shaded form
   scene.add(new THREE.AmbientLight(0x8f86a8, 0.55));
@@ -2306,41 +2695,33 @@ function initHero3D() {
   rimLight.position.set(-5, -3, -4);
   scene.add(rimLight);
 
-  // ---- Graduation cap: dome + flat board + button + hanging tassel ----
-  function createGraduationCap(boardMat) {
-    const g = new THREE.Group();
-    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.62, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2.1), boardMat);
-    dome.position.y = -0.08;
-    g.add(dome);
-    const board = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.1, 1.9), boardMat);
-    board.position.y = 0.22; board.rotation.y = Math.PI / 4;
-    g.add(board);
-    const button = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 8), materials.cord);
-    button.position.y = 0.29;
-    g.add(button);
-    const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.75, 6), materials.cord);
-    cord.position.set(0.55, -0.1, 0.55); cord.rotation.set(0.1, 0, 0.35);
-    g.add(cord);
-    const knot = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.16, 8), materials.cord);
-    knot.position.set(0.78, -0.46, 0.62); knot.rotation.z = Math.PI;
-    g.add(knot);
-    return g;
+  // ---- Signature shape: an 8-point Islamic star medallion (نجمة) —
+  // echoes the "نجوم المدرسة" language used for top students elsewhere
+  // on the site, and Egyptian geometric ornament, instead of generic
+  // stock "education" clipart. One shared geometry, reused per instance. ----
+  function buildStarGeometry(points, outerR, innerR, depth) {
+    const shape = new THREE.Shape();
+    const step = Math.PI / points;
+    for (let i = 0; i < points * 2; i++) {
+      const r = i % 2 === 0 ? outerR : innerR;
+      const a = i * step - Math.PI / 2;
+      const x = Math.cos(a) * r, y = Math.sin(a) * r;
+      if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+    }
+    shape.closePath();
+    return new THREE.ExtrudeGeometry(shape, {
+      depth, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 2, curveSegments: 1
+    });
   }
+  const starGeo = buildStarGeometry(8, 1, 0.42, 0.18);
+  const bossGeo = new THREE.CylinderGeometry(0.17, 0.17, 0.3, 16);
+  bossGeo.rotateX(Math.PI / 2);
 
-  // ---- Open book: two pages hinged at a central spine ----
-  function createOpenBook() {
+  function createStarMedallion() {
     const g = new THREE.Group();
-    const pageGeo = new THREE.BoxGeometry(1.0, 0.05, 0.75);
-    pageGeo.translate(0.5, 0, 0); // pivot at the spine edge
-    const left = new THREE.Mesh(pageGeo, materials.page);
-    left.rotation.z = Math.PI - 0.35;
-    g.add(left);
-    const right = new THREE.Mesh(pageGeo, materials.page);
-    right.rotation.z = 0.35;
-    g.add(right);
-    const spineGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.78, 8);
-    spineGeo.rotateX(Math.PI / 2);
-    g.add(new THREE.Mesh(spineGeo, materials.cord));
+    const star = new THREE.Mesh(starGeo, starMats[Math.floor(Math.random() * starMats.length)]);
+    g.add(star);
+    if (Math.random() > 0.4) g.add(new THREE.Mesh(bossGeo, bossMat)); // center medallion boss, on most stars
     return g;
   }
 
@@ -2354,8 +2735,7 @@ function initHero3D() {
     scene.add(obj);
     models.push(obj);
   }
-  for (let i = 0; i < capCount; i++) place(createGraduationCap(Math.random() > 0.5 ? materials.board : materials.board2), 0.9 + Math.random() * 1.1);
-  for (let i = 0; i < bookCount; i++) place(createOpenBook(), 1.0 + Math.random() * 1.0);
+  for (let i = 0; i < starCount; i++) place(createStarMedallion(), 0.55 + Math.random() * 0.75);
 
   // Fine gold dust — a soft, sparse point field for depth
   const dustGeo = new THREE.BufferGeometry();
@@ -2648,8 +3028,8 @@ function renderStudents() {
     const dob = new Date(s.dob);
     const dobAr = `${dob.getFullYear()}/${String(dob.getMonth()+1).padStart(2,'0')}/${String(dob.getDate()).padStart(2,'0')}`;
     const card = document.createElement('div');
-    card.className = 'student-card';
-    card.style.animationDelay = (i * 0.1) + 's';
+    card.className = 'student-card student-reveal';
+    card.style.transitionDelay = Math.min(i * 0.07, 0.5) + 's';
     card.innerHTML = `
       <div class="rank-badge rank-${s.rank <= 3 ? s.rank : ''}">${s.rank}</div>
       <div class="s-avatar">${s.icon}</div>
@@ -2666,8 +3046,8 @@ function renderStudents() {
       <div class="s-quote">"${s.quote}"</div>
     `;
     grid.appendChild(card);
-    setTimeout(() => card.classList.add('visible'), 100 + i * 80);
   });
+  setTimeout(setupStudentReveal, 50);
 
   // Live age updates every minute
   setInterval(() => {
@@ -2688,8 +3068,8 @@ function renderMemories() {
   const vGrid = document.getElementById('videosGrid');
   videos.forEach((v, i) => {
     const card = document.createElement('div');
-    card.className = 'video-card';
-    card.style.animationDelay = (i * 0.12) + 's';
+    card.className = 'video-card video-reveal';
+    card.style.transitionDelay = Math.min(i * 0.09, 0.5) + 's';
     card.innerHTML = `
       <div class="video-thumb">
         <div class="play-btn">
@@ -2703,20 +3083,20 @@ function renderMemories() {
     `;
     card.onclick = () => { document.getElementById('vidTitle').textContent = v.title; document.getElementById('vidModal').classList.add('open'); };
     vGrid.appendChild(card);
-    setTimeout(() => card.classList.add('visible'), 100 + i * 100);
   });
 
   const pGrid = document.getElementById('photosGrid');
   photos.forEach((label, i) => {
     const card = document.createElement('div');
-    card.className = 'photo-card';
+    card.className = 'photo-card photo-reveal';
     card.setAttribute('data-label', label);
-    card.style.animationDelay = (i * 0.06) + 's';
+    card.style.transitionDelay = Math.min(i * 0.045, 0.5) + 's';
     card.innerHTML = `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
     card.onclick = () => openPhotoModal(label);
     pGrid.appendChild(card);
-    setTimeout(() => card.classList.add('visible'), 200 + i * 50);
   });
+
+  setTimeout(setupMemoriesReveal, 50);
 }
 
 function closeVidModal() {
@@ -2729,6 +3109,131 @@ function openPhotoModal(label) {
 }
 function closePhotoModal() {
   document.getElementById('photoModal').classList.remove('open');
+}
+
+/* ============================================================
+   SETTINGS — accent color / font size / light-dark appearance
+   All three are independent CSS variable overrides (see :root
+   rules), so they never fight each other, and persist via
+   localStorage across visits.
+============================================================ */
+function openSettingsModal() {
+  document.getElementById('settingsModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSettingsModalDirect() {
+  document.getElementById('settingsModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function applyTheme(theme) {
+  if (theme === 'gold') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', theme);
+  document.querySelectorAll('.theme-swatch').forEach(sw => {
+    sw.classList.toggle('active', sw.dataset.theme === theme);
+  });
+}
+function setSiteTheme(theme) {
+  applyTheme(theme);
+  try { localStorage.setItem('siteTheme', theme); } catch (e) { /* private mode etc — just won't persist */ }
+}
+
+function applyAppearance(mode) {
+  document.documentElement.classList.toggle('light-mode', mode === 'light');
+  const lightBtn = document.getElementById('appLightBtn');
+  const darkBtn = document.getElementById('appDarkBtn');
+  if (lightBtn) lightBtn.classList.toggle('active', mode === 'light');
+  if (darkBtn) darkBtn.classList.toggle('active', mode !== 'light');
+}
+function setAppearance(mode) {
+  applyAppearance(mode);
+  try { localStorage.setItem('siteAppearance', mode); } catch (e) {}
+}
+
+const FONT_STEPS = ['صغير', 'عادي', 'كبير', 'أكبر'];
+const FONT_SIZES = ['87.5%', '100%', '112.5%', '125%'];
+function applyFontStep(step) {
+  step = Math.max(0, Math.min(FONT_STEPS.length - 1, step));
+  document.documentElement.style.fontSize = FONT_SIZES[step];
+  document.documentElement.dataset.fontStep = String(step);
+  const label = document.getElementById('fsCurrentLabel');
+  if (label) label.textContent = FONT_STEPS[step];
+  const minusBtn = document.getElementById('fsMinusBtn');
+  const plusBtn = document.getElementById('fsPlusBtn');
+  if (minusBtn) minusBtn.disabled = step === 0;
+  if (plusBtn) plusBtn.disabled = step === FONT_STEPS.length - 1;
+}
+function changeFontSize(dir) {
+  const current = parseInt(document.documentElement.dataset.fontStep || '1', 10);
+  const next = current + dir;
+  if (next < 0 || next > FONT_STEPS.length - 1) return;
+  applyFontStep(next);
+  try { localStorage.setItem('siteFontStep', String(next)); } catch (e) {}
+}
+
+function initSettings() {
+  let theme = 'gold', appearance = 'dark', fontStep = 1;
+  try {
+    theme = localStorage.getItem('siteTheme') || 'gold';
+    appearance = localStorage.getItem('siteAppearance') || 'dark';
+    fontStep = parseInt(localStorage.getItem('siteFontStep') || '1', 10);
+  } catch (e) { /* localStorage unavailable — defaults above stay in effect */ }
+  applyTheme(theme);
+  applyAppearance(appearance);
+  applyFontStep(fontStep);
+}
+
+/* ============================================================
+   SUPPORT MODAL — full-screen sequential "story" reveal.
+   Each slide fades in, holds for a set duration, fades out, then
+   the next one takes over — ending on the back / WhatsApp actions.
+============================================================ */
+const SUPPORT_SLIDE_MS = 3400;
+let _supportTimer = null;
+
+function openSupportModal() {
+  const modal = document.getElementById('supportModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  runSupportSequence();
+}
+function closeSupportModal() {
+  const modal = document.getElementById('supportModal');
+  if (modal) modal.classList.remove('open');
+  document.body.style.overflow = '';
+  clearTimeout(_supportTimer);
+}
+function runSupportSequence() {
+  const modal = document.getElementById('supportModal');
+  const slides = Array.from(modal.querySelectorAll('.support-slide'));
+  const fills = Array.from(modal.querySelectorAll('.support-progress-fill'));
+  const actions = document.getElementById('supportActions');
+  if (!slides.length) return;
+
+  clearTimeout(_supportTimer);
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  modal.classList.toggle('no-motion', reduceMotion);
+
+  slides.forEach(s => s.classList.remove('active'));
+  actions.classList.remove('show');
+  fills.forEach(f => { f.style.transition = 'none'; f.style.width = '0%'; });
+
+  let i = 0;
+  function step() {
+    if (i > 0) slides[i - 1].classList.remove('active');
+    if (i >= slides.length) { actions.classList.add('show'); return; }
+    slides[i].classList.add('active');
+    const fill = fills[i];
+    if (fill) {
+      requestAnimationFrame(() => {
+        fill.style.transition = reduceMotion ? 'none' : `width ${SUPPORT_SLIDE_MS}ms linear`;
+        fill.style.width = '100%';
+      });
+    }
+    _supportTimer = setTimeout(() => { i++; step(); }, SUPPORT_SLIDE_MS);
+  }
+  step();
 }
 
 /* ============================================================
@@ -2793,18 +3298,24 @@ function setupReveal() {
 }
 
 /* ============================================================
-   TEACHERS — REVERSIBLE SCROLL REVEAL
-   Never unobserves: each row shows itself as it scrolls into view
-   and hides itself again as it scrolls out — in EITHER direction.
-   No page navigation involved, purely a scroll-linked toggle.
+   REVERSIBLE SCROLL REVEAL (shared engine)
+   Never unobserves: each matched element shows itself as it scrolls
+   into view and hides itself again as it scrolls out — in EITHER
+   direction. No page navigation involved, purely a scroll-linked
+   toggle. Each section below just points this at its own selector;
+   the actual look of each section's animation lives entirely in CSS
+   (teacher rows flip on X, students turn on Y, videos/photos in
+   Memories slide+tilt or blur into focus, About slides+rotates,
+   the team list cascades) so every section reads as its own thing.
 ============================================================ */
-let _teacherRevealObs = null;
-function setupTeacherReveal() {
-  const rows = document.querySelectorAll('#teachersList .teacher-row.teacher-reveal');
-  if (!rows.length) return;
-  if (_teacherRevealObs) _teacherRevealObs.disconnect();
+const _revealObservers = {};
+function setupReversibleReveal(key, selector, options = {}) {
+  const { threshold = 0.12, rootMargin = '-10% 0px -10% 0px' } = options;
+  const els = document.querySelectorAll(selector);
+  if (!els.length) return null;
+  if (_revealObservers[key]) _revealObservers[key].disconnect();
 
-  _teacherRevealObs = new IntersectionObserver(entries => {
+  const obs = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       const el = entry.target;
       if (entry.isIntersecting) {
@@ -2812,17 +3323,30 @@ function setupTeacherReveal() {
         el.classList.remove('exiting');
       } else {
         el.classList.remove('visible');
-        // Only play the "exit forward" motion when it left past the TOP
-        // (scrolling down through it). If it's below the viewport again
-        // (scrolled back up past its entrance point), let it reset to the
-        // normal entrance pose so scrolling back down replays the same way.
+        // Only play the "exit" motion when it left past the TOP (scrolling
+        // down through it). If it's below the viewport again (scrolled back
+        // up past its entrance point), reset to the normal entrance pose so
+        // scrolling back down replays the same way.
         const leftFromTop = entry.boundingClientRect.top < 0;
         el.classList.toggle('exiting', leftFromTop);
       }
     });
-  }, { threshold: 0.12, rootMargin: '-10% 0px -10% 0px' });
+  }, { threshold, rootMargin });
 
-  rows.forEach(row => _teacherRevealObs.observe(row));
+  els.forEach(el => obs.observe(el));
+  _revealObservers[key] = obs;
+  return obs;
+}
+
+function setupTeacherReveal()  { setupReversibleReveal('teachers', '#teachersList .teacher-row.teacher-reveal'); }
+function setupStudentReveal()  { setupReversibleReveal('students', '#studentsGrid .student-card.student-reveal'); }
+function setupMemoriesReveal() {
+  setupReversibleReveal('videos', '#videosGrid .video-card.video-reveal');
+  setupReversibleReveal('photos', '#photosGrid .photo-card.photo-reveal');
+}
+function setupAboutReveal() {
+  setupReversibleReveal('about-halves', '.about-reveal-left, .about-reveal-right');
+  setupReversibleReveal('about-team', '.team-member.team-reveal');
 }
 
 /* ============================================================
@@ -2843,6 +3367,8 @@ document.addEventListener('keydown', e => {
     closeTModalDirect();
     closeVidModal();
     closePhotoModal();
+    closeSettingsModalDirect();
+    closeSupportModal();
     closeMenu();
   }
 });
@@ -2864,6 +3390,8 @@ window.addEventListener('DOMContentLoaded', () => {
   try { initHero3D(); } catch (err) { console.error('initHero3D failed:', err); }
   try { initTiltCards(); } catch (err) { console.error('initTiltCards failed:', err); }
   try { initCounters(); } catch (err) { console.error('initCounters failed:', err); }
+  try { initSettings(); } catch (err) { console.error('initSettings failed:', err); }
+  try { setupAboutReveal(); } catch (err) { console.error('setupAboutReveal failed:', err); }
   setTimeout(setupReveal, 300);
 });
 </script>
