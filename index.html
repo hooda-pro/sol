@@ -1388,6 +1388,146 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   .about-story { gap: 2rem; margin: 2.5rem 0; }
 }
 
+
+/* ========== LANGUAGE SWITCHER ========== */
+.lang-switcher {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+.lang-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--border2);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: 'Cairo', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 100px;
+}
+.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
+.lang-btn.active {
+  border-color: var(--gold);
+  background: var(--gold-dim);
+  color: var(--gold);
+  box-shadow: 0 4px 16px rgba(201,168,76,0.15);
+}
+.lang-btn .lang-flag {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+/* ========== SUPPORT MODAL — NAVIGATION & LONG-PRESS ========== */
+.support-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  font-size: 1.2rem;
+  user-select: none;
+}
+.support-nav-btn:hover {
+  background: rgba(201,168,76,0.15);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.support-nav-btn:active { transform: translateY(-50%) scale(0.9); }
+.support-nav-btn.prev { left: 1rem; }
+.support-nav-btn.next { right: 1rem; }
+
+.support-pause-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.support-pause-overlay.show { opacity: 1; }
+.support-pause-overlay .pause-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.support-pause-overlay .pause-icon svg { width: 24px; height: 24px; }
+
+.support-hint {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.support-modal.open .support-hint { opacity: 1; transition-delay: 2s; }
+
+/* Touch area for long-press */
+.support-touch-area {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  cursor: grab;
+}
+.support-touch-area:active { cursor: grabbing; }
+
+@media (max-width: 600px) {
+  .support-nav-btn { width: 38px; height: 38px; font-size: 1rem; }
+  .support-nav-btn.prev { left: 0.5rem; }
+  .support-nav-btn.next { right: 0.5rem; }
+}
+
+/* ========== RTL / LAYOUT DIRECTION ========== */
+html[dir="ltr"] body { direction: ltr; text-align: left; }
+html[dir="ltr"] .nav-brand-text { text-align: left; }
+html[dir="ltr"] .mmenu-item { text-align: left; flex-direction: row-reverse; }
+html[dir="ltr"] .mmenu-item .mmenu-icon { margin-right: 0; margin-left: 12px; }
+html[dir="ltr"] .about-hero,
+html[dir="ltr"] .section-head,
+html[dir="ltr"] .about-story-content,
+html[dir="ltr"] .about-footer-note { text-align: left; }
+html[dir="ltr"] .about-story { direction: ltr; }
+html[dir="ltr"] .about-story-visual { order: -1; }
+html[dir="ltr"] .team-section-title { text-align: left; }
+html[dir="ltr"] .team-card { text-align: left; }
+html[dir="ltr"] .team-card-avatar { margin: 0 0 1.2rem 0; }
+html[dir="ltr"] .mission-card { text-align: left; }
+html[dir="ltr"] .mission-icon { margin: 0 0 1.2rem 0; }
+html[dir="ltr"] .about-hero-desc { margin: 0; }
+
 /* ========== MOBILE MENU — NEW BADGE ========== */
 .mmenu-new-badge {
   display:inline-block; margin-right:6px; padding:1px 8px;
@@ -2034,36 +2174,7 @@ footer::before {
     <div class="mmenu-sub">ثانوية — إدارة الحسنية</div>
   </div>
   <nav class="mmenu-nav">
-    <button class="mmenu-item" onclick="goPage('home');closeMenu()">
-      <span class="mmenu-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      </span>
-      <span>الرئيسية</span>
-    </button>
-    <button class="mmenu-item" onclick="goPage('principal');closeMenu()">
-      <span class="mmenu-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </span>
-      <span>المدير والمدرسون</span>
-    </button>
-    <button class="mmenu-item" onclick="goPage('students');closeMenu()">
-      <span class="mmenu-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </span>
-      <span>الطلاب المتفوقون</span>
-    </button>
-    <button class="mmenu-item" onclick="goPage('memories');closeMenu()">
-      <span class="mmenu-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      </span>
-      <span>ذكريات</span>
-    </button>
-    <button class="mmenu-item" onclick="goPage('about');closeMenu()">
-      <span class="mmenu-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      </span>
-      <span>عن الموقع</span>
-    </button>
+    <!-- الروابط الرئيسية مخفية لأنها موجودة في شريط التنقل العلوي -->
   </nav>
   <div class="mmenu-divider"></div>
   <div class="mmenu-utility">
