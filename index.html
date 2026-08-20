@@ -84,6 +84,7 @@ body {
   overflow-x: hidden;
   line-height:1.7;
   min-height:100vh;
+  min-height:100svh;
   overscroll-behavior-y: none;
 }
 body.menu-open { overflow:hidden; }
@@ -361,7 +362,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 
 
 /* ========== PAGES SYSTEM ========== */
-.page { display:none; min-height:100vh; padding-top:var(--nav-h); }
+.page { display:none; min-height:100vh; min-height:100svh; padding-top:var(--nav-h); }
 .page.active { display:block; animation:pageSlide 0.26s var(--ease-out) both; }
 
 /* ========== STARS BACKGROUND ========== */
@@ -1951,18 +1952,18 @@ footer::before {
         <div class="principal-badge-tag">مدير المدرسة — إدارة الحسنية</div>
       </div>
       <div class="principal-info">
-        <h2 class="principal-name">أ. فتحي شكري</h2>
+        <h2 class="principal-name">أ. محمد عبد الله الحمدي</h2>
         <div class="principal-role-chip">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          مدير المدرسة
+          مدير المدرسة — رئيس الهيئة الإدارية
         </div>
         <p class="principal-bio">
           أ. محمد عبد الله الحمدي، قائد تربوي متميز يعمل في إطار إدارة الحسنية التعليمية بمحافظة مصر. يحمل رؤية واضحة لبناء جيل ثانوي متوازن متسلح بالعلم والقيم الأصيلة. يُدير المدرسة بأسلوب إنساني راقٍ يجمع بين الحزم والمرونة، ويؤمن إيمانًا راسخًا بأن النجاح الحقيقي يبدأ من داخل الفصل الدراسي وينعكس على المجتمع بأسره.
         </p>
         <div class="principal-chips">
-          <div class="p-chip"><span class="lbl">السن</span><span class="val">58 سنة</span></div>
-          <div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">7 سنوات</span></div>
-          <div class="p-chip"><span class="lbl">التخصص</span><span class="val">مدير مدرسة ثانوية</span></div>
+          <div class="p-chip"><span class="lbl">السن</span><span class="val">٥٢ سنة</span></div>
+          <div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">٢٦ سنة</span></div>
+          <div class="p-chip"><span class="lbl">التخصص</span><span class="val">إدارة تربوية</span></div>
           <div class="p-chip"><span class="lbl">المؤهل</span><span class="val">ماجستير تربية</span></div>
           <div class="p-chip"><span class="lbl">مكان العمل</span><span class="val">مدرسة شهيد حسن حمدي</span></div>
           <div class="p-chip"><span class="lbl">التبعية الإدارية</span><span class="val">إدارة الحسنية</span></div>
@@ -2307,28 +2308,28 @@ footer::before {
     </svg>
     <div class="bnav-inner">
       <div class="bnav-group">
-        <button class="bnav-item" data-page="principal" onclick="goPage('principal');setBNavItem(this)">
+        <button class="bnav-item" data-page="principal" onclick="goPage('principal')">
           <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <span class="bnav-label">مدرسون</span>
         </button>
-        <button class="bnav-item" data-page="memories" onclick="goPage('memories');setBNavItem(this)">
+        <button class="bnav-item" data-page="memories" onclick="goPage('memories')">
           <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
           <span class="bnav-label">ذكريات</span>
         </button>
       </div>
       <div class="bnav-gap"></div>
       <div class="bnav-group">
-        <button class="bnav-item" data-page="students" onclick="goPage('students');setBNavItem(this)">
+        <button class="bnav-item" data-page="students" onclick="goPage('students')">
           <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           <span class="bnav-label">متفوقون</span>
         </button>
-        <button class="bnav-item" data-page="about" onclick="goPage('about');setBNavItem(this)">
+        <button class="bnav-item" data-page="about" onclick="goPage('about')">
           <div class="bnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
           <span class="bnav-label">عن الموقع</span>
         </button>
       </div>
     </div>
-    <button class="bnav-home active" id="bnavHome" data-page="home" onclick="goPage('home');setBNavHome()">
+    <button class="bnav-home active" id="bnavHome" data-page="home" onclick="goPage('home')">
       <div class="bnav-home-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
       <span class="bnav-home-label">رئيسية</span>
     </button>
@@ -2364,11 +2365,11 @@ function updateCopyrightYear() {
 
 const teachers = [
   {
-    name:'أ. محمد رأفت', subject:'برمجة وحاسوب', age:32, exp:7,
-    spec:'مادة البرمجة', grade:'الثانوية', icon:'ك', cat:'برمجة',
-    from:'الشرقية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. كريم الشاذلي', subject:'برمجة وحاسوب', age:32, exp:7,
+    spec:'Python · Web Dev · قواعد البيانات', grade:'الثانوية', icon:'ك', cat:'برمجة',
+    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
-    bio:'أ. محمد رأفت مدرس حاسوب وبرمجة، عمره (لم يتم ذكرة بعد) سنة، من الأخيوة. متخصص في مادة المربجة. يُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يجعل البرمجة بسيطة ومرحة للطلاب.'
+    bio:'أ. كريم الشاذلي، مدرس حاسوب وبرمجة، عمره ٣٢ سنة، من القاهرة. متخصص في Python وتطوير الويب وقواعد البيانات. خريج كلية الحاسبات والمعلومات. يُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يجعل البرمجة بسيطة ومرحة للطلاب من خلال مشاريع حقيقية.'
   },
   {
     name:'أ. مروان سيد فرحان', subject:'برمجة تطبيقات', age:29, exp:5,
@@ -2534,20 +2535,6 @@ const photos = [
 ============================================================ */
 const PAGE_IDS = ['home','principal','students','memories','about'];
 
-function setBNavItem(el) {
-  // deactivate all items and home
-  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
-  const home = document.getElementById('bnavHome');
-  if (home) home.classList.remove('active');
-  if (el) el.classList.add('active');
-}
-
-function setBNavHome() {
-  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
-  const home = document.getElementById('bnavHome');
-  if (home) home.classList.add('active');
-}
-
 function syncBNav(id) {
   document.querySelectorAll('.bnav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.page === id);
@@ -2557,15 +2544,22 @@ function syncBNav(id) {
 }
 
 function goPage(id, linkEl) {
+  const target = document.getElementById('page-'+id);
+  if (!target) return;
+
+  // Settle scroll position BEFORE swapping which page is visible, and force it
+  // instant — 'instant' bypasses this page's global CSS scroll-behavior:smooth,
+  // unlike 'auto', which would still defer to it and animate over several frames.
+  // Do this first so there's never a moment where the new (often shorter) page's
+  // content is shown at the old page's leftover scroll position.
+  window.scrollTo({ top:0, behavior:'instant' });
+
   PAGE_IDS.forEach(p => {
     const el = document.getElementById('page-'+p);
     if (el) el.classList.remove('active');
   });
-  const target = document.getElementById('page-'+id);
-  if (!target) return;
   target.classList.add('active');
   syncBNav(id);
-  window.scrollTo({ top:0, behavior:'smooth' });
 
   // update nav active
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -2790,11 +2784,16 @@ function initHero3D() {
   }, { passive: true });
 
   function resize() {
+    // Guard against the mobile browser's address-bar show/hide firing window
+    // 'resize' while #page-home (and this canvas) is display:none on another
+    // page — heroSection would report 0x0, which used to get clamped to a
+    // degenerate 1x1 render size and corrupt the renderer until the next
+    // real resize. Skip instead: keep whatever the last valid size was.
     const r = heroSection.getBoundingClientRect();
-    const w = Math.max(r.width, 1), h = Math.max(r.height, 1);
-    camera.aspect = w / h;
+    if (r.width < 1 || r.height < 1) return;
+    camera.aspect = r.width / r.height;
     camera.updateProjectionMatrix();
-    renderer.setSize(w, h, false);
+    renderer.setSize(r.width, r.height, false);
   }
   resize();
   window.addEventListener('resize', resize);
@@ -2812,7 +2811,10 @@ function initHero3D() {
   }
 
   new IntersectionObserver(entries => {
-    entries.forEach(en => { isVisible = en.isIntersecting; if (isVisible) scheduleTick(); });
+    entries.forEach(en => {
+      isVisible = en.isIntersecting;
+      if (isVisible) { resize(); scheduleTick(); } // catch up on any size change missed while hidden
+    });
   }, { threshold: 0.01 }).observe(heroSection);
 
   const clock = new THREE.Clock();
