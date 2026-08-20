@@ -1564,7 +1564,12 @@ footer::before {
      during scroll, instead of recalculating it inline with page repaint. */
   transform:translateZ(0);
   will-change:transform;
+  transition:transform 0.28s var(--ease-out);
 }
+/* Slid fully off-screen while actively scrolling down — see the scroll
+   listener below. The bar simply isn't on screen during the moments the
+   browser's own toolbar animation would otherwise make it jitter. */
+#bottomNav.bnav-hidden { transform:translateY(100%) translateZ(0); }
 @media (max-width:600px) { #bottomNav { display:block; } }
 
 .bnav-wrap {
@@ -3398,11 +3403,28 @@ function setupAboutReveal() {
 /* ============================================================
    SCROLL EVENTS
 ============================================================ */
+let lastScrollY = window.scrollY;
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
   nav.classList.toggle('scrolled', window.scrollY > 60);
   const btn = document.getElementById('scrollTop');
   btn.classList.toggle('show', window.scrollY > 500);
+
+  // Bottom nav: hide on scroll-down, reveal on scroll-up or near the top.
+  // This is also what keeps it out of view during the exact moments the
+  // mobile browser's own toolbar show/hide animation would otherwise make
+  // a fixed bottom bar jitter — see #bottomNav comment above.
+  const bnav = document.getElementById('bottomNav');
+  if (bnav) {
+    const y = Math.max(0, window.scrollY); // ignore iOS rubber-band negative overscroll
+    const delta = y - lastScrollY;
+    if (y < 80) {
+      bnav.classList.remove('bnav-hidden');
+    } else if (Math.abs(delta) > 5) {
+      bnav.classList.toggle('bnav-hidden', delta > 0);
+    }
+    lastScrollY = y;
+  }
 }, { passive: true });
 
 /* ============================================================
