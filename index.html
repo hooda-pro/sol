@@ -1564,12 +1564,7 @@ footer::before {
      during scroll, instead of recalculating it inline with page repaint. */
   transform:translateZ(0);
   will-change:transform;
-  transition:transform 0.28s var(--ease-out);
 }
-/* Slid fully off-screen while actively scrolling down — see the scroll
-   listener below. The bar simply isn't on screen during the moments the
-   browser's own toolbar animation would otherwise make it jitter. */
-#bottomNav.bnav-hidden { transform:translateY(100%) translateZ(0); }
 @media (max-width:600px) { #bottomNav { display:block; } }
 
 .bnav-wrap {
@@ -2313,8 +2308,8 @@ footer::before {
 <!-- ======== MOBILE BOTTOM APP NAV — notch ======== -->
 <nav id="bottomNav" aria-label="التنقل السريع">
   <div class="bnav-wrap">
-    <svg class="bnav-svg" viewBox="0 0 375 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,0 L138,0 Q150,0 154,10 Q160,26 187.5,26 Q215,26 221,10 Q225,0 237,0 L375,0 L375,70 L0,70 Z"/>
+    <svg class="bnav-svg" id="bnavNotchSvg" viewBox="0 0 375 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path id="bnavNotchPath" d="M0,0 L138,0 Q150,0 154,10 Q160,26 187.5,26 Q215,26 221,10 Q225,0 237,0 L375,0 L375,70 L0,70 Z"/>
     </svg>
     <div class="bnav-inner">
       <div class="bnav-group">
@@ -2611,6 +2606,31 @@ function closeMenu() {
   ham.setAttribute('aria-label', 'فتح القائمة');
   document.body.classList.remove('menu-open');
 }
+
+/* ============================================================
+   BOTTOM NAV NOTCH — pixel-perfect on any screen width
+============================================================ */
+function updateBNavNotch() {
+  const wrap = document.querySelector('.bnav-wrap');
+  const svg = document.getElementById('bnavNotchSvg');
+  const path = document.getElementById('bnavNotchPath');
+  if (!wrap || !svg || !path) return;
+  const W = wrap.clientWidth;
+  const H = wrap.clientHeight;
+  if (!W || !H) return; // bar is display:none (desktop width) — nothing to sync yet
+
+  const cx = W / 2; // .bnav-home is always centered via left:50%
+  // Fixed pixel offsets from center, sized to .bnav-home's actual 58px
+  // diameter plus breathing room — NOT proportional to screen width, so the
+  // notch matches the button exactly on every screen instead of stretching.
+  const outer = 49.5, ctrl1 = 37.5, mid1 = 33.5, ctrl2 = 27.5;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  path.setAttribute('d',
+    `M0,0 L${cx-outer},0 Q${cx-ctrl1},0 ${cx-mid1},10 Q${cx-ctrl2},26 ${cx},26 ` +
+    `Q${cx+ctrl2},26 ${cx+mid1},10 Q${cx+ctrl1},0 ${cx+outer},0 L${W},0 L${W},${H} L0,${H} Z`
+  );
+}
+window.addEventListener('resize', updateBNavNotch);
 
 /* ============================================================
    STARS CANVAS
@@ -3403,28 +3423,11 @@ function setupAboutReveal() {
 /* ============================================================
    SCROLL EVENTS
 ============================================================ */
-let lastScrollY = window.scrollY;
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
   nav.classList.toggle('scrolled', window.scrollY > 60);
   const btn = document.getElementById('scrollTop');
   btn.classList.toggle('show', window.scrollY > 500);
-
-  // Bottom nav: hide on scroll-down, reveal on scroll-up or near the top.
-  // This is also what keeps it out of view during the exact moments the
-  // mobile browser's own toolbar show/hide animation would otherwise make
-  // a fixed bottom bar jitter — see #bottomNav comment above.
-  const bnav = document.getElementById('bottomNav');
-  if (bnav) {
-    const y = Math.max(0, window.scrollY); // ignore iOS rubber-band negative overscroll
-    const delta = y - lastScrollY;
-    if (y < 80) {
-      bnav.classList.remove('bnav-hidden');
-    } else if (Math.abs(delta) > 5) {
-      bnav.classList.toggle('bnav-hidden', delta > 0);
-    }
-    lastScrollY = y;
-  }
 }, { passive: true });
 
 /* ============================================================
@@ -3454,6 +3457,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }, 1900);
 
   try { updateCopyrightYear(); } catch (err) { console.error('updateCopyrightYear failed:', err); }
+  try { updateBNavNotch(); } catch (err) { console.error('updateBNavNotch failed:', err); }
   try { initStars(); } catch (err) { console.error('initStars failed:', err); }
   try { initHeroParticles(); } catch (err) { console.error('initHeroParticles failed:', err); }
   try { initHero3D(); } catch (err) { console.error('initHero3D failed:', err); }
