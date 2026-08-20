@@ -1559,6 +1559,11 @@ footer::before {
   display:none;
   position:fixed; bottom:0; left:0; right:0; z-index:900;
   pointer-events:none;
+  /* Keeps this on its own GPU layer so mobile browsers can move it smoothly
+     and independently while their own address bar/toolbar animates in or out
+     during scroll, instead of recalculating it inline with page repaint. */
+  transform:translateZ(0);
+  will-change:transform;
 }
 @media (max-width:600px) { #bottomNav { display:block; } }
 
