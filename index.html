@@ -39,15 +39,22 @@
   --border2:  rgba(255,255,255,0.07);
   --text:     #e8e4dc;
   --text-dim: rgba(232,228,220,0.55);
-  --text-muted:rgba(232,228,220,0.3);
+  --text-muted:rgba(232,228,220,0.4);
   --white:    #ffffff;
   --radius:   20px;
   --radius-sm:12px;
-  --nav-h:    68px;
-  --mobile-nav-h: 60px;
-  --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  /* env() resolves to 0px in a normal browser tab, so this is a no-op there —
+     it only adds real space once the site is installed as a home-screen PWA
+     in standalone mode on a notched/dynamic-island phone, where the fixed
+     navbar would otherwise sit under the sensor housing. */
+  --nav-h:    calc(68px + env(safe-area-inset-top));
+  --mobile-nav-h: calc(60px + env(safe-area-inset-top));
+  --transition: 0.45s var(--ease-standard);
   --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
   --ease-press:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.4,0,0.2,1);
+  --ease-bounce: cubic-bezier(0.175,0.885,0.32,1.275);
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
 }
 
 /* ========== SETTINGS: ACCENT COLOR THEMES ==========
@@ -65,7 +72,7 @@ html.light-mode {
   --bg:#f7f4ee; --bg2:#efe9db; --bg3:#e6ded0;
   --surface:rgba(20,15,5,0.035); --surface2:rgba(20,15,5,0.06);
   --border:rgba(120,90,20,0.22); --border2:rgba(20,15,5,0.09);
-  --text:#241d10; --text-dim:rgba(36,29,16,0.62); --text-muted:rgba(36,29,16,0.4);
+  --text:#241d10; --text-dim:rgba(36,29,16,0.62); --text-muted:rgba(36,29,16,0.52);
   --white:#171310;
 }
 
@@ -97,33 +104,18 @@ a { text-decoration:none; color:inherit; }
 
 /* ========== ANIMATIONS ========== */
 @keyframes fadeUp    { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
-@keyframes fadeIn    { from{opacity:0} to{opacity:1} }
 @keyframes fadeDown  { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
-@keyframes slideRight{ from{opacity:0;transform:translateX(-40px)} to{opacity:1;transform:translateX(0)} }
-@keyframes slideLeft { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
-@keyframes scaleIn   { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
 @keyframes float     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
 @keyframes glow-pulse{ 0%,100%{box-shadow:0 0 0 0 var(--gold-glow)} 50%{box-shadow:0 0 0 14px transparent} }
 @keyframes spin      { to{transform:rotate(360deg)} }
 @keyframes spin-rev  { to{transform:rotate(-360deg)} }
-@keyframes twinkle   { 0%,100%{opacity:0.15;transform:scale(0.7)} 50%{opacity:1;transform:scale(1.2)} }
 @keyframes shimmer   { 0%{background-position:-200% center} 100%{background-position:200% center} }
 @keyframes lineGrow  { from{width:0} to{width:60px} }
-@keyframes counterUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-@keyframes menuSlide { from{opacity:0;transform:translateX(-100%)} to{opacity:1;transform:translateX(0)} }
 @keyframes progressLoad { from{transform:scaleX(0)} to{transform:scaleX(1)} }
 @keyframes particleDrift { 0%{transform:translateY(0) translateX(0) rotate(0deg)} 100%{transform:translateY(-60px) translateX(20px) rotate(180deg)} }
 @keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-@keyframes borderDance  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-@keyframes slideMenuIn { from{transform:translateX(-100%)} to{transform:translateX(0)} }
-@keyframes slideMenuOut{ from{transform:translateX(0)} to{transform:translateX(-100%)} }
-@keyframes cardEntrance { from{opacity:0;transform:translateY(28px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
 @keyframes rankPop { 0%{transform:scale(0.5)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
-@keyframes hoverBob  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 @keyframes pageSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-@keyframes softPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
-@keyframes iconBounce{ 0%,100%{transform:translateY(0)} 40%{transform:translateY(-4px)} 60%{transform:translateY(-1px)} }
-@keyframes waveIn    { from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0% 0 0)} }
 @keyframes wordDrop3D {
   0%   { opacity:0; transform:translateY(-190px) rotateX(-386deg) scale(0.68); }
   50%  { opacity:1; }
@@ -224,15 +216,24 @@ a { text-decoration:none; color:inherit; }
 .nav-brand-text span:last-child {
   display:block; font-size:0.62rem; color:var(--text-muted); font-weight:500;
 }
+.nav-right-group { display:flex; align-items:center; gap:1.1rem; }
 .nav-links {
   display:flex; gap:0.2rem; list-style:none; align-items:center;
+}
+/* 5 page links + the school-site button need ~1150px+ to sit on one line
+   without crowding — collapsing only below 900px (the general mobile-layout
+   breakpoint used elsewhere on the page) left laptops/tablets in the very
+   common ~901–1240px band with a squeezed or edge-clipped navbar. Give the
+   nav its own, wider collapse point instead. */
+@media (max-width:1240px) {
+  .nav-links { display:none; }
 }
 .nav-links a {
   color:rgba(232,228,220,0.6); font-size:0.78rem; font-weight:600;
   padding:7px 14px; border-radius:50px;
   border:1px solid transparent;
-  transition:all 0.3s; white-space:nowrap; position:relative;
-  display:flex; align-items:center; gap:5px;
+  transition:color 0.3s, background-color 0.3s, border-color 0.3s; white-space:nowrap; position:relative;
+  display:flex; align-items:center; gap:5px; touch-action:manipulation;
 }
 .nav-links a::after {
   content:''; position:absolute; bottom:-1px; left:50%; right:50%;
@@ -255,16 +256,25 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 }
 
 .hamburger {
-  display:none; width:36px; height:36px;
+  display:flex; width:40px; height:40px; flex-shrink:0;
   flex-direction:column; gap:5px; align-items:center; justify-content:center;
   cursor:pointer; border-radius:10px;
   background:rgba(255,255,255,0.05); border:1px solid var(--border2);
   transition:background 0.3s, border-color 0.3s; z-index:1002;
-  -webkit-tap-highlight-color:transparent; outline:none;
+  -webkit-tap-highlight-color:transparent; outline:none; touch-action:manipulation;
+}
+/* On wider screens nav-links is also visible, so give the hamburger a
+   divider — it reads as 'more: settings & support', not a stray mobile leftover. */
+@media (min-width:1241px) {
+  .hamburger { position:relative; margin-right:0.3rem; }
+  .hamburger::before {
+    content:''; position:absolute; top:50%; right:calc(100% + 0.75rem);
+    width:1px; height:22px; background:var(--border2); transform:translateY(-50%);
+  }
 }
 .hamburger span {
   width:20px; height:2px; background:var(--gold); border-radius:2px;
-  transition:all 0.4s cubic-bezier(0.4,0,0.2,1); transform-origin:center;
+  transition:transform 0.4s var(--ease-standard), opacity 0.4s var(--ease-standard); transform-origin:center;
   display:block;
 }
 .hamburger.active { background:rgba(201,168,76,0.1); border-color:rgba(201,168,76,0.25); }
@@ -288,12 +298,6 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .nav-school-btn::after { display:none !important; opacity:0 !important; visibility:hidden !important; }
 .nav-school-btn::before { display:none !important; opacity:0 !important; visibility:hidden !important; }
 /* ========== MOBILE MENU — clean rebuild, zero flash ========== */
-#mobileMenu .mobile-nav-link:nth-child(1),
-#mobileMenu .mobile-nav-link:nth-child(2),
-#mobileMenu .mobile-nav-link:nth-child(3),
-#mobileMenu .mobile-nav-link:nth-child(4),
-#mobileMenu .mobile-nav-link:nth-child(5),
-#mobileMenu .mobile-nav-link:nth-child(6) { display:none; }
 #mobileMenu {
   position:fixed; top:0; left:0; bottom:0;
   width:78vw; max-width:300px;
@@ -301,7 +305,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   border-right:1px solid rgba(201,168,76,0.1);
   z-index:2000;
   transform:translateX(-100%);
-  transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+  transition:transform 0.38s var(--ease-standard);
   display:flex; flex-direction:column;
   overflow:hidden;
 }
@@ -356,10 +360,6 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 }
 .mmenu-school-btn:hover { background:rgba(160,28,28,0.35); border-color:rgba(160,28,28,0.55); color:#ffaaaa; }
 .mmenu-school-btn:active { background:rgba(160,28,28,0.45); }
-
-/* Kill old classes */
-.mobile-menu-header, .mobile-nav-link { display:none !important; }
-
 
 /* ========== PAGES SYSTEM ========== */
 .page { display:none; min-height:100vh; min-height:100svh; padding-top:var(--nav-h); }
@@ -450,8 +450,8 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   background:linear-gradient(135deg,var(--gold),var(--gold2));
   color:var(--bg); padding:14px 32px; border-radius:50px;
   font-size:0.9rem; font-weight:700;
-  transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-  position:relative; overflow:hidden;
+  transition:transform 0.4s var(--ease-bounce), box-shadow 0.4s var(--ease-bounce);
+  position:relative; overflow:hidden; touch-action:manipulation;
 }
 .btn-gold::before {
   content:''; position:absolute; top:-50%; left:-60%; width:50%; height:200%;
@@ -493,7 +493,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   border:1px solid rgba(201,168,76,0.1);
   border-radius:16px;
   position:relative; overflow:hidden;
-  transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+  transition:border-color 0.4s var(--ease-standard), transform 0.4s var(--ease-standard), box-shadow 0.4s var(--ease-standard);
   backdrop-filter:blur(14px);
   cursor:default;
 }
@@ -565,12 +565,12 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   opacity:0;
   transform:perspective(1600px) translateY(70px) rotateX(-16deg) scale(0.92);
   transform-style:preserve-3d;
-  transition:opacity 0.75s cubic-bezier(0.23,1,0.32,1), transform 0.75s cubic-bezier(0.23,1,0.32,1);
+  transition:opacity 0.75s var(--ease-out), transform 0.75s var(--ease-out);
   will-change:transform, opacity;
 }
 .teacher-row.teacher-reveal.exiting {
   transform:perspective(1600px) translateY(-50px) rotateX(14deg) scale(0.94);
-  transition:opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  transition:opacity 0.55s var(--ease-standard), transform 0.55s var(--ease-standard);
 }
 .teacher-row.teacher-reveal.visible {
   opacity:1;
@@ -653,7 +653,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .p-chip {
   background:var(--surface); border:1px solid var(--border2);
   border-radius:var(--radius-sm); padding:0.9rem 1rem;
-  transition:all 0.3s;
+  transition:border-color 0.3s, background-color 0.3s, transform 0.3s;
 }
 .p-chip:hover { border-color:var(--border); background:var(--gold-dim); transform:translateX(-4px); }
 .p-chip .lbl { color:var(--text-muted); font-size:0.68rem; font-weight:600; display:block; margin-bottom:3px; }
@@ -667,8 +667,8 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   background:var(--surface); border:1px solid var(--border2);
   border-radius:var(--radius); overflow:hidden;
   margin-bottom:1.5rem; cursor:pointer; position:relative;
-  transition:all 0.45s cubic-bezier(0.4,0,0.2,1);
-  min-height:220px;
+  transition:border-color 0.45s var(--ease-standard), transform 0.45s var(--ease-standard), box-shadow 0.45s var(--ease-standard);
+  min-height:220px; touch-action:manipulation;
 }
 
 /* AR: image on RIGHT (start in RTL = right), info on left */
@@ -798,17 +798,18 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   border:1px solid var(--border); border-radius:24px; padding:2.5rem;
   max-width:480px; width:100%; position:relative;
   transform:scale(0.88) translateY(30px);
-  transition:all 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
+  transition:transform 0.45s var(--ease-bounce), opacity 0.45s var(--ease-bounce);
   box-shadow:0 40px 80px rgba(0,0,0,0.6);
-  max-height:90vh; overflow-y:auto;
+  max-height:90vh; overflow-y:auto; overscroll-behavior:contain;
 }
 .t-modal-overlay.open .t-modal-box { transform:scale(1) translateY(0); }
 .t-modal-close {
   position:absolute; top:1rem; left:1rem;
-  width:34px; height:34px; border-radius:50%;
+  width:38px; height:38px; border-radius:50%;
   background:rgba(255,255,255,0.07); border:1px solid var(--border2);
   color:var(--white); display:flex; align-items:center; justify-content:center;
-  cursor:pointer; transition:all 0.3s; font-size:1rem; font-family:'Cairo',sans-serif;
+  cursor:pointer; transition:background-color 0.3s, transform 0.3s; font-size:1rem; font-family:'Cairo',sans-serif;
+  touch-action:manipulation;
 }
 .t-modal-close:hover { background:rgba(139,26,26,0.5); transform:rotate(90deg); }
 .t-modal-avatar {
@@ -823,7 +824,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .t-modal-sub { text-align:center; margin-bottom:1.5rem; }
 .t-modal-sub span { background:var(--gold-dim); border:1px solid var(--border); color:var(--gold); font-size:0.78rem; font-weight:600; padding:5px 18px; border-radius:50px; }
 .t-modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:1.5rem; }
-.t-modal-cell { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius-sm); padding:0.9rem; transition:all 0.3s; }
+.t-modal-cell { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius-sm); padding:0.9rem; transition:border-color 0.3s, transform 0.3s; }
 .t-modal-cell:hover { border-color:var(--border); transform:translateY(-2px); }
 .t-modal-cell .lbl { color:var(--text-muted); font-size:0.66rem; display:block; margin-bottom:3px; font-weight:600; }
 .t-modal-cell .val { color:var(--white); font-weight:700; font-size:0.85rem; }
@@ -837,15 +838,19 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   overflow-x:auto; flex:1;
   scrollbar-width:none; -webkit-overflow-scrolling:touch;
   padding-bottom:2px;
+  /* Soft fade at both edges hints there are more tabs to scroll to —
+     harmless when everything already fits, since there's nothing there to fade. */
+  mask-image:linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  -webkit-mask-image:linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
 }
 .filter-tabs::-webkit-scrollbar { display:none; }
 .filter-tab {
   background:var(--surface); border:1px solid var(--border2);
   color:rgba(232,228,220,0.55); padding:7px 18px; border-radius:50px;
   font-size:0.78rem; font-weight:600;
-  transition:all 0.3s cubic-bezier(0.4,0,0.2,1); cursor:pointer;
+  transition:background-color 0.3s var(--ease-standard), border-color 0.3s var(--ease-standard), color 0.3s var(--ease-standard), transform 0.3s var(--ease-standard); cursor:pointer;
   flex-shrink:0; white-space:nowrap; font-family:'Cairo',sans-serif;
-  outline:none; -webkit-tap-highlight-color:transparent;
+  outline:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
 }
 .filter-tab:hover { background:var(--gold-dim); border-color:rgba(201,168,76,0.22); color:var(--gold); transform:translateY(-2px); }
 .filter-tab.active {
@@ -856,22 +861,15 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 
 /* Dropdown trigger button */
 .filter-dropdown-btn {
-  display:flex; align-items:center; gap:8px;
-  background:linear-gradient(135deg, var(--gold-dim), rgba(201,168,76,0.08));
-  border:1.5px solid var(--border);
-  color:var(--gold); padding:9px 20px; border-radius:12px;
-  font-size:0.85rem; font-weight:800; cursor:pointer; flex-shrink:0;
-  transition:all 0.3s; font-family:'Cairo',sans-serif;
-  outline:none; -webkit-tap-highlight-color:transparent;
+  display:flex; align-items:center; gap:6px;
+  background:var(--surface); border:1px solid var(--border2);
+  color:var(--gold); padding:7px 14px; border-radius:10px;
+  font-size:0.78rem; font-weight:700; cursor:pointer; flex-shrink:0;
+  transition:background-color 0.3s, border-color 0.3s; font-family:'Cairo',sans-serif;
+  outline:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
   white-space:nowrap;
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
 }
-.filter-dropdown-btn:hover {
-  background:linear-gradient(135deg, rgba(201,168,76,0.18), rgba(201,168,76,0.12));
-  border-color:var(--gold);
-  transform:translateY(-2px);
-  box-shadow:0 6px 20px rgba(201,168,76,0.15);
-}
+.filter-dropdown-btn:hover { background:var(--gold-dim); border-color:rgba(201,168,76,0.28); }
 .filter-dropdown-btn.open { background:var(--gold-dim); border-color:rgba(201,168,76,0.35); }
 
 /* Dropdown panel */
@@ -881,8 +879,8 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   border-radius:16px; padding:0.6rem;
   display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:0.5rem;
   z-index:200;
-  opacity:0; transform:translateY(-8px) scale(0.97); pointer-events:none;
-  transition:opacity 0.25s ease, transform 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+  opacity:0; transform:translateY(-8px) scale(0.97); transform-origin:top center; pointer-events:none;
+  transition:opacity 0.25s ease, transform 0.25s var(--ease-bounce);
   box-shadow:0 20px 50px rgba(0,0,0,0.5);
   backdrop-filter:blur(16px);
 }
@@ -894,8 +892,8 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   padding:0.7rem 1rem; border-radius:10px;
   background:transparent; border:1px solid transparent;
   color:rgba(232,228,220,0.6); font-size:0.8rem; font-weight:600;
-  cursor:pointer; transition:all 0.22s; font-family:'Cairo',sans-serif;
-  outline:none; -webkit-tap-highlight-color:transparent; text-align:right;
+  cursor:pointer; transition:background-color 0.22s, border-color 0.22s, color 0.22s; font-family:'Cairo',sans-serif;
+  outline:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; text-align:right;
   width:100%;
 }
 .fdrop-item:hover { background:var(--gold-dim); border-color:rgba(201,168,76,0.2); color:var(--gold); }
@@ -932,7 +930,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   display:flex; align-items:center; justify-content:center;
   margin:0 auto 1.4rem; box-shadow:0 8px 24px var(--gold-glow);
   position:relative; z-index:1;
-  animation:rankPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  animation:rankPop 0.6s var(--ease-bounce) both;
 }
 .rank-badge::after {
   content:''; position:absolute; inset:-5px; border-radius:50%;
@@ -948,7 +946,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   border:2px solid rgba(201,168,76,0.25);
   display:flex; align-items:center; justify-content:center;
   font-family:'Tajawal',sans-serif; font-size:2rem; font-weight:900; color:var(--gold);
-  margin:0 auto 1rem; transition:all 0.4s;
+  margin:0 auto 1rem; transition:border-color 0.4s, box-shadow 0.4s, transform 0.4s;
   position:relative; z-index:1;
 }
 .student-card:hover .s-avatar { border-color:var(--gold); box-shadow:0 0 20px var(--gold-glow); transform:scale(1.08); }
@@ -975,12 +973,12 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   opacity:0;
   transform:perspective(1300px) translateY(46px) rotateY(-34deg) scale(0.86);
   transform-style:preserve-3d;
-  transition:opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1), border-color 0.4s, box-shadow 0.4s;
+  transition:opacity 0.65s var(--ease-press), transform 0.65s var(--ease-press), border-color 0.4s, box-shadow 0.4s;
   will-change:transform, opacity;
 }
 .student-card.student-reveal.exiting {
   transform:perspective(1300px) translateY(-34px) rotateY(28deg) scale(0.9);
-  transition:opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  transition:opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
 }
 .student-card.student-reveal.visible {
   opacity:1;
@@ -1007,7 +1005,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   background:rgba(201,168,76,0.85); color:var(--bg);
   display:flex; align-items:center; justify-content:center;
   position:relative; z-index:1;
-  transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  transition:all 0.4s var(--ease-bounce);
 }
 .play-btn svg { width:20px; height:20px; margin-right:-2px; }
 .video-card:hover .play-btn { transform:scale(1.2); background:var(--gold); box-shadow:0 0 30px var(--gold-glow); }
@@ -1021,13 +1019,13 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .video-card.video-reveal {
   opacity:0;
   transform:translateY(42px) scale(0.88) rotate(-3.5deg);
-  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1), border-color 0.4s, box-shadow 0.4s;
+  transition:opacity 0.6s var(--ease-press), transform 0.6s var(--ease-press), border-color 0.4s, box-shadow 0.4s;
   will-change:transform, opacity;
 }
 .video-card.video-reveal:nth-child(even) { transform:translateY(42px) scale(0.88) rotate(3.5deg); }
 .video-card.video-reveal.exiting {
   transform:translateY(-32px) scale(0.92) rotate(4deg);
-  transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1);
+  transition:opacity 0.45s var(--ease-standard), transform 0.45s var(--ease-standard);
 }
 .video-card.video-reveal:nth-child(even).exiting { transform:translateY(-32px) scale(0.92) rotate(-4deg); }
 .video-card.video-reveal.visible {
@@ -1068,7 +1066,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   opacity:0;
   transform:scale(1.16);
   filter:blur(7px);
-  transition:opacity 0.55s ease, transform 0.55s cubic-bezier(0.16,1,0.3,1), filter 0.55s ease, border-color 0.4s, box-shadow 0.4s;
+  transition:opacity 0.55s ease, transform 0.55s var(--ease-press), filter 0.55s ease, border-color 0.4s, box-shadow 0.4s;
   will-change:transform, opacity, filter;
 }
 .photo-card.photo-reveal.exiting {
@@ -1092,7 +1090,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   opacity:0; pointer-events:none; transition:opacity 0.4s;
 }
 .vid-modal.open { opacity:1; pointer-events:all; }
-.vid-modal-inner { max-width:820px; width:90%; position:relative; transform:scale(0.9); transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+.vid-modal-inner { max-width:820px; width:90%; position:relative; transform:scale(0.9); transition:transform 0.4s var(--ease-bounce); }
 .vid-modal.open .vid-modal-inner { transform:scale(1); }
 .vid-modal-close {
   position:absolute; top:-50px; left:0;
@@ -1110,423 +1108,6 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .vid-placeholder svg { width:56px; height:56px; opacity:0.45; }
 .vid-placeholder p { font-size:1rem; color:var(--text-dim); font-weight:600; }
 .vid-placeholder .sub { font-size:0.78rem; color:var(--text-muted); }
-
-
-/* ========== ABOUT PAGE — NEW DESIGN ========== */
-.about-hero {
-  text-align: center;
-  padding: 4rem 2rem 3rem;
-  position: relative;
-}
-.about-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--gold-dim);
-  border: 1px solid var(--border);
-  color: var(--gold);
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 6px 20px;
-  border-radius: 50px;
-  margin-bottom: 1.5rem;
-}
-.about-hero-badge svg { width: 14px; height: 14px; }
-.about-hero-title {
-  font-family: 'Tajawal', sans-serif;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 900;
-  color: var(--white);
-  margin-bottom: 1rem;
-  line-height: 1.1;
-}
-.about-hero-title span { color: var(--gold); }
-.about-hero-desc {
-  color: var(--text-dim);
-  font-size: 1rem;
-  max-width: 560px;
-  margin: 0 auto;
-  line-height: 1.9;
-}
-
-.about-mission-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem;
-  margin: 3rem 0;
-}
-.mission-card {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  padding: 2rem 1.5rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-.mission-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), var(--gold2));
-  transform: scaleX(0);
-  transition: transform 0.4s;
-}
-.mission-card:hover {
-  border-color: var(--border);
-  transform: translateY(-8px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-}
-.mission-card:hover::before { transform: scaleX(1); }
-.mission-icon {
-  width: 56px; height: 56px;
-  border-radius: 16px;
-  background: var(--gold-dim);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.2rem;
-  color: var(--gold);
-  transition: all 0.3s;
-}
-.mission-card:hover .mission-icon {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: var(--bg);
-  transform: scale(1.1) rotate(-5deg);
-}
-.mission-icon svg { width: 26px; height: 26px; }
-.mission-title {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--white);
-  margin-bottom: 0.6rem;
-}
-.mission-desc {
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  line-height: 1.8;
-}
-
-.about-story {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  margin: 4rem 0;
-}
-.about-story-visual {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.story-orb {
-  width: 260px; height: 260px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(12,17,32,0.8), rgba(7,9,15,0.95));
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  animation: float 6s ease-in-out infinite;
-}
-.story-orb::before {
-  content: '';
-  position: absolute;
-  inset: -20px;
-  border-radius: 50%;
-  border: 1px dashed rgba(201,168,76,0.15);
-  animation: spin 25s linear infinite;
-}
-.story-orb svg { width: 90px; height: 90px; opacity: 0.6; }
-.about-story-content h3 {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: var(--gold);
-  margin-bottom: 1rem;
-}
-.about-story-content p {
-  color: var(--text-dim);
-  line-height: 2;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-
-.team-section-title {
-  text-align: center;
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: var(--white);
-  margin-bottom: 2.5rem;
-  margin-top: 4rem;
-}
-.team-section-title span { color: var(--gold); }
-.team-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-.team-card {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  padding: 2rem 1.5rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-.team-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, var(--gold-dim), transparent 60%);
-  opacity: 0;
-  transition: opacity 0.4s;
-  pointer-events: none;
-}
-.team-card:hover {
-  border-color: var(--border);
-  transform: translateY(-6px);
-  box-shadow: 0 24px 55px rgba(0,0,0,0.45);
-}
-.team-card:hover::after { opacity: 1; }
-.team-card-avatar {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--bg2), var(--bg3));
-  border: 2px solid rgba(201,168,76,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: var(--gold);
-  margin: 0 auto 1.2rem;
-  position: relative;
-  z-index: 1;
-  transition: all 0.4s;
-}
-.team-card:hover .team-card-avatar {
-  border-color: var(--gold);
-  box-shadow: 0 0 20px var(--gold-glow);
-  transform: scale(1.08);
-}
-.team-card-name {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--white);
-  margin-bottom: 0.3rem;
-  position: relative;
-  z-index: 1;
-}
-.team-card-role {
-  font-size: 0.78rem;
-  color: var(--gold);
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-  position: relative;
-  z-index: 1;
-}
-.team-card-bio {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  line-height: 1.7;
-  position: relative;
-  z-index: 1;
-}
-
-.about-footer-note {
-  text-align: center;
-  padding: 2rem;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 16px;
-  margin-top: 2rem;
-}
-.about-footer-note p {
-  color: var(--text-dim);
-  font-size: 0.85rem;
-  line-height: 1.9;
-}
-.about-footer-note strong { color: var(--gold); }
-
-/* Filter bar responsive */
-/* Mobile: hide tab bar, show "اختر مادة" button */
-@media (max-width: 600px) {
-  .filter-tabs { display: none !important; }
-  .filter-dropdown-btn { display: flex !important; }
-}
-/* Desktop: show both tab bar and "اختر مادة" button */
-@media (min-width: 601px) {
-  .filter-tabs { display: flex !important; }
-  .filter-dropdown-btn { display: flex !important; }
-}
-
-/* About page responsive */
-@media (max-width: 900px) {
-  .about-mission-grid { grid-template-columns: 1fr; }
-  .about-story { grid-template-columns: 1fr; text-align: center; }
-  .about-story-visual { order: -1; }
-  .story-orb { width: 200px; height: 200px; }
-  .team-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-  .about-hero { padding: 2.5rem 1rem 2rem; }
-  .mission-card { padding: 1.5rem 1rem; }
-  .team-card { padding: 1.5rem 1rem; }
-  .about-story { gap: 2rem; margin: 2.5rem 0; }
-}
-
-
-/* ========== LANGUAGE SWITCHER ========== */
-.lang-switcher {
-  display: flex;
-  gap: 0.7rem;
-  flex-wrap: wrap;
-}
-.lang-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 0.5rem;
-  border-radius: 14px;
-  border: 1.5px solid var(--border2);
-  background: var(--surface);
-  color: var(--text-dim);
-  font-size: 0.85rem;
-  font-weight: 700;
-  font-family: 'Cairo', sans-serif;
-  cursor: pointer;
-  transition: all 0.3s;
-  min-width: 100px;
-}
-.lang-btn:hover { border-color: var(--gold); color: var(--gold); }
-.lang-btn.active {
-  border-color: var(--gold);
-  background: var(--gold-dim);
-  color: var(--gold);
-  box-shadow: 0 4px 16px rgba(201,168,76,0.15);
-}
-.lang-btn .lang-flag {
-  font-size: 1.6rem;
-  line-height: 1;
-}
-
-/* ========== SUPPORT MODAL — NAVIGATION & LONG-PRESS ========== */
-.support-nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s;
-  z-index: 10;
-  -webkit-tap-highlight-color: transparent;
-  outline: none;
-  font-size: 1.2rem;
-  user-select: none;
-}
-.support-nav-btn:hover {
-  background: rgba(201,168,76,0.15);
-  border-color: var(--gold);
-  color: var(--gold);
-}
-.support-nav-btn:active { transform: translateY(-50%) scale(0.9); }
-.support-nav-btn.prev { left: 1rem; }
-.support-nav-btn.next { right: 1rem; }
-
-.support-pause-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.35);
-  backdrop-filter: blur(4px);
-  z-index: 5;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-.support-pause-overlay.show { opacity: 1; }
-.support-pause-overlay .pause-icon {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-.support-pause-overlay .pause-icon svg { width: 24px; height: 24px; }
-
-.support-hint {
-  position: absolute;
-  bottom: 1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.25);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.support-modal.open .support-hint { opacity: 1; transition-delay: 2s; }
-
-/* Touch area for long-press */
-.support-touch-area {
-  position: absolute;
-  inset: 0;
-  z-index: 8;
-  cursor: grab;
-}
-.support-touch-area:active { cursor: grabbing; }
-
-@media (max-width: 600px) {
-  .support-nav-btn { width: 38px; height: 38px; font-size: 1rem; }
-  .support-nav-btn.prev { left: 0.5rem; }
-  .support-nav-btn.next { right: 0.5rem; }
-}
-
-/* ========== RTL / LAYOUT DIRECTION ========== */
-html[dir="ltr"] body { direction: ltr; text-align: left; }
-html[dir="ltr"] .nav-brand-text { text-align: left; }
-html[dir="ltr"] .mmenu-item { text-align: left; flex-direction: row-reverse; }
-html[dir="ltr"] .mmenu-item .mmenu-icon { margin-right: 0; margin-left: 12px; }
-html[dir="ltr"] .about-hero,
-html[dir="ltr"] .section-head,
-html[dir="ltr"] .about-story-content,
-html[dir="ltr"] .about-footer-note { text-align: left; }
-html[dir="ltr"] .about-story { direction: ltr; }
-html[dir="ltr"] .about-story-visual { order: -1; }
-html[dir="ltr"] .team-section-title { text-align: left; }
-html[dir="ltr"] .team-card { text-align: left; }
-html[dir="ltr"] .team-card-avatar { margin: 0 0 1.2rem 0; }
-html[dir="ltr"] .mission-card { text-align: left; }
-html[dir="ltr"] .mission-icon { margin: 0 0 1.2rem 0; }
-html[dir="ltr"] .about-hero-desc { margin: 0; }
 
 /* ========== MOBILE MENU — NEW BADGE ========== */
 .mmenu-new-badge {
@@ -1634,7 +1215,7 @@ html[dir="ltr"] .about-hero-desc { margin: 0; }
 .support-slide {
   position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.1rem;
   opacity:0; transform:translateY(24px) scale(0.96);
-  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  transition:opacity 0.6s var(--ease-press), transform 0.6s var(--ease-press);
   pointer-events:none; padding:0 0.5rem;
 }
 .support-slide.active { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
@@ -1680,77 +1261,78 @@ html[dir="ltr"] .about-hero-desc { margin: 0; }
 }
 
 /* ========== ABOUT SITE PAGE ========== */
-.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
-.about-visual { position:relative; display:flex; align-items:center; justify-content:center; }
-.about-orb {
-  width:300px; height:300px; border-radius:50%;
-  background:linear-gradient(135deg,rgba(12,17,32,0.7),rgba(7,9,15,0.9));
-  border:2px solid var(--border); display:flex; align-items:center; justify-content:center;
-  position:relative; animation:float 6s ease-in-out infinite;
+/* ========== ABOUT PAGE ========== */
+.about-hero { max-width:720px; margin:0 auto 4rem; text-align:center; }
+.about-statement {
+  font-family:'Noto Kufi Arabic',sans-serif; font-weight:900;
+  font-size:clamp(1.5rem,3.4vw,2.3rem); line-height:1.6;
+  color:var(--white); margin-bottom:1.3rem;
 }
-.about-orb::before {
-  content:''; position:absolute; inset:-18px; border-radius:50%;
-  border:1px dashed rgba(201,168,76,0.18); animation:spin 22s linear infinite;
+.about-statement .accent { color:var(--gold); }
+.about-lede { color:var(--text-dim); line-height:2; font-size:0.92rem; max-width:600px; margin:0 auto; }
+
+.about-team-section { max-width:760px; margin:0 auto; }
+.about-team-label {
+  display:flex; align-items:center; gap:0.9rem;
+  color:var(--text-muted); font-size:0.76rem; font-weight:700; letter-spacing:0.5px;
+  margin-bottom:1.3rem;
 }
-.about-orb svg { width:110px; height:110px; opacity:0.65; }
-.about-content h3 { font-family:'Tajawal',sans-serif; font-size:1.7rem; font-weight:900; color:var(--gold); margin-bottom:1rem; }
-.about-content p { color:var(--text-dim); line-height:2; margin-bottom:1.2rem; font-size:0.9rem; }
-.team-list { display:flex; flex-direction:column; gap:0.9rem; margin-top:1.8rem; }
-.team-member {
-  display:flex; align-items:center; gap:1rem;
+.about-team-label::before, .about-team-label::after { content:''; flex:1; height:1px; background:var(--border2); }
+
+.about-team-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.about-member {
+  display:flex; align-items:center; gap:1.1rem;
   background:var(--surface); border:1px solid var(--border2);
-  border-radius:var(--radius-sm); padding:0.9rem 1.2rem; transition:all 0.3s;
+  border-radius:var(--radius); padding:1.3rem 1.4rem;
+  transition:border-color 0.3s, background 0.3s, transform 0.3s;
 }
-.team-member:hover { border-color:var(--border); background:var(--gold-dim); transform:translateX(-5px); }
-.team-av {
-  width:44px; height:44px; border-radius:50%;
+.about-member:hover { border-color:var(--border); background:var(--gold-dim); transform:translateY(-3px); }
+.about-member--lead { grid-column:1 / -1; padding:1.6rem 1.7rem; }
+
+.about-member-avatar-wrap { position:relative; flex-shrink:0; }
+.about-member-avatar {
+  width:54px; height:54px; border-radius:50%;
   background:linear-gradient(135deg,var(--gold),var(--gold2));
   display:flex; align-items:center; justify-content:center;
-  font-family:'Tajawal',sans-serif; font-weight:900; color:var(--bg); font-size:0.95rem;
-  flex-shrink:0;
+  font-family:'Tajawal',sans-serif; font-weight:900; color:var(--bg); font-size:1.05rem;
 }
-.team-info h4 { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:2px; }
-.team-info span { font-size:0.72rem; color:var(--text-muted); }
+.about-member--lead .about-member-avatar { width:74px; height:74px; font-size:1.45rem; }
+.about-member-badge {
+  position:absolute; top:-5px; right:-5px; width:21px; height:21px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg2); border:1px solid var(--border); border-radius:50%;
+}
+.about-member-badge svg { width:11px; height:11px; color:var(--gold); }
+.about-member-name { font-size:0.98rem; font-weight:700; color:var(--white); margin-bottom:3px; }
+.about-member--lead .about-member-name { font-size:1.18rem; }
+.about-member-role { font-size:0.76rem; color:var(--text-muted); line-height:1.6; }
+.about-member--lead .about-member-role { font-size:0.83rem; color:var(--text-dim); }
 
-/* ========== ABOUT — REVERSIBLE "DOCUMENT UNVEIL" ==========
-   The two halves slide in from opposite sides with a slight rotate,
-   like unfolding an official letter — and fold back on exit, either
-   scroll direction. Distinct from every other section's motion. */
-.about-visual.about-reveal-left,
-.about-content.about-reveal-right {
-  transition:opacity 0.75s cubic-bezier(0.16,1,0.3,1), transform 0.75s cubic-bezier(0.16,1,0.3,1);
+@media (max-width:640px) {
+  .about-team-grid { grid-template-columns:1fr; }
+  .about-member--lead { padding:1.4rem 1.3rem; }
+}
+
+/* ---- Reveal: statement settles in first, team cards cascade after ---- */
+.about-hero-reveal {
+  opacity:0; transform:translateY(22px);
+  transition:opacity 0.7s var(--ease-press), transform 0.7s var(--ease-press);
   will-change:transform, opacity;
 }
-.about-visual.about-reveal-left   { opacity:0; transform:translateX(-70px) rotate(-6deg) scale(0.88); }
-.about-content.about-reveal-right { opacity:0; transform:translateX(70px)  rotate(4deg)  scale(0.92); }
-.about-visual.about-reveal-left.exiting {
-  transform:translateX(-46px) rotate(5deg) scale(0.93);
-  transition:opacity 0.5s ease, transform 0.5s ease;
-}
-.about-content.about-reveal-right.exiting {
-  transform:translateX(46px) rotate(-4deg) scale(0.95);
-  transition:opacity 0.5s ease, transform 0.5s ease;
-}
-.about-visual.about-reveal-left.visible,
-.about-content.about-reveal-right.visible { opacity:1; transform:translateX(0) rotate(0deg) scale(1); }
+.about-hero-reveal.exiting { transform:translateY(-14px); transition:opacity 0.4s ease, transform 0.4s ease; }
+.about-hero-reveal.visible { opacity:1; transform:translateY(0); }
 
-/* ---- Team list: cascading slide-up, one after another ---- */
-.team-member.team-reveal {
-  opacity:0;
-  transform:translateY(22px) scale(0.95);
-  transition:opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, background 0.3s;
+.about-member-reveal {
+  opacity:0; transform:translateY(22px) scale(0.96);
+  transition:opacity 0.55s var(--ease-press), transform 0.55s var(--ease-press), border-color 0.3s, background 0.3s;
   will-change:transform, opacity;
 }
-.team-member.team-reveal.exiting {
-  transform:translateY(-16px) scale(0.97);
-  transition:opacity 0.4s ease, transform 0.4s ease;
-}
-.team-member.team-reveal.visible { opacity:1; transform:translateY(0) scale(1); }
+.about-member-reveal.exiting { transform:translateY(-16px) scale(0.97); transition:opacity 0.4s ease, transform 0.4s ease; }
+.about-member-reveal.visible { opacity:1; transform:translateY(0) scale(1); }
 
 @media (prefers-reduced-motion: reduce) {
-  .about-visual.about-reveal-left, .about-visual.about-reveal-left.exiting, .about-visual.about-reveal-left.visible,
-  .about-content.about-reveal-right, .about-content.about-reveal-right.exiting, .about-content.about-reveal-right.visible,
-  .team-member.team-reveal, .team-member.team-reveal.exiting, .team-member.team-reveal.visible {
+  .about-hero-reveal, .about-hero-reveal.exiting, .about-hero-reveal.visible,
+  .about-member-reveal, .about-member-reveal.exiting, .about-member-reveal.visible {
     opacity:1; transform:none; transition:none;
   }
 }
@@ -1820,7 +1402,7 @@ footer::before {
 
 @media (hover: none) and (pointer: coarse) {
   .stat-cell:hover, .teacher-row:hover, .student-card:hover, .video-card:hover,
-  .photo-card:hover, .team-member:hover, .p-chip:hover, .t-modal-cell:hover,
+  .photo-card:hover, .about-member:hover, .p-chip:hover, .t-modal-cell:hover,
   .filter-tab:hover {
     transform:none;
   }
@@ -1851,21 +1433,26 @@ footer::before {
   .hero-desc { margin-bottom:1.5rem; }
   .stats-strip { padding:0 2rem 2.5rem; }
 }
+/* A phone rotated to landscape is often wider than the 600px portrait
+   trigger below (e.g. ~850px), which would hide the bottom app nav and
+   leave only the hamburger. Bring it back — and its padding offsets —
+   for any touch device this short, regardless of width. */
+@media (max-height: 500px) and (pointer: coarse) {
+  #bottomNav { display:block; }
+  .section-wrap { padding-bottom:calc(72px + env(safe-area-inset-bottom) + 0.5rem) !important; }
+  footer { padding-bottom:calc(72px + env(safe-area-inset-bottom) + 0.5rem) !important; }
+  #scrollTop { bottom:calc(70px + env(safe-area-inset-bottom) + 0.4rem); }
+}
 
 /* ========== MOBILE — RESPONSIVE ========== */
 @media (max-width: 900px) {
   :root { --nav-h: var(--mobile-nav-h); }
   #navbar { padding:0 1rem; height:var(--mobile-nav-h); }
-  .nav-links { display:none; }
-  .hamburger { display:flex; }
   .principal-hero-row { grid-template-columns:1fr; }
   .principal-portrait-area { min-height:260px; order:-1; }
   .principal-info { padding:2rem 1.5rem; text-align:center; }
   .principal-chips { grid-template-columns:1fr 1fr; }
   .principal-role-chip { justify-content:center; margin-left:auto; margin-right:auto; }
-  .about-grid { grid-template-columns:1fr; text-align:center; }
-  .about-visual { order:-1; }
-  .about-orb { width:220px; height:220px; }
   .videos-grid { grid-template-columns:1fr; }
   .stats-strip-inner { grid-template-columns:repeat(2,1fr); gap:0.75rem; }
   .stat-cell { border-radius:14px; }
@@ -1962,10 +1549,9 @@ footer::before {
   .t-modal-name { font-size:1.2rem; }
 
   /* About */
-  .about-grid { gap:2rem; }
-  .about-orb { width:160px; height:160px; }
-  .about-orb svg { width:60px; height:60px; }
-  .team-member { border-radius:12px; }
+  .about-statement { font-size:1.35rem; }
+  .about-member { border-radius:12px; padding:1.1rem 1.2rem; }
+  .about-member--lead { padding:1.3rem 1.2rem; }
 
   /* Footer */
   footer { padding:2rem 1rem 6rem; } /* extra bottom for app nav */
@@ -1976,6 +1562,16 @@ footer::before {
 
   /* Scroll top - avoid bottom nav */
   #scrollTop { bottom:5rem; left:1rem; width:40px; height:40px; }
+}
+
+/* ========== SMALLEST PHONES (SE / compact Android, ~360px and under) ========== */
+@media (max-width: 380px) {
+  /* Two columns leaves ~140px per card at this width — too tight for the
+     avatar + rank badge + chips + quote. One column keeps everything legible. */
+  .students-grid { grid-template-columns:1fr; }
+  .student-card { padding:1.4rem 1.2rem; }
+  .hero-title { font-size:clamp(1.8rem,11vw,2.4rem); }
+  .stat-num { font-size:1.5rem; }
 }
 
 /* ========== BOTTOM APP NAV — SVG notch bar ========== */
@@ -2035,7 +1631,7 @@ footer::before {
   width:36px; height:36px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   transition:background 0.3s ease, box-shadow 0.3s ease,
-             width 0.36s cubic-bezier(0.34,1.56,0.64,1), height 0.36s cubic-bezier(0.34,1.56,0.64,1);
+             width 0.36s var(--ease-spring), height 0.36s var(--ease-spring);
 }
 .bnav-item.active .bnav-icon {
   width:42px; height:42px;
@@ -2090,7 +1686,6 @@ footer::before {
   #scrollTop { bottom:calc(76px + env(safe-area-inset-bottom) + 0.4rem); }
 }
 </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -2134,36 +1729,38 @@ footer::before {
       <span>ثانوية · إدارة الحسنية</span>
     </div>
   </button>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#" onclick="goPage('home',this)" class="active" data-page="home">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      الرئيسية
-    </a></li>
-    <li><a href="#" onclick="goPage('principal',this)" data-page="principal">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
-      المدير والمدرسون
-    </a></li>
-    <li><a href="#" onclick="goPage('students',this)" data-page="students">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      الطلاب المتفوقون
-    </a></li>
-    <li><a href="#" onclick="goPage('memories',this)" data-page="memories">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      ذكريات
-    </a></li>
-    <li><a href="#" onclick="goPage('about',this)" data-page="about">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      عن الموقع
-    </a></li>
-    <!-- ⚠️ TODO: href="#" is a placeholder — point this at the school's real official site/page once it exists -->
-    <li><a href="#" class="nav-school-btn" target="_blank" rel="noopener noreferrer">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      موقع المدرسة
-    </a></li>
-  </ul>
-  <button type="button" class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="فتح القائمة" aria-expanded="false" aria-controls="mobileMenu">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="nav-right-group">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" onclick="goPage('home',this)" class="active" data-page="home">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        الرئيسية
+      </a></li>
+      <li><a href="#" onclick="goPage('principal',this)" data-page="principal">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+        المدير والمدرسون
+      </a></li>
+      <li><a href="#" onclick="goPage('students',this)" data-page="students">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        الطلاب المتفوقون
+      </a></li>
+      <li><a href="#" onclick="goPage('memories',this)" data-page="memories">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        ذكريات
+      </a></li>
+      <li><a href="#" onclick="goPage('about',this)" data-page="about">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        عن الموقع
+      </a></li>
+      <!-- ⚠️ TODO: href="#" is a placeholder — point this at the school's real official site/page once it exists -->
+      <li><a href="#" class="nav-school-btn" target="_blank" rel="noopener noreferrer">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        موقع المدرسة
+      </a></li>
+    </ul>
+    <button type="button" class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="فتح القائمة" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
 
 <!-- ======== MOBILE MENU ======== -->
@@ -2174,7 +1771,36 @@ footer::before {
     <div class="mmenu-sub">ثانوية — إدارة الحسنية</div>
   </div>
   <nav class="mmenu-nav">
-    <!-- الروابط الرئيسية مخفية لأنها موجودة في شريط التنقل العلوي -->
+    <button class="mmenu-item" onclick="goPage('home');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </span>
+      <span>الرئيسية</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('principal');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </span>
+      <span>المدير والمدرسون</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('students');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </span>
+      <span>الطلاب المتفوقون</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('memories');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </span>
+      <span>ذكريات</span>
+    </button>
+    <button class="mmenu-item" onclick="goPage('about');closeMenu()">
+      <span class="mmenu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </span>
+      <span>عن الموقع</span>
+    </button>
   </nav>
   <div class="mmenu-divider"></div>
   <div class="mmenu-utility">
@@ -2319,6 +1945,7 @@ footer::before {
     </div>
 
     <div class="principal-hero-row reveal">
+      <!-- Arabic RTL: photo panel is first in DOM = appears on RIGHT visually -->
       <div class="principal-portrait-area">
         <span class="bg-letter">ف</span>
         <svg class="principal-portrait-svg" viewBox="0 0 280 340" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2333,14 +1960,20 @@ footer::before {
             </linearGradient>
           </defs>
           <ellipse cx="140" cy="280" rx="110" ry="45" fill="rgba(201,168,76,0.06)"/>
+          <!-- Head -->
           <circle cx="140" cy="105" r="54" fill="url(#p-fig)" stroke="rgba(201,168,76,0.3)" stroke-width="1.5"/>
           <circle cx="140" cy="105" r="38" fill="rgba(12,17,32,0.5)"/>
+          <!-- Body -->
           <path d="M65 340 Q80 228 140 215 Q200 228 215 340Z" fill="url(#p-fig)" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+          <!-- Collar -->
           <path d="M118 215 L140 238 L162 215" stroke="rgba(201,168,76,0.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Tie -->
           <path d="M140 238 L132 275 L140 285 L148 275Z" fill="rgba(201,168,76,0.15)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+          <!-- Initial -->
           <text x="140" y="118" text-anchor="middle" dominant-baseline="middle"
             font-family="Tajawal, Cairo, sans-serif" font-size="36" font-weight="900"
             fill="rgba(201,168,76,0.92)">ف</text>
+          <!-- Bottom fade -->
           <rect x="0" y="270" width="280" height="70" fill="url(#p-fade)" opacity="0.85"/>
         </svg>
         <div class="principal-badge-tag">مدير المدرسة — إدارة الحسنية</div>
@@ -2352,12 +1985,12 @@ footer::before {
           مدير المدرسة — رئيس الهيئة الإدارية
         </div>
         <p class="principal-bio">
-          أ. فتحي شكري، قائد تربوي متميز يعمل في إطار إدارة الحسنية التعليمية بمحافظة مصر. يحمل رؤية واضحة لبناء جيل ثانوي متوازن متسلح بالعلم والقيم الأصيلة. يُدير المدرسة بأسلوب إنساني راقٍ يجمع بين الحزم والمرونة، ويؤمن إيمانًا راسخًا بأن النجاح الحقيقي يبدأ من داخل الفصل الدراسي وينعكس على المجتمع بأسره.
+          الأستاذ فتحي شكري، مديرٌ يجمع بين الحزم والقرب من الطلاب والمعلمين على حدٍّ سواء. يقود مسيرة مدرسة شهيد حسن حمدي برؤية تربوية تضع الطالب في قلب كل قرار، وإيمانٍ راسخ بأن بيئة مدرسية صحية ومتوازنة هي الأساس الذي يُبنى عليه أي تفوّق علمي حقيقي.
         </p>
         <div class="principal-chips">
           <div class="p-chip"><span class="lbl">السن</span><span class="val">٥٨ سنة</span></div>
           <div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">٧ سنوات</span></div>
-          <div class="p-chip"><span class="lbl">التخصص</span><span class="val">مدير مدرسة ثانوية</span></div>
+          <div class="p-chip"><span class="lbl">التخصص</span><span class="val">إدارة تربوية</span></div>
           <div class="p-chip"><span class="lbl">المؤهل</span><span class="val">ماجستير تربية</span></div>
           <div class="p-chip"><span class="lbl">مكان العمل</span><span class="val">مدرسة شهيد حسن حمدي</span></div>
           <div class="p-chip"><span class="lbl">التبعية الإدارية</span><span class="val">إدارة الحسنية</span></div>
@@ -2390,8 +2023,8 @@ footer::before {
           <button class="filter-tab" data-filter="فرنساوي" onclick="filterTeachers('فرنساوي',this)">فرنساوي</button>
         </div>
         <button class="filter-dropdown-btn" onclick="toggleFilterDropdown('filterDropdown')" id="filterDropBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-          اختار مادة
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          تصفية
         </button>
       </div>
       <div class="filter-dropdown" id="filterDropdown">
@@ -2477,99 +2110,63 @@ footer::before {
 <!-- ======== PAGE: ABOUT ======== -->
 <div class="page" id="page-about">
   <div class="section-wrap">
-    <!-- Hero -->
-    <div class="about-hero reveal">
-      <div class="about-hero-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <div class="section-head">
+      <div class="section-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         عن الموقع
       </div>
-      <h2 class="about-hero-title">نبني جسرًا رقميًا بين <span>المدرسة والمجتمع</span></h2>
-      <p class="about-hero-desc">
-        منصة متكاملة تهدف إلى تقديم تجربة رقمية فريدة لمدرسة شهيد حسن حمدي الثانوية،
-        تجمع بين الأناقة والوظائف العملية لخدمة الطلاب وأولياء الأمور على حد سواء.
+      <h2 class="section-title">معلومات <span>عن الموقع</span></h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-hero about-hero-reveal">
+      <p class="about-statement">لم يطلب منّا أحد أن نبني <span class="accent">هذا الموقع</span></p>
+      <p class="about-lede">
+        بنيناه لأننا نؤمن أن مدرسة شهيد حسن حمدي تستحق واجهة رقمية بحجم تاريخها وطلابها.
+        هذا ليس الموقع الرسمي للمدرسة، بل مساحة صنعها فريق صغير من الطلاب بشغف،
+        لتكون نافذة تُعرّف بالمعلمين والمتفوقين والذكريات التي تستحق أن تُروى.
       </p>
     </div>
 
-    <!-- Mission Cards -->
-    <div class="about-mission-grid">
-      <div class="mission-card reveal">
-        <div class="mission-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <div class="about-team-section">
+      <div class="about-team-label">خلف الموقع</div>
+      <div class="about-team-grid">
+        <div class="about-member about-member--lead about-member-reveal" style="transition-delay:0s">
+          <div class="about-member-avatar-wrap">
+            <div class="about-member-avatar">م</div>
+            <div class="about-member-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+          </div>
+          <div>
+            <h4 class="about-member-name">محمود أحمد سعيد</h4>
+            <p class="about-member-role">مطوّر الموقع ومصمّمه</p>
+          </div>
         </div>
-        <div class="mission-title">التميز الأكاديمي</div>
-        <div class="mission-desc">عرض شامل لكادر المدرسة والطلاب المتفوقين بأسلوب عصري يليق بإنجازاتهم.</div>
-      </div>
-      <div class="mission-card reveal">
-        <div class="mission-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div class="about-member about-member-reveal" style="transition-delay:0.1s">
+          <div class="about-member-avatar-wrap">
+            <div class="about-member-avatar">س</div>
+            <div class="about-member-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+          </div>
+          <div>
+            <h4 class="about-member-name">سلمى سخيلي</h4>
+            <p class="about-member-role">شريكة في التفكير والتخطيط</p>
+          </div>
         </div>
-        <div class="mission-title">الموثوقية والأمان</div>
-        <div class="mission-desc">محتوى دقيق ومُحدّث باستمرار مع مراعاة خصوصية الجميع وحقوق الصور والبيانات.</div>
-      </div>
-      <div class="mission-card reveal">
-        <div class="mission-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M6 8l3 3 3-3 3 3 3-3"/></svg>
-        </div>
-        <div class="mission-title">تجربة مستخدم سلسة</div>
-        <div class="mission-desc">تصميم متجاوب مع جميع الأجهزة مع واجهة سهلة الاستخدام وصولاً سريعًا للمعلومات.</div>
-      </div>
-    </div>
-
-    <!-- Story -->
-    <div class="about-story">
-      <div class="about-story-visual about-reveal-left">
-        <div class="story-orb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
-            <path d="M6 8l3 3 3-3 3 3 3-3"/>
-          </svg>
+        <div class="about-member about-member-reveal" style="transition-delay:0.2s">
+          <div class="about-member-avatar-wrap">
+            <div class="about-member-avatar">ر</div>
+            <div class="about-member-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+          </div>
+          <div>
+            <h4 class="about-member-name">ريماس حبيب</h4>
+            <p class="about-member-role">مساهمة في التفكير والتخطيط</p>
+          </div>
         </div>
       </div>
-      <div class="about-story-content about-reveal-right">
-        <h3>من نحن</h3>
-        <p>
-          تم إنشاء هذا الموقع بهدف تقديم واجهة رقمية رسمية ومتكاملة لمدرسة شهيد حسن حمدي الثانوية التابعة لإدارة الحسنية،
-          ليكون منصة تواصل فعّالة بين المدرسة وأولياء الأمور والطلاب.
-        </p>
-        <p>
-          يجمع الموقع بين التصميم العصري والمحتوى الوافي، مع التركيز على تجربة المستخدم السلسة
-          والوصول السريع للمعلومات عبر جميع الأجهزة.
-        </p>
-      </div>
-    </div>
-
-    <!-- Team -->
-    <h3 class="team-section-title reveal">فريق <span>العمل</span></h3>
-    <div class="team-grid">
-      <div class="team-card reveal">
-        <div class="team-card-avatar">م</div>
-        <div class="team-card-name">محمود أحمد سعيد</div>
-        <div class="team-card-role">مطور الموقع · التصميم والتطوير</div>
-        <div class="team-card-bio">المسؤول عن بناء وتصميم الموقع من الصفر، مع العمل على تجربة المستخدم والواجهة الأمامية.</div>
-      </div>
-      <div class="team-card reveal">
-        <div class="team-card-avatar">س</div>
-        <div class="team-card-name">سلمى سخيلي</div>
-        <div class="team-card-role">المساهمة في التفكير والتخطيط</div>
-        <div class="team-card-bio">ساهمت في وضع الرؤية الأولية للموقع وتنظيم المحتوى بما يخدم الطلاب والزوار.</div>
-      </div>
-      <div class="team-card reveal">
-        <div class="team-card-avatar">ر</div>
-        <div class="team-card-name">ريماس حبيب</div>
-        <div class="team-card-role">المساهمة في التفكير والتخطيط</div>
-        <div class="team-card-bio">شاركت في تخطيط هيكل الموقع واقتراحات تطوير المحتوى ليصبح أكثر فائدة.</div>
-      </div>
-    </div>
-
-    <!-- Footer Note -->
-    <div class="about-footer-note reveal">
-      <p>
-        <strong>تصميم وتطوير:</strong> محمود أحمد سعيد<br>
-        <strong>فريق التفكير:</strong> سلمى سخيلي · ريماس حبيب<br>
-        © <span class="copyright-year">٢٠٢٧</span> مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة
-      </p>
     </div>
   </div>
   <footer>
@@ -3008,7 +2605,6 @@ function goPage(id, linkEl) {
   if (id === 'principal' && !document.getElementById('teachersList').childElementCount) { renderTeachersList('teachersList','filterTabs'); }
   if (id === 'students'  && !document.getElementById('studentsGrid').childElementCount) { renderStudents(); }
   if (id === 'memories'  && !document.getElementById('videosGrid').childElementCount)   { renderMemories(); }
-  // about page init removed
 
   setTimeout(setupReveal, 80);
 }
@@ -3333,7 +2929,7 @@ function initTiltCards() {
   let activeEl = null;
 
   function resetTilt(el) {
-    el.style.transition = 'transform 0.5s cubic-bezier(0.23,1,0.32,1)';
+    el.style.transition = 'transform 0.5s var(--ease-out)';
     el.style.transform = '';
   }
 
@@ -3739,11 +3335,6 @@ function runSupportSequence() {
 }
 
 /* ============================================================
-   MAHMOUD LIVE AGE
-============================================================ */
-// Team ages removed per request
-
-/* ============================================================
    COUNTER ANIMATION
 ============================================================ */
 function initCounters() {
@@ -3760,7 +3351,7 @@ function initCounters() {
         cell.style.opacity = '0';
         cell.style.transform = 'translateY(20px) scale(0.94)';
         setTimeout(() => {
-          cell.style.transition = 'opacity 0.55s ease, transform 0.55s cubic-bezier(0.175,0.885,0.32,1.275)';
+          cell.style.transition = 'opacity 0.55s ease, transform 0.55s var(--ease-bounce)';
           cell.style.opacity = '';
           cell.style.transform = '';
         }, idx * 90);
@@ -3840,8 +3431,8 @@ function setupMemoriesReveal() {
   setupReversibleReveal('photos', '#photosGrid .photo-card.photo-reveal');
 }
 function setupAboutReveal() {
-  setupReversibleReveal('about-halves', '.about-reveal-left, .about-reveal-right');
-  setupReversibleReveal('about-team', '.team-member.team-reveal');
+  setupReversibleReveal('about-hero', '.about-hero-reveal');
+  setupReversibleReveal('about-team', '.about-member-reveal');
 }
 
 /* ============================================================
