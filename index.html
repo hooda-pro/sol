@@ -1948,6 +1948,7 @@ footer::before {
       <!-- Arabic RTL: photo panel is first in DOM = appears on RIGHT visually -->
       <div class="principal-portrait-area">
         <span class="bg-letter">ف</span>
+        <!-- portrait initial below reflects real principal's name: فتحي -->
         <svg class="principal-portrait-svg" viewBox="0 0 280 340" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="p-fig" x1="0.5" y1="0" x2="0.5" y2="1">
@@ -1979,19 +1980,15 @@ footer::before {
         <div class="principal-badge-tag">مدير المدرسة — إدارة الحسنية</div>
       </div>
       <div class="principal-info">
-        <h2 class="principal-name">أ. فتحي شكري</h2>
+        <h2 class="principal-name">أ. فتحي محمد حسن مرسي</h2>
         <div class="principal-role-chip">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           مدير المدرسة — رئيس الهيئة الإدارية
         </div>
         <p class="principal-bio">
-          الأستاذ فتحي شكري، مديرٌ يجمع بين الحزم والقرب من الطلاب والمعلمين على حدٍّ سواء. يقود مسيرة مدرسة شهيد حسن حمدي برؤية تربوية تضع الطالب في قلب كل قرار، وإيمانٍ راسخ بأن بيئة مدرسية صحية ومتوازنة هي الأساس الذي يُبنى عليه أي تفوّق علمي حقيقي.
+          الأستاذ فتحي محمد حسن مرسي، مدير مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.
         </p>
         <div class="principal-chips">
-          <div class="p-chip"><span class="lbl">السن</span><span class="val">٥٨ سنة</span></div>
-          <div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">٧ سنوات</span></div>
-          <div class="p-chip"><span class="lbl">التخصص</span><span class="val">إدارة تربوية</span></div>
-          <div class="p-chip"><span class="lbl">المؤهل</span><span class="val">ماجستير تربية</span></div>
           <div class="p-chip"><span class="lbl">مكان العمل</span><span class="val">مدرسة شهيد حسن حمدي</span></div>
           <div class="p-chip"><span class="lbl">التبعية الإدارية</span><span class="val">إدارة الحسنية</span></div>
         </div>
@@ -2021,6 +2018,12 @@ footer::before {
           <button class="filter-tab" data-filter="دينية" onclick="filterTeachers('دينية',this)">تربية دينية</button>
           <button class="filter-tab" data-filter="انجليزي" onclick="filterTeachers('انجليزي',this)">انجليزي</button>
           <button class="filter-tab" data-filter="فرنساوي" onclick="filterTeachers('فرنساوي',this)">فرنساوي</button>
+          <button class="filter-tab" data-filter="رياضيات" onclick="filterTeachers('رياضيات',this)">رياضيات</button>
+          <button class="filter-tab" data-filter="جغرافيا" onclick="filterTeachers('جغرافيا',this)">جغرافيا</button>
+          <button class="filter-tab" data-filter="نفس" onclick="filterTeachers('نفس',this)">علم نفس</button>
+          <button class="filter-tab" data-filter="اجتماعي" onclick="filterTeachers('اجتماعي',this)">أخصائي اجتماعي</button>
+          <button class="filter-tab" data-filter="تكنولوجيا" onclick="filterTeachers('تكنولوجيا',this)">تكنولوجيا</button>
+          <button class="filter-tab" data-filter="عام" onclick="filterTeachers('عام',this)">عام</button>
         </div>
         <button class="filter-dropdown-btn" onclick="toggleFilterDropdown('filterDropdown')" id="filterDropBtn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
@@ -2038,6 +2041,12 @@ footer::before {
         <button class="fdrop-item" data-filter="دينية" onclick="filterTeachers('دينية',this,true)">☪️ تربية دينية</button>
         <button class="fdrop-item" data-filter="انجليزي" onclick="filterTeachers('انجليزي',this,true)">🇬🇧 انجليزي</button>
         <button class="fdrop-item" data-filter="فرنساوي" onclick="filterTeachers('فرنساوي',this,true)">🇫🇷 فرنساوي</button>
+        <button class="fdrop-item" data-filter="رياضيات" onclick="filterTeachers('رياضيات',this,true)">➗ رياضيات</button>
+        <button class="fdrop-item" data-filter="جغرافيا" onclick="filterTeachers('جغرافيا',this,true)">🗺️ جغرافيا</button>
+        <button class="fdrop-item" data-filter="نفس" onclick="filterTeachers('نفس',this,true)">🧩 علم نفس</button>
+        <button class="fdrop-item" data-filter="اجتماعي" onclick="filterTeachers('اجتماعي',this,true)">🤝 أخصائي اجتماعي</button>
+        <button class="fdrop-item" data-filter="تكنولوجيا" onclick="filterTeachers('تكنولوجيا',this,true)">💻 تكنولوجيا</button>
+        <button class="fdrop-item" data-filter="عام" onclick="filterTeachers('عام',this,true)">📖 عام</button>
       </div>
     </div>
     <div id="teachersList"></div>
@@ -2195,11 +2204,11 @@ footer::before {
     <div class="t-modal-name" id="mName">—</div>
     <div class="t-modal-sub"><span id="mSub">—</span></div>
     <div class="t-modal-grid">
-      <div class="t-modal-cell"><span class="lbl">السن</span><span class="val" id="mAge">—</span></div>
-      <div class="t-modal-cell"><span class="lbl">الخبرة</span><span class="val" id="mExp">—</span></div>
+      <div class="t-modal-cell" id="mAgeCell"><span class="lbl">السن</span><span class="val" id="mAge">—</span></div>
+      <div class="t-modal-cell" id="mExpCell"><span class="lbl">الخبرة</span><span class="val" id="mExp">—</span></div>
       <div class="t-modal-cell"><span class="lbl">التخصص</span><span class="val" id="mSpec">—</span></div>
       <div class="t-modal-cell"><span class="lbl">المرحلة</span><span class="val" id="mGrade">—</span></div>
-      <div class="t-modal-cell"><span class="lbl">المنشأ</span><span class="val" id="mFrom">—</span></div>
+      <div class="t-modal-cell" id="mFromCell"><span class="lbl">المنشأ</span><span class="val" id="mFrom">—</span></div>
       <div class="t-modal-cell"><span class="lbl">يُدرِّس في</span><span class="val" id="mWhere">—</span></div>
     </div>
     <div class="t-modal-bio" id="mBio">—</div>
@@ -2398,116 +2407,179 @@ function updateCopyrightYear() {
 
 const teachers = [
   {
-    name:'أ. كريم الشاذلي', subject:'برمجة وحاسوب', age:32, exp:7,
-    spec:'Python · Web Dev · قواعد البيانات', grade:'الثانوية', icon:'ك', cat:'برمجة',
-    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. محمد الصادق إبراهيم', subject:'لغة عربية',
+    spec:'لغة عربية', grade:'الثانوية', icon:'م', cat:'عربي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
-    bio:'أ. كريم الشاذلي، مدرس حاسوب وبرمجة، عمره ٣٢ سنة، من القاهرة. متخصص في Python وتطوير الويب وقواعد البيانات. خريج كلية الحاسبات والمعلومات. يُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يجعل البرمجة بسيطة ومرحة للطلاب من خلال مشاريع حقيقية.'
+    bio:'أ. محمد الصادق إبراهيم، يقوم بتدريس مادة لغة عربية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'أ. مروان سيد فرحان', subject:'برمجة تطبيقات', age:29, exp:5,
-    spec:'تطبيقات موبايل · JavaScript', grade:'الثانوية', icon:'م', cat:'برمجة',
-    from:'الجيزة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. أحمد عبد القادر محمد', subject:'تدريس / مدرس',
+    spec:'تدريس / مدرس', grade:'الثانوية', icon:'أ', cat:'عام',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
-    bio:'أ. مروان سيد فرحان، مدرس برمجة تطبيقات موبايل وJavaScript، عمره ٢٩ سنة، من الجيزة. خريج هندسة حاسبات. يُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. يحمّس الطلاب لبناء تطبيقاتهم الخاصة بأيديهم.'
+    bio:'أ. أحمد عبد القادر محمد، يعمل بالتدريس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'أ. رانيا حسين الغزالي', subject:'لغة عربية', age:43, exp:17,
-    spec:'بلاغة وأدب وقواعد نحوية', grade:'الثانوية', icon:'ر', cat:'عربي',
-    from:'المنيا', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. السيد السيد احمد عبد العال', subject:'لغة عربية',
+    spec:'لغة عربية', grade:'الثانوية', icon:'ا', cat:'عربي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. السيد السيد احمد عبد العال، يقوم بتدريس مادة لغة عربية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. محمد حنفي محمد محمد', subject:'لغة إنجليزية',
+    spec:'لغة إنجليزية', grade:'الثانوية', icon:'م', cat:'انجليزي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. محمد حنفي محمد محمد، يقوم بتدريس مادة لغة إنجليزية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. شاكر عبد العزيز إسماعيل', subject:'لغة إنجليزية',
+    spec:'لغة إنجليزية', grade:'الثانوية', icon:'ش', cat:'انجليزي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. شاكر عبد العزيز إسماعيل، يقوم بتدريس مادة لغة إنجليزية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. فاروق اسكندر متنائيل', subject:'لغة إنجليزية',
+    spec:'لغة إنجليزية', grade:'الثانوية', icon:'ف', cat:'انجليزي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. فاروق اسكندر متنائيل، يقوم بتدريس مادة لغة إنجليزية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. السيد محمد أحمد علي سخيل', subject:'لغة إنجليزية',
+    spec:'لغة إنجليزية', grade:'الثانوية', icon:'ا', cat:'انجليزي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. السيد محمد أحمد علي سخيل، يقوم بتدريس مادة لغة إنجليزية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. إبراهيم عبد اللطيف إبراهيم', subject:'لغة فرنسية',
+    spec:'لغة فرنسية', grade:'الثانوية', icon:'إ', cat:'فرنساوي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. إبراهيم عبد اللطيف إبراهيم، يقوم بتدريس مادة لغة فرنسية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. الحسين محمد السيد يوسف', subject:'لغة فرنسية',
+    spec:'لغة فرنسية', grade:'الثانوية', icon:'ا', cat:'فرنساوي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. الحسين محمد السيد يوسف، يقوم بتدريس مادة لغة فرنسية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. محمد إبراهيم أحمد', subject:'لغة فرنسية',
+    spec:'لغة فرنسية', grade:'الثانوية', icon:'م', cat:'فرنساوي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. محمد إبراهيم أحمد، يقوم بتدريس مادة لغة فرنسية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. محمد موسى أحمد إبراهيم السعداوي', subject:'رياضيات',
+    spec:'رياضيات', grade:'الثانوية', icon:'م', cat:'رياضيات',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. محمد موسى أحمد إبراهيم السعداوي، يقوم بتدريس مادة رياضيات بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. عبد المجيد محمد أحمد', subject:'تاريخ',
+    spec:'تاريخ', grade:'الثانوية', icon:'ع', cat:'تاريخ',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. عبد المجيد محمد أحمد، يقوم بتدريس مادة تاريخ بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. محمد عبد الله عبد المعطي علاوي', subject:'جغرافيا',
+    spec:'جغرافيا', grade:'الثانوية', icon:'م', cat:'جغرافيا',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. محمد عبد الله عبد المعطي علاوي، يقوم بتدريس مادة جغرافيا بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. عادل عوض عبد الملاك', subject:'تربية دينية مسيحية',
+    spec:'تربية دينية مسيحية', grade:'الثانوية', icon:'ع', cat:'دينية',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. عادل عوض عبد الملاك، يقوم بتدريس مادة تربية دينية مسيحية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. محمد محمد عبد الحميد عبد الحق', subject:'أخصائي اجتماعي',
+    spec:'أخصائي اجتماعي', grade:'الثانوية', icon:'م', cat:'اجتماعي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'ذ',
+    bio:'أ. محمد محمد عبد الحميد عبد الحق، يقوم بتدريس مادة أخصائي اجتماعي بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
+  },
+  {
+    name:'أ. سهير جرجس المصيلحي', subject:'لغة عربية',
+    spec:'لغة عربية', grade:'الثانوية', icon:'س', cat:'عربي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. رانيا حسين الغزالي، مدرسة لغة عربية متخصصة في البلاغة والأدب وقواعد اللغة، عمرها ٤٣ سنة، من المنيا. خريجة دار العلوم جامعة القاهرة. تُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٧ عامًا. تُحبّب الطلاب في لغتهم العربية بأسلوب شيّق ومبتكر.'
+    bio:'أ. سهير جرجس المصيلحي، تقوم بتدريس مادة لغة عربية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'أ. محمود طاهر درويش', subject:'نحو وصرف', age:50, exp:24,
-    spec:'نحو وصرف وعلم العروض', grade:'الثانوية', icon:'م', cat:'عربي',
-    from:'المنصورة', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. محمود طاهر درويش، عميد في تدريس اللغة العربية، عمره ٥٠ سنة، من المنصورة. يحمل ليسانس لغة عربية من جامعة المنصورة. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. مرجع في النحو والصرف والعروض العربي.'
-  },
-  {
-    name:'أ. أحمد رفعت الحضري', subject:'تربية رياضية', age:34, exp:8,
-    spec:'ألعاب جماعية ولياقة بدنية', grade:'الثانوية', icon:'أ', cat:'رياضة',
-    from:'الغربية', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. أحمد رفعت الحضري، مدرس تربية رياضية متخصص في الألعاب الجماعية واللياقة البدنية، عمره ٣٤ سنة، من محافظة الغربية. خريج معهد التربية الرياضية. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٨ أعوام. يبني روح الفريق والصحة الجسدية لدى الطلاب.'
-  },
-  {
-    name:'أ. سامي عبد الرحمن نصار', subject:'علوم طبيعية', age:44, exp:18,
-    spec:'أحياء وكيمياء', grade:'الثانوية', icon:'س', cat:'علوم',
-    from:'محافظة الجيزة', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. سامي عبد الرحمن نصار، مدرس علوم طبيعية متخصص في الأحياء والكيمياء، عمره ٤٤ سنة، من محافظة الجيزة. خريج كلية العلوم جامعة القاهرة. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٥ عامًا. يتميز بأسلوبه التجريبي في شرح المفاهيم العلمية.'
-  },
-  {
-    name:'أ. هناء مصطفى كمال', subject:'فيزياء', age:38, exp:12,
-    spec:'فيزياء تطبيقية', grade:'الثانوية', icon:'هـ', cat:'علوم',
-    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. أميرة عبد الناصر عبد المنعم', subject:'لغة عربية',
+    spec:'لغة عربية', grade:'الثانوية', icon:'أ', cat:'عربي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. هناء مصطفى كمال، مدرسة فيزياء متخصصة في الفيزياء التطبيقية، عمرها ٣٨ سنة، من القاهرة. خريجة كلية العلوم جامعة عين شمس. تُدرّس في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تستخدم المعامل وأدوات القياس يوميًا لجعل الفيزياء حية وملموسة.'
+    bio:'أ. أميرة عبد الناصر عبد المنعم، تقوم بتدريس مادة لغة عربية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'أ. منى إبراهيم الطيب', subject:'أحياء', age:35, exp:9,
-    spec:'علم الخلية والوراثة', grade:'الثانوية', icon:'م', cat:'علوم',
-    from:'الإسكندرية', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. زينب محمد عبد الحميد عبد الحق', subject:'لغة فرنسية',
+    spec:'لغة فرنسية', grade:'الثانوية', icon:'ز', cat:'فرنساوي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. منى إبراهيم الطيب، مدرسة أحياء متخصصة في علم الخلية والوراثة، عمرها ٣٥ سنة، من الإسكندرية. خريجة كلية العلوم جامعة الإسكندرية. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. شغوفة بنقل حب علم الأحياء لطلاب الثانوية.'
+    bio:'أ. زينب محمد عبد الحميد عبد الحق، تقوم بتدريس مادة لغة فرنسية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'أ. سلوى محمد الديب', subject:'تاريخ', age:47, exp:21,
-    spec:'التاريخ الإسلامي والحديث', grade:'الثانوية', icon:'س', cat:'تاريخ',
-    from:'سوهاج', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. هانم محمد أحمد شريف', subject:'لغة فرنسية',
+    spec:'لغة فرنسية', grade:'الثانوية', icon:'ه', cat:'فرنساوي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. سلوى محمد الديب، مدرسة تاريخ متخصصة في التاريخ الإسلامي والحديث، عمرها ٤٧ سنة، من سوهاج. خريجة كلية الآداب قسم التاريخ جامعة سوهاج. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُحيي أحداث التاريخ بقصص شيّقة تشدّ الطلاب.'
+    bio:'أ. هانم محمد أحمد شريف، تقوم بتدريس مادة لغة فرنسية بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'أ. جمال فتحي عبد العزيز', subject:'فلسفة ومنطق', age:52, exp:26,
-    spec:'فلسفة وأخلاق وتفكير نقدي', grade:'الثانوية', icon:'ج', cat:'فلسفة',
-    from:'أسيوط', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. جمال فتحي عبد العزيز، مدرس فلسفة ومنطق متخصص في الأخلاق والتفكير النقدي، عمره ٥٢ سنة، من أسيوط. يحمل ليسانس فلسفة من جامعة أسيوط. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ٢٦ عامًا. يُعلّم طلابه بناء الحجج والتساؤل المنطقي.'
-  },
-  {
-    name:'أ. إيمان صالح الغزالي', subject:'تربية دينية', age:40, exp:14,
-    spec:'فقه وتفسير وسيرة نبوية', grade:'الثانوية', icon:'إ', cat:'دينية',
-    from:'القاهرة', where:'مدرسة شهيد حسن حمدي الثانوية',
+    name:'أ. هبة حماد محمد حسانين', subject:'علم نفس',
+    spec:'علم نفس', grade:'الثانوية', icon:'ه', cat:'نفس',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
-    bio:'أ. إيمان صالح الغزالي، مدرسة تربية دينية متخصصة في الفقه والتفسير والسيرة النبوية، عمرها ٤٠ سنة، من القاهرة. خريجة كلية الدراسات الإسلامية والعربية. تعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية. تُرسّخ القيم الإسلامية الأصيلة في نفوس الطلاب.'
+    bio:'أ. هبة حماد محمد حسانين، تقوم بتدريس مادة علم نفس بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'أ. خالد أسامة السيد', subject:'تربية دينية — فقه', age:41, exp:15,
-    spec:'فقه إسلامي وعقيدة', grade:'الثانوية', icon:'خ', cat:'دينية',
-    from:'محافظة المنوفية', where:'مدرسة شهيد حسن حمدي الثانوية',
-    lang:'ar', gender:'ذ',
-    bio:'أ. خالد أسامة السيد، مدرس تربية دينية متخصص في الفقه الإسلامي والعقيدة، عمره ٤١ سنة، من المنوفية. خريج كلية الشريعة والقانون. يعمل في مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية منذ ١٥ عامًا. يربط الدين بالحياة اليومية للطلاب.'
+    name:'أ. سحر عبد العليم موسى خاطر', subject:'فلسفة',
+    spec:'فلسفة', grade:'الثانوية', icon:'س', cat:'فلسفة',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. سحر عبد العليم موسى خاطر، تقوم بتدريس مادة فلسفة بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'Mr. Karim Nabil El-Shadly', subject:'English Language', age:37, exp:11,
-    spec:'Conversation & Academic Writing', grade:'Secondary', icon:'K', cat:'انجليزي',
-    from:'Cairo', where:'Shaheed Hassan Hamdi Secondary School',
-    lang:'en', gender:'M',
-    bio:'Mr. Karim Nabil El-Shadly is an English Language teacher specializing in conversational and academic writing, aged 37, originally from Cairo. He holds a B.A. in English Literature from Cairo University. He has been teaching at Shaheed Hassan Hamdi Secondary School under Al-Haseniya Administration for 11 years, using modern interactive methods to build fluency.'
+    name:'أ. رباب أحمد السيد', subject:'فلسفة',
+    spec:'فلسفة', grade:'الثانوية', icon:'ر', cat:'فلسفة',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. رباب أحمد السيد، تقوم بتدريس مادة فلسفة بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'Ms. Dina Fawzy Hassan', subject:'English Language — Grammar', age:33, exp:7,
-    spec:'Grammar · Reading Comprehension', grade:'Secondary', icon:'D', cat:'انجليزي',
-    from:'Alexandria', where:'Shaheed Hassan Hamdi Secondary School',
-    lang:'en', gender:'F',
-    bio:'Ms. Dina Fawzy Hassan is an English Grammar and Reading teacher, aged 33, from Alexandria. She holds a B.A. in English from Alexandria University. She teaches at Shaheed Hassan Hamdi Secondary School under Al-Haseniya Administration. She uses visual and interactive methods to make grammar intuitive for students.'
+    name:'أ. هالة جودة السيد', subject:'علم نفس',
+    spec:'علم نفس', grade:'الثانوية', icon:'ه', cat:'نفس',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. هالة جودة السيد، تقوم بتدريس مادة علم نفس بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'Mme. Nadia Samir Farid', subject:'Langue Française', age:40, exp:14,
-    spec:'Linguistique · Littérature · Expression', grade:'Secondaire', icon:'N', cat:'فرنساوي',
-    from:'Alexandrie', where:'École Secondaire Chahid Hassan Hamdi',
-    lang:'fr', gender:'F',
-    bio:'Mme. Nadia Samir Farid est professeure de français, âgée de 40 ans, originaire d\'Alexandrie. Diplômée de l\'Institut des Langues. Elle enseigne au sein de l\'école secondaire Chahid Hassan Hamdi relevant de l\'administration d\'Al-Haseniya depuis 14 ans avec passion et méthodes innovantes.'
+    name:'أ. فتحية عبد المحيد عبد الرحمن', subject:'تكنولوجيا',
+    spec:'تكنولوجيا', grade:'الثانوية', icon:'ف', cat:'تكنولوجيا',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. فتحية عبد المحيد عبد الرحمن، تقوم بتدريس مادة تكنولوجيا بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
   {
-    name:'M. Youssef Adel Mansour', subject:'Français — Conversation', age:35, exp:9,
-    spec:'Expression orale · Culture francophone', grade:'Secondaire', icon:'Y', cat:'فرنساوي',
-    from:'Le Caire', where:'École Secondaire Chahid Hassan Hamdi',
-    lang:'fr', gender:'M',
-    bio:'M. Youssef Adel Mansour est professeur de français spécialisé en expression orale, âgé de 35 ans, du Caire. Il enseigne à l\'école secondaire Chahid Hassan Hamdi sous l\'administration d\'Al-Haseniya depuis 9 ans, en valorisant la culture francophone pour ouvrir l\'horizon des élèves.'
+    name:'أ. نجلاء محمد عبده عطا الله', subject:'أخصائي اجتماعي',
+    spec:'أخصائي اجتماعي', grade:'الثانوية', icon:'ن', cat:'اجتماعي',
+    where:'مدرسة شهيد حسن حمدي الثانوية',
+    lang:'ar', gender:'أ',
+    bio:'أ. نجلاء محمد عبده عطا الله، تقوم بتدريس مادة أخصائي اجتماعي بمدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.'
   },
 ];
 
@@ -2975,15 +3047,15 @@ function buildTeacherRow(t) {
       <svg class="teacher-portrait-svg" viewBox="0 0 240 260" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Background gradient wash -->
         <defs>
-          <linearGradient id="bg-${t.icon}-${t.age}" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="bg-${t.icon}-${t.name.length}" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#0c1120"/>
             <stop offset="100%" stop-color="#07090f"/>
           </linearGradient>
-          <linearGradient id="figure-${t.icon}-${t.age}" x1="0.5" y1="0" x2="0.5" y2="1">
+          <linearGradient id="figure-${t.icon}-${t.name.length}" x1="0.5" y1="0" x2="0.5" y2="1">
             <stop offset="0%" stop-color="rgba(201,168,76,0.22)"/>
             <stop offset="100%" stop-color="rgba(201,168,76,0.06)"/>
           </linearGradient>
-          <linearGradient id="glow-${t.icon}-${t.age}" x1="0.5" y1="0" x2="0.5" y2="1">
+          <linearGradient id="glow-${t.icon}-${t.name.length}" x1="0.5" y1="0" x2="0.5" y2="1">
             <stop offset="0%" stop-color="rgba(201,168,76,0.35)"/>
             <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
           </linearGradient>
@@ -2991,13 +3063,13 @@ function buildTeacherRow(t) {
         <!-- Subtle glow circle -->
         <ellipse cx="120" cy="200" rx="90" ry="40" fill="rgba(201,168,76,0.05)"/>
         <!-- Person silhouette — head -->
-        <circle cx="120" cy="85" r="42" fill="url(#figure-${t.icon}-${t.age})" stroke="rgba(201,168,76,0.25)" stroke-width="1.5"/>
+        <circle cx="120" cy="85" r="42" fill="url(#figure-${t.icon}-${t.name.length})" stroke="rgba(201,168,76,0.25)" stroke-width="1.5"/>
         <!-- Inner face detail -->
         <circle cx="120" cy="85" r="30" fill="rgba(12,17,32,0.5)"/>
         <!-- Body/shoulders -->
         ${genderIsMale
-          ? `<path d="M60 260 Q70 185 120 175 Q170 185 180 260Z" fill="url(#figure-${t.icon}-${t.age})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
-          : `<path d="M50 260 Q65 178 120 168 Q175 178 190 260Z" fill="url(#figure-${t.icon}-${t.age})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
+          ? `<path d="M60 260 Q70 185 120 175 Q170 185 180 260Z" fill="url(#figure-${t.icon}-${t.name.length})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
+          : `<path d="M50 260 Q65 178 120 168 Q175 178 190 260Z" fill="url(#figure-${t.icon}-${t.name.length})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
         }
         <!-- Collar/jacket detail -->
         <path d="M100 175 L120 195 L140 175" stroke="rgba(201,168,76,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -3006,7 +3078,7 @@ function buildTeacherRow(t) {
           font-family="Tajawal, Cairo, sans-serif" font-size="28" font-weight="900"
           fill="rgba(201,168,76,0.9)">${t.icon}</text>
         <!-- Bottom fade mask -->
-        <rect x="0" y="200" width="240" height="60" fill="url(#bg-${t.icon}-${t.age})" opacity="0.7"/>
+        <rect x="0" y="200" width="240" height="60" fill="url(#bg-${t.icon}-${t.name.length})" opacity="0.7"/>
       </svg>
       <div class="teacher-photo-badge">${t.subject}</div>
     </div>
@@ -3017,12 +3089,12 @@ function buildTeacherRow(t) {
       <h3 class="t-name">${t.name}</h3>
       <div class="t-location">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        ${t.from} — ${t.where}
+        ${t.from ? t.from + ' — ' : ''}${t.where}
       </div>
       <p class="t-bio-short">${t.bio.substring(0, 150)}...</p>
       <div class="t-meta-chips">
-        <div class="t-chip">السن: <strong>${t.age} سنة</strong></div>
-        <div class="t-chip">الخبرة: <strong>${t.exp} سنة</strong></div>
+        ${t.age ? `<div class="t-chip">السن: <strong>${t.age} سنة</strong></div>` : ''}
+        ${t.exp ? `<div class="t-chip">الخبرة: <strong>${t.exp} سنة</strong></div>` : ''}
         <div class="t-chip">التخصص: <strong>${t.spec}</strong></div>
         <div class="t-chip">المرحلة: <strong>${t.grade}</strong></div>
       </div>
@@ -3097,11 +3169,14 @@ function openTModal(t) {
   document.getElementById('mAv').textContent   = t.icon;
   document.getElementById('mName').textContent = t.name;
   document.getElementById('mSub').textContent  = t.subject;
-  document.getElementById('mAge').textContent  = t.age + ' سنة';
-  document.getElementById('mExp').textContent  = t.exp + ' سنة';
+  document.getElementById('mAgeCell').style.display = t.age ? '' : 'none';
+  if (t.age) document.getElementById('mAge').textContent = t.age + ' سنة';
+  document.getElementById('mExpCell').style.display = t.exp ? '' : 'none';
+  if (t.exp) document.getElementById('mExp').textContent = t.exp + ' سنة';
   document.getElementById('mSpec').textContent = t.spec;
   document.getElementById('mGrade').textContent= t.grade;
-  document.getElementById('mFrom').textContent = t.from;
+  document.getElementById('mFromCell').style.display = t.from ? '' : 'none';
+  if (t.from) document.getElementById('mFrom').textContent = t.from;
   document.getElementById('mWhere').textContent= t.where;
   document.getElementById('mBio').textContent  = t.bio;
   document.getElementById('tModal').classList.add('open');
