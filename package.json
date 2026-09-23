@@ -1,9 +1,0 @@
-{
-  "name": "shaheed-hassan-hamdy-school",
-  "version": "1.0.0",
-  "private": true,
-  "description": "موقع مدرسة شهيد حسن حمدي مع لوحة تحكم أدمن متصلة بقاعدة بيانات Neon",
-  "dependencies": {
-    "@neondatabase/serverless": "^0.9.5"
-  }
-}
