@@ -1,3 +1,8 @@
+/* ============================================================
+   ADMIN PANEL — لوحة تحكم مخفية، بتتفعّل بس لو الرابط فيه #/admin
+   مفيش أي زرار أو لينك للوحة دي في الموقع العادي.
+============================================================ */
+
 // قراءة sessionStorage جوه try/catch: بعض المتصفحات (وضع التصفح الخاص، بعض
 // إعدادات الخصوصية) بترفض الوصول للتخزين وترمي Error فورًا. لو حصل كده من
 // غير الحماية دي، سكربت الأدمن كله كان هيقف من أول سطر ومكانش هيشتغل خالص.
@@ -27,18 +32,149 @@ function adminFetch(url, opts = {}) {
   return fetch(url, opts);
 }
 
+/* ============================================================
+   ICONS — SVG بسيطة بأسلوب الموقع (stroke, currentColor)
+============================================================ */
+const ADM_ICON = {
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+  close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+  upload: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`,
+  lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  school: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>`,
+};
+
+/* ============================================================
+   STYLE — تنسيقات لوحة الأدمن، محطوطة مرة واحدة جوه <head>
+============================================================ */
+function injectAdminStyles() {
+  if (document.getElementById('adminStyles')) return;
+  const s = document.createElement('style');
+  s.id = 'adminStyles';
+  s.textContent = `
+  #adminRoot * { box-sizing: border-box; }
+  #adminRoot { font-family:'Cairo',sans-serif; }
+  .adm-shell { max-width:1080px; margin:0 auto; padding:1.6rem 1.2rem 6rem; }
+  .adm-topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.6rem; flex-wrap:wrap; padding-bottom:1.2rem; border-bottom:1px solid var(--border2); }
+  .adm-brand { display:flex; align-items:center; gap:0.7rem; }
+  .adm-brand-icon { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:flex; align-items:center; justify-content:center; color:#07090f; flex-shrink:0; }
+  .adm-brand-icon svg { width:22px; height:22px; }
+  .adm-title { font-family:'Tajawal',sans-serif; font-weight:900; color:var(--gold2); font-size:1.25rem; margin:0; line-height:1.2; }
+  .adm-subtitle { font-size:0.78rem; color:var(--text-muted,#9a9488); margin:0.15rem 0 0; }
+  .adm-btn { display:inline-flex; align-items:center; gap:0.4rem; border:none; cursor:pointer; font-family:'Cairo',sans-serif; font-weight:700; border-radius:9px; padding:0.6rem 1.1rem; font-size:0.88rem; transition:transform .15s,opacity .15s; }
+  .adm-btn:active { transform:scale(0.97); }
+  .adm-btn svg { width:16px; height:16px; flex-shrink:0; }
+  .adm-btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#07090f; }
+  .adm-btn-gold:hover { opacity:0.92; }
+  .adm-btn-ghost { background:var(--surface2); color:var(--text); border:1px solid var(--border2); }
+  .adm-btn-ghost:hover { background:var(--surface); }
+  .adm-btn-danger { background:rgba(139,26,26,0.55); color:#fff; }
+  .adm-btn-danger:hover { background:rgba(176,42,42,0.7); }
+  .adm-btn-icon { padding:0.5rem; }
+
+  .adm-tabs { display:flex; gap:0.4rem; background:var(--surface); border:1px solid var(--border2); border-radius:11px; padding:0.3rem; margin-bottom:1.2rem; flex-wrap:wrap; }
+  .adm-tab { flex:1; min-width:110px; text-align:center; padding:0.55rem 0.8rem; border-radius:8px; border:none; cursor:pointer; font-family:'Cairo',sans-serif; font-weight:700; font-size:0.86rem; background:transparent; color:var(--text-muted,#9a9488); transition:all .15s; }
+  .adm-tab.active { background:var(--gold); color:#07090f; }
+  .adm-tab:not(.active):hover { color:var(--text); background:var(--surface2); }
+
+  .adm-toolbar { display:flex; gap:0.7rem; margin-bottom:1.3rem; flex-wrap:wrap; align-items:center; }
+  .adm-search { position:relative; flex:1; min-width:200px; }
+  .adm-search svg { position:absolute; top:50%; right:0.85rem; transform:translateY(-50%); width:17px; height:17px; color:var(--text-muted,#9a9488); pointer-events:none; }
+  .adm-search input { width:100%; padding:0.65rem 2.5rem 0.65rem 1rem; border-radius:9px; border:1px solid var(--border2); background:var(--bg2); color:var(--text); font-family:'Cairo',sans-serif; font-size:0.9rem; }
+  .adm-search input:focus { outline:none; border-color:var(--gold); }
+  .adm-count { font-size:0.78rem; color:var(--text-muted,#9a9488); white-space:nowrap; }
+
+  .adm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:0.9rem; }
+  .adm-card { background:var(--surface); border:1px solid var(--border2); border-radius:13px; padding:0.9rem; display:flex; flex-direction:column; gap:0.7rem; transition:border-color .15s,transform .15s; }
+  .adm-card:hover { border-color:var(--border); transform:translateY(-2px); }
+  .adm-card-top { display:flex; align-items:center; gap:0.7rem; }
+  .adm-thumb { width:52px; height:52px; border-radius:10px; background:var(--bg2); flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; color:var(--gold); font-weight:900; font-size:1.1rem; border:1px solid var(--border2); }
+  .adm-thumb img { width:100%; height:100%; object-fit:cover; }
+  .adm-card-text { flex:1; min-width:0; }
+  .adm-card-name { font-weight:800; font-size:0.95rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .adm-card-sub { font-size:0.78rem; color:var(--text-muted,#9a9488); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:0.1rem; }
+  .adm-card-actions { display:flex; gap:0.5rem; }
+  .adm-card-actions .adm-btn { flex:1; justify-content:center; font-size:0.8rem; padding:0.5rem; }
+
+  .adm-empty { text-align:center; padding:3rem 1rem; color:var(--text-muted,#9a9488); }
+  .adm-empty svg { width:40px; height:40px; margin-bottom:0.8rem; opacity:0.5; }
+
+  .adm-login-wrap { max-width:380px; margin:3.5rem auto 0; }
+  .adm-login-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2rem 1.7rem; text-align:center; }
+  .adm-login-icon { width:52px; height:52px; border-radius:50%; background:var(--gold-dim); display:flex; align-items:center; justify-content:center; color:var(--gold); margin:0 auto 1rem; }
+  .adm-login-icon svg { width:24px; height:24px; }
+  .adm-field { margin-bottom:0.9rem; text-align:right; }
+  .adm-field label { display:block; margin-bottom:0.35rem; font-size:0.82rem; color:var(--text-muted,#9a9488); font-weight:600; }
+  .adm-field input, .adm-field select, .adm-field textarea {
+    width:100%; padding:0.65rem 0.85rem; border-radius:9px; border:1px solid var(--border2);
+    background:var(--bg2); color:var(--text); font-family:'Cairo',sans-serif; font-size:0.9rem;
+  }
+  .adm-field input:focus, .adm-field select:focus, .adm-field textarea:focus { outline:none; border-color:var(--gold); }
+  .adm-err { color:#e88; font-size:0.83rem; margin-top:0.8rem; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.4); padding:0.55rem 0.8rem; border-radius:8px; display:none; }
+
+  .adm-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:5; display:flex; align-items:flex-start; justify-content:center; padding:2.2rem 1rem; overflow:auto; backdrop-filter:blur(2px); }
+  .adm-modal { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:1.6rem; max-width:480px; width:100%; }
+  .adm-modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; }
+  .adm-modal-head h3 { margin:0; color:var(--gold2); font-family:'Tajawal',sans-serif; font-weight:800; font-size:1.05rem; }
+  .adm-modal-close { background:var(--surface2); border:none; color:var(--text); width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .adm-modal-close svg { width:14px; height:14px; }
+
+  .adm-img-drop { border:1.5px dashed var(--border2); border-radius:10px; padding:0.9rem; text-align:center; cursor:pointer; transition:border-color .15s,background .15s; position:relative; }
+  .adm-img-drop:hover { border-color:var(--gold); background:var(--gold-dim); }
+  .adm-img-drop svg { width:20px; height:20px; color:var(--gold); margin-bottom:0.3rem; }
+  .adm-img-drop input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .adm-img-preview { display:flex; align-items:center; gap:0.7rem; margin-top:0.6rem; }
+  .adm-img-preview img { width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid var(--border2); }
+
+  .adm-toast { position:fixed; bottom:1.4rem; left:50%; transform:translateX(-50%) translateY(0); background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.7rem 1.3rem; border-radius:10px; font-size:0.85rem; z-index:10; display:flex; align-items:center; gap:0.5rem; box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+  .adm-toast.success { border-color:rgba(76,175,80,0.5); }
+  .adm-toast.success svg { color:#7ed08a; width:16px; height:16px; }
+
+  @media (max-width:560px) {
+    .adm-grid { grid-template-columns:1fr 1fr; }
+    .adm-tab { min-width:80px; font-size:0.78rem; padding:0.5rem 0.4rem; }
+  }
+  @media (max-width:380px) {
+    .adm-grid { grid-template-columns:1fr; }
+  }
+  `;
+  document.head.appendChild(s);
+}
+
+function admToast(msg) {
+  const old = document.querySelector('.adm-toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'adm-toast success';
+  t.innerHTML = `${ADM_ICON.check}<span>${msg}</span>`;
+  document.getElementById('adminRoot').appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
 function adminShell(inner) {
   return `
-  <div style="max-width:980px;margin:0 auto;padding:2rem 1.2rem 6rem;font-family:'Cairo',sans-serif;color:var(--text);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;flex-wrap:wrap;gap:0.8rem;">
-      <h1 style="font-family:'Tajawal',sans-serif;font-weight:900;color:var(--gold);font-size:1.4rem;margin:0;">لوحة تحكم المدرسة</h1>
-      ${ADMIN.pass ? `<button id="admLogout" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:0.5rem 1rem;border-radius:8px;cursor:pointer;">تسجيل خروج</button>` : ''}
+  <div class="adm-shell">
+    <div class="adm-topbar">
+      <div class="adm-brand">
+        <div class="adm-brand-icon">${ADM_ICON.school}</div>
+        <div>
+          <h1 class="adm-title">لوحة تحكم المدرسة</h1>
+          <p class="adm-subtitle">مدرسة شهيد حسن حمدي الثانوية</p>
+        </div>
+      </div>
+      ${ADMIN.pass ? `<button id="admLogout" class="adm-btn adm-btn-ghost">${ADM_ICON.logout}<span>خروج</span></button>` : ''}
     </div>
     ${inner}
   </div>`;
 }
 
 function renderAdmin() {
+  injectAdminStyles();
   if (!ADMIN.pass) renderAdminLogin();
   else renderAdminDashboard('teachers');
 }
@@ -46,17 +182,25 @@ function renderAdmin() {
 function renderAdminLogin() {
   const root = document.getElementById('adminRoot');
   root.innerHTML = adminShell(`
-    <div style="max-width:360px;margin:3rem auto 0;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.8rem;">
-      <p style="margin:0 0 1rem;color:var(--text-muted,#9a9488);">أدخل كلمة سر الأدمن للمتابعة</p>
-      <input id="admPassInput" type="password" placeholder="كلمة السر" style="width:100%;box-sizing:border-box;padding:0.7rem 0.9rem;border-radius:8px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);margin-bottom:0.9rem;">
-      <button id="admLoginBtn" style="width:100%;padding:0.7rem;border-radius:8px;background:var(--gold);color:#07090f;font-weight:800;cursor:pointer;">دخول</button>
-      <p id="admLoginErr" style="color:var(--crimson2);font-size:0.85rem;margin-top:0.8rem;display:none;"></p>
+    <div class="adm-login-wrap">
+      <div class="adm-login-card">
+        <div class="adm-login-icon">${ADM_ICON.lock}</div>
+        <h2 style="margin:0 0 0.3rem;font-family:'Tajawal',sans-serif;color:var(--text);font-weight:800;">تسجيل الدخول</h2>
+        <p style="margin:0 0 1.3rem;color:var(--text-muted,#9a9488);font-size:0.85rem;">أدخل كلمة سر الأدمن للمتابعة</p>
+        <div class="adm-field" style="text-align:center;">
+          <input id="admPassInput" type="password" placeholder="كلمة السر" autofocus>
+        </div>
+        <button id="admLoginBtn" class="adm-btn adm-btn-gold" style="width:100%;justify-content:center;padding:0.75rem;">دخول</button>
+        <p id="admLoginErr" class="adm-err"></p>
+      </div>
     </div>
   `);
   const doLogin = async () => {
     const pass = document.getElementById('admPassInput').value;
     const errEl = document.getElementById('admLoginErr');
     errEl.style.display = 'none';
+    const btn = document.getElementById('admLoginBtn');
+    btn.textContent = '...جاري التحقق'; btn.disabled = true;
     try {
       const r = await fetch('/api/login', {
         method: 'POST',
@@ -66,15 +210,17 @@ function renderAdminLogin() {
       const data = await r.json();
       if (r.ok && data.ok) {
         ADMIN.pass = pass;
-        try { sessionStorage.setItem('adminPass', pass); } catch (e) { /* هيفضل شغال، بس هيطلب الباسورد تاني لو عمل ريفريش */ }
+        try { sessionStorage.setItem('adminPass', pass); } catch (e) {}
         renderAdminDashboard('teachers');
       } else {
         errEl.textContent = data.error || 'كلمة السر غلط';
         errEl.style.display = 'block';
+        btn.textContent = 'دخول'; btn.disabled = false;
       }
     } catch (e) {
       errEl.textContent = 'تعذر الاتصال بالسيرفر. تأكد إن API متظبط.';
       errEl.style.display = 'block';
+      btn.textContent = 'دخول'; btn.disabled = false;
     }
   };
   document.getElementById('admLoginBtn').onclick = doLogin;
@@ -89,7 +235,13 @@ const ADMIN_SCHEMAS = {
       { key: 'subject', label: 'المادة', type: 'text' },
       { key: 'spec', label: 'التخصص', type: 'text' },
       { key: 'grade', label: 'المرحلة', type: 'text', default: 'الثانوية' },
-      { key: 'cat', label: 'التصنيف (للفلترة)', type: 'text' },
+      { key: 'cat', label: 'التصنيف (للفلترة)', type: 'select', options: [
+          ['برمجة','برمجة'], ['عربي','عربي'], ['رياضة','رياضة'], ['علوم','علوم'],
+          ['تاريخ','تاريخ'], ['فلسفة','فلسفة ومنطق'], ['دينية','تربية دينية'],
+          ['انجليزي','انجليزي'], ['فرنساوي','فرنساوي'], ['رياضيات','رياضيات'],
+          ['جغرافيا','جغرافيا'], ['نفس','علم نفس'], ['اجتماعي','أخصائي اجتماعي'],
+          ['تكنولوجيا','تكنولوجيا'], ['عام','عام'],
+        ] },
       { key: 'gender', label: 'النوع', type: 'select', options: [['ذ','ذكر'],['أ','أنثى']] },
       { key: 'lang', label: 'لغة العرض', type: 'select', options: [['ar','عربي'],['en','إنجليزي'],['fr','فرنساوي']] },
       { key: 'where', label: 'مكان التدريس', type: 'text', default: 'مدرسة شهيد حسن حمدي الثانوية' },
@@ -120,34 +272,46 @@ const ADMIN_SCHEMAS = {
       { key: 'sort_order', label: 'ترتيب العرض', type: 'number', default: 0 },
       { key: 'image_data', label: 'الصورة', type: 'image', required: true },
     ],
-    itemTitle: p => p.title || '(بدون عنوان)', itemSub: p => '',
+    itemTitle: p => p.title || '(بدون عنوان)', itemSub: () => '',
   },
 };
 
 let admActiveTab = 'teachers';
 let admItems = [];
-let admEditing = null; // null = not editing, {} = new, object = existing item
+let admSearchQuery = '';
 
 function renderAdminDashboard(tab) {
   admActiveTab = tab;
-  admEditing = null;
+  admSearchQuery = '';
   const root = document.getElementById('adminRoot');
   const tabs = Object.keys(ADMIN_SCHEMAS).map(k => `
-    <button class="admTabBtn" data-tab="${k}" style="padding:0.55rem 1.1rem;border-radius:8px;border:1px solid var(--border2);cursor:pointer;font-weight:700;
-      background:${k===tab?'var(--gold)':'var(--surface)'};color:${k===tab?'#07090f':'var(--text)'};">${ADMIN_SCHEMAS[k].label}</button>
+    <button class="adm-tab ${k === tab ? 'active' : ''}" data-tab="${k}">${ADMIN_SCHEMAS[k].label}</button>
   `).join('');
   root.innerHTML = adminShell(`
-    <div style="display:flex;gap:0.6rem;margin-bottom:1.4rem;flex-wrap:wrap;">${tabs}</div>
-    <div style="margin-bottom:1rem;">
-      <button id="admAddBtn" style="padding:0.6rem 1.2rem;border-radius:8px;background:var(--gold2);color:#07090f;font-weight:800;cursor:pointer;">+ إضافة جديد</button>
+    <div class="adm-tabs">${tabs}</div>
+    <div class="adm-toolbar">
+      <div class="adm-search">
+        ${ADM_ICON.search}
+        <input id="admSearchInput" type="text" placeholder="ابحث بالاسم...">
+      </div>
+      <span class="adm-count" id="admCount"></span>
+      <button id="admAddBtn" class="adm-btn adm-btn-gold">${ADM_ICON.plus}<span>إضافة جديد</span></button>
     </div>
-    <div id="admList" style="display:grid;gap:0.7rem;"><p style="color:var(--text-muted,#9a9488);">جاري التحميل...</p></div>
+    <div id="admList" class="adm-grid"><p style="color:var(--text-muted,#9a9488);">جاري التحميل...</p></div>
     <div id="admFormWrap"></div>
   `);
-  document.querySelectorAll('.admTabBtn').forEach(b => b.onclick = () => renderAdminDashboard(b.dataset.tab));
+  document.querySelectorAll('.adm-tab').forEach(b => b.onclick = () => renderAdminDashboard(b.dataset.tab));
   document.getElementById('admAddBtn').onclick = () => openAdminForm({});
+  document.getElementById('admSearchInput').addEventListener('input', (e) => {
+    admSearchQuery = e.target.value.trim();
+    renderAdminList();
+  });
   const logoutBtn = document.getElementById('admLogout');
-  if (logoutBtn) logoutBtn.onclick = () => { try { sessionStorage.removeItem('adminPass'); } catch (e) {} ADMIN.pass = null; renderAdminLogin(); };
+  if (logoutBtn) logoutBtn.onclick = () => {
+    try { sessionStorage.removeItem('adminPass'); } catch (e) {}
+    ADMIN.pass = null;
+    renderAdminLogin();
+  };
   loadAdminList();
 }
 
@@ -158,35 +322,62 @@ async function loadAdminList() {
     const r = await adminFetch(schema.api);
     const data = await r.json();
     admItems = Array.isArray(data) ? data : [];
-    if (!admItems.length) {
-      listEl.innerHTML = `<p style="color:var(--text-muted,#9a9488);">مفيش عناصر لسه. دوس "إضافة جديد".</p>`;
-      return;
-    }
-    listEl.innerHTML = admItems.map(item => `
-      <div style="display:flex;align-items:center;gap:0.9rem;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:0.7rem 0.9rem;">
-        <div style="width:44px;height:44px;border-radius:8px;background:var(--bg2);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          ${item.photo_data || item.image_data ? `<img src="${item.photo_data || item.image_data}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="color:var(--gold);font-weight:800;">${(schema.itemTitle(item)||'?').trim().slice(0,1)}</span>`}
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${schema.itemTitle(item)}</div>
-          <div style="font-size:0.8rem;color:var(--text-muted,#9a9488);">${schema.itemSub(item)}</div>
-        </div>
-        <button class="admEditBtn" data-id="${item[schema.idField]}" style="padding:0.4rem 0.8rem;border-radius:7px;background:var(--surface2);color:var(--text);cursor:pointer;">تعديل</button>
-        <button class="admDelBtn" data-id="${item[schema.idField]}" style="padding:0.4rem 0.8rem;border-radius:7px;background:rgba(139,26,26,0.5);color:#fff;cursor:pointer;">حذف</button>
-      </div>
-    `).join('');
-    document.querySelectorAll('.admEditBtn').forEach(b => b.onclick = () => {
-      const item = admItems.find(x => String(x[schema.idField]) === b.dataset.id);
-      if (item) openAdminForm(item);
-    });
-    document.querySelectorAll('.admDelBtn').forEach(b => b.onclick = async () => {
-      if (!confirm('متأكد إنك عايز تحذف؟')) return;
-      await adminFetch(`${schema.api}?id=${b.dataset.id}`, { method: 'DELETE' });
-      loadAdminList();
-    });
+    renderAdminList();
   } catch (e) {
-    listEl.innerHTML = `<p style="color:var(--crimson2);">تعذر تحميل البيانات. تأكد إن الـ API وقاعدة البيانات متظبطين.</p>`;
+    listEl.innerHTML = `<p style="color:#e88;grid-column:1/-1;">تعذر تحميل البيانات. تأكد إن الـ API وقاعدة البيانات متظبطين.</p>`;
   }
+}
+
+function renderAdminList() {
+  const schema = ADMIN_SCHEMAS[admActiveTab];
+  const listEl = document.getElementById('admList');
+  const countEl = document.getElementById('admCount');
+  const q = admSearchQuery.toLowerCase();
+  const filtered = q
+    ? admItems.filter(item => (schema.itemTitle(item) + ' ' + schema.itemSub(item)).toLowerCase().includes(q))
+    : admItems;
+
+  if (countEl) countEl.textContent = `${filtered.length} / ${admItems.length}`;
+
+  if (!admItems.length) {
+    listEl.innerHTML = `<div class="adm-empty" style="grid-column:1/-1;">${ADM_ICON.image}<p>مفيش عناصر لسه. دوس "إضافة جديد".</p></div>`;
+    return;
+  }
+  if (!filtered.length) {
+    listEl.innerHTML = `<div class="adm-empty" style="grid-column:1/-1;">${ADM_ICON.search}<p>مفيش نتايج للبحث "${admSearchQuery}"</p></div>`;
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(item => `
+    <div class="adm-card">
+      <div class="adm-card-top">
+        <div class="adm-thumb">
+          ${item.photo_data || item.image_data
+            ? `<img src="${item.photo_data || item.image_data}">`
+            : (schema.itemTitle(item) || '?').trim().slice(0,1)}
+        </div>
+        <div class="adm-card-text">
+          <div class="adm-card-name">${schema.itemTitle(item)}</div>
+          <div class="adm-card-sub">${schema.itemSub(item)}</div>
+        </div>
+      </div>
+      <div class="adm-card-actions">
+        <button class="adm-btn adm-btn-ghost admEditBtn" data-id="${item[schema.idField]}">${ADM_ICON.edit}<span>تعديل</span></button>
+        <button class="adm-btn adm-btn-danger admDelBtn" data-id="${item[schema.idField]}">${ADM_ICON.trash}<span>حذف</span></button>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.admEditBtn').forEach(b => b.onclick = () => {
+    const item = admItems.find(x => String(x[schema.idField]) === b.dataset.id);
+    if (item) openAdminForm(item);
+  });
+  document.querySelectorAll('.admDelBtn').forEach(b => b.onclick = async () => {
+    if (!confirm('متأكد إنك عايز تحذف؟')) return;
+    await adminFetch(`${schema.api}?id=${b.dataset.id}`, { method: 'DELETE' });
+    admToast('اتحذف بنجاح');
+    loadAdminList();
+  });
 }
 
 function fileToResizedBase64(file, maxDim = 900, quality = 0.82) {
@@ -214,59 +405,88 @@ function fileToResizedBase64(file, maxDim = 900, quality = 0.82) {
 }
 
 function openAdminForm(item) {
-  admEditing = item;
   const schema = ADMIN_SCHEMAS[admActiveTab];
   const isNew = !item[schema.idField];
   const wrap = document.getElementById('admFormWrap');
   const fieldsHtml = schema.fields.map(f => {
     const val = item[f.key] !== undefined && item[f.key] !== null ? item[f.key] : (f.default !== undefined ? f.default : '');
     if (f.type === 'textarea') {
-      return `<div style="margin-bottom:0.8rem;"><label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--text-muted,#9a9488);">${f.label}</label>
-        <textarea data-field="${f.key}" rows="3" style="width:100%;box-sizing:border-box;padding:0.6rem;border-radius:8px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);">${val}</textarea></div>`;
+      return `<div class="adm-field"><label>${f.label}</label>
+        <textarea data-field="${f.key}" rows="3">${val}</textarea></div>`;
     }
     if (f.type === 'select') {
-      return `<div style="margin-bottom:0.8rem;"><label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--text-muted,#9a9488);">${f.label}</label>
-        <select data-field="${f.key}" style="width:100%;box-sizing:border-box;padding:0.6rem;border-radius:8px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);">
+      return `<div class="adm-field"><label>${f.label}</label>
+        <select data-field="${f.key}">
           ${f.options.map(([v,l]) => `<option value="${v}" ${v===val?'selected':''}>${l}</option>`).join('')}
         </select></div>`;
     }
     if (f.type === 'image') {
-      return `<div style="margin-bottom:0.8rem;"><label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--text-muted,#9a9488);">${f.label}${f.required && isNew ? ' *' : ' (سيب فاضي لو مش عايز تغيّرها)'}</label>
-        <input type="file" accept="image/*" data-field="${f.key}" data-imgfield="1" style="width:100%;color:var(--text);">
-        ${val ? `<img src="${val}" style="max-width:120px;max-height:120px;border-radius:8px;margin-top:0.5rem;display:block;">` : ''}
-        <input type="hidden" data-field-hidden="${f.key}" value="${val ? '1' : ''}"></div>`;
+      return `<div class="adm-field">
+        <label>${f.label}${f.required && isNew ? ' *' : ' (اختياري — سيب فاضي لو مش عايز تغيّرها)'}</label>
+        <label class="adm-img-drop">
+          ${ADM_ICON.upload}
+          <div style="font-size:0.82rem;">دوس هنا أو اسحب صورة</div>
+          <input type="file" accept="image/*" data-field="${f.key}" data-imgfield="1">
+        </label>
+        <div class="adm-img-preview" id="preview-${f.key}" style="${val ? '' : 'display:none;'}">
+          <img src="${val || ''}">
+          <span style="font-size:0.8rem;color:var(--text-muted,#9a9488);">الصورة الحالية</span>
+        </div>
+      </div>`;
     }
-    return `<div style="margin-bottom:0.8rem;"><label style="display:block;margin-bottom:0.3rem;font-size:0.85rem;color:var(--text-muted,#9a9488);">${f.label}</label>
-      <input type="${f.type}" data-field="${f.key}" value="${val}" style="width:100%;box-sizing:border-box;padding:0.6rem;border-radius:8px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);"></div>`;
+    return `<div class="adm-field"><label>${f.label}</label>
+      <input type="${f.type}" data-field="${f.key}" value="${val}"></div>`;
   }).join('');
 
   wrap.innerHTML = `
-    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow:auto;" id="admFormOverlay">
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;max-width:480px;width:100%;">
-        <h3 style="margin:0 0 1rem;color:var(--gold);font-family:'Tajawal',sans-serif;">${isNew ? 'إضافة' : 'تعديل'} — ${schema.label}</h3>
+    <div class="adm-overlay" id="admFormOverlay">
+      <div class="adm-modal">
+        <div class="adm-modal-head">
+          <h3>${isNew ? 'إضافة' : 'تعديل'} — ${schema.label}</h3>
+          <button type="button" class="adm-modal-close" id="admCancelBtn">${ADM_ICON.close}</button>
+        </div>
         <form id="admForm">${fieldsHtml}
-          <div style="display:flex;gap:0.6rem;margin-top:1rem;">
-            <button type="submit" style="flex:1;padding:0.7rem;border-radius:8px;background:var(--gold);color:#07090f;font-weight:800;cursor:pointer;">حفظ</button>
-            <button type="button" id="admCancelBtn" style="flex:1;padding:0.7rem;border-radius:8px;background:var(--surface2);color:var(--text);cursor:pointer;">إلغاء</button>
+          <div style="display:flex;gap:0.6rem;margin-top:0.4rem;">
+            <button type="submit" class="adm-btn adm-btn-gold" style="flex:1;justify-content:center;padding:0.75rem;">حفظ</button>
+            <button type="button" id="admCancelBtn2" class="adm-btn adm-btn-ghost" style="flex:1;justify-content:center;padding:0.75rem;">إلغاء</button>
           </div>
-          <p id="admFormErr" style="color:var(--crimson2);font-size:0.85rem;margin-top:0.8rem;display:none;"></p>
+          <p id="admFormErr" class="adm-err"></p>
         </form>
       </div>
     </div>`;
 
-  document.getElementById('admCancelBtn').onclick = () => { wrap.innerHTML = ''; };
+  const closeForm = () => { wrap.innerHTML = ''; };
+  document.getElementById('admCancelBtn').onclick = closeForm;
+  document.getElementById('admCancelBtn2').onclick = closeForm;
+  document.getElementById('admFormOverlay').onclick = (e) => { if (e.target.id === 'admFormOverlay') closeForm(); };
+
+  // Live preview when a new image file is picked
+  schema.fields.filter(f => f.type === 'image').forEach(f => {
+    const input = document.querySelector(`[data-imgfield][data-field="${f.key}"]`);
+    input.addEventListener('change', () => {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const prev = document.getElementById(`preview-${f.key}`);
+        prev.style.display = 'flex';
+        prev.querySelector('img').src = reader.result;
+        prev.querySelector('span').textContent = 'معاينة الصورة الجديدة';
+      };
+      reader.readAsDataURL(input.files[0]);
+    });
+  });
 
   document.getElementById('admForm').onsubmit = async (e) => {
     e.preventDefault();
     const errEl = document.getElementById('admFormErr');
     errEl.style.display = 'none';
+    const submitBtn = e.target.querySelector('button[type=submit]');
     const payload = {};
     for (const f of schema.fields) {
       if (f.type === 'image') continue;
       const el = e.target.querySelector(`[data-field="${f.key}"]`);
       payload[f.key] = f.type === 'number' ? (parseFloat(el.value) || 0) : el.value;
     }
-    // Handle image fields: convert selected file to base64 (resized), else leave unset (keeps old on edit)
     for (const f of schema.fields.filter(x => x.type === 'image')) {
       const fileInput = e.target.querySelector(`[data-imgfield][data-field="${f.key}"]`);
       if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -276,6 +496,7 @@ function openAdminForm(item) {
         errEl.textContent = `${f.label} مطلوبة`; errEl.style.display = 'block'; return;
       }
     }
+    submitBtn.textContent = '...جاري الحفظ'; submitBtn.disabled = true;
     try {
       const method = isNew ? 'POST' : 'PUT';
       const url = isNew ? schema.api : `${schema.api}?id=${item[schema.idField]}`;
@@ -284,13 +505,16 @@ function openAdminForm(item) {
         const d = await r.json().catch(() => ({}));
         errEl.textContent = d.error || 'حصل خطأ، حاول تاني';
         errEl.style.display = 'block';
+        submitBtn.textContent = 'حفظ'; submitBtn.disabled = false;
         return;
       }
-      wrap.innerHTML = '';
+      closeForm();
+      admToast(isNew ? 'اتضاف بنجاح' : 'اتحدّث بنجاح');
       loadAdminList();
     } catch (err) {
       errEl.textContent = 'تعذر الاتصال بالسيرفر';
       errEl.style.display = 'block';
+      submitBtn.textContent = 'حفظ'; submitBtn.disabled = false;
     }
   };
 }
