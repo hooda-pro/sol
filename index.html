@@ -619,6 +619,13 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .principal-portrait-svg {
   position:absolute; inset:0; width:100%; height:100%; z-index:2;
 }
+.principal-photo-img {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:3; display:none;
+}
+.principal-portrait-area.has-photo .principal-photo-img { display:block; }
+.principal-portrait-area.has-photo .principal-portrait-svg,
+.principal-portrait-area.has-photo .bg-letter { opacity:0; }
 .principal-badge-tag {
   position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
   z-index:4;
@@ -732,6 +739,16 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   position:absolute; inset:0;
 }
 
+/* Real uploaded photo — sits above the generated placeholder graphic
+   when a matching numbered file is found, and is hidden otherwise */
+.teacher-photo-img {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:0; display:none;
+}
+.teacher-row-photo.has-photo .teacher-photo-img { display:block; }
+.teacher-row-photo.has-photo .teacher-photo-letter,
+.teacher-row-photo.has-photo .teacher-portrait-svg { opacity:0; }
+
 /* Gender / subject badge on the photo */
 .teacher-photo-badge {
   position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
@@ -819,7 +836,14 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   display:flex; align-items:center; justify-content:center;
   font-family:'Tajawal',sans-serif; font-size:2.2rem; font-weight:900; color:var(--gold);
   animation:float 4s ease-in-out infinite;
+  position:relative; overflow:hidden;
 }
+.t-modal-avatar-img {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; border-radius:50%; display:none;
+}
+.t-modal-avatar.has-photo .t-modal-avatar-img { display:block; }
+.t-modal-avatar.has-photo .t-modal-avatar-letter { opacity:0; }
 .t-modal-name { font-family:'Tajawal',sans-serif; font-size:1.5rem; font-weight:900; color:var(--gold); text-align:center; margin-bottom:0.3rem; }
 .t-modal-sub { text-align:center; margin-bottom:1.5rem; }
 .t-modal-sub span { background:var(--gold-dim); border:1px solid var(--border); color:var(--gold); font-size:0.78rem; font-weight:600; padding:5px 18px; border-radius:50px; }
@@ -1240,6 +1264,17 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   cursor:pointer; transition:all 0.25s; font-family:'Cairo',sans-serif;
 }
 .support-btn-back:hover { border-color:var(--gold); color:var(--gold); }
+
+/* Teacher profile page — back button */
+.tp-back-btn {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  padding:0.7rem 1.4rem; border-radius:50px; border:1px solid var(--border2);
+  background:var(--surface); color:var(--text-dim); font-weight:700; font-size:0.85rem;
+  cursor:pointer; transition:all 0.25s; font-family:'Cairo',sans-serif;
+  margin-bottom:2rem;
+}
+.tp-back-btn:hover { border-color:var(--gold); color:var(--gold); transform:translateX(4px); }
+.tp-back-btn svg { width:16px; height:16px; transform:scaleX(-1); }
 .support-btn-whatsapp {
   display:flex; align-items:center; gap:0.55rem;
   padding:0.85rem 1.8rem; border-radius:50px; border:none;
@@ -1977,6 +2012,7 @@ footer::before {
           <!-- Bottom fade -->
           <rect x="0" y="270" width="280" height="70" fill="url(#p-fade)" opacity="0.85"/>
         </svg>
+        <img class="principal-photo-img" src="photos/1.jpg" data-num="1" data-ext-idx="0" alt="أ. فتحي محمد حسن مرسي" loading="lazy" onerror="window.tryNextPhotoExt ? tryNextPhotoExt(this) : this.style.display='none'" onload="window.onPhotoLoad ? onPhotoLoad(this, '.principal-portrait-area') : this.closest('.principal-portrait-area').classList.add('has-photo')" />
         <div class="principal-badge-tag">مدير المدرسة — إدارة الحسنية</div>
       </div>
       <div class="principal-info">
@@ -2059,6 +2095,54 @@ footer::before {
       <div class="footer-copy">© <span class="copyright-year">٢٠٢٧</span> مدرسة شهيد حسن حمدي — جميع الحقوق محفوظة</div>
     </div>
   </footer>
+</div>
+
+<!-- ======== PAGE: SINGLE TEACHER PROFILE ======== -->
+<div class="page" id="page-teacher-profile">
+  <div class="section-wrap">
+    <button class="tp-back-btn" onclick="goPage('principal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      رجوع لكادر المدرسين
+    </button>
+    <div class="principal-hero-row reveal">
+      <div class="principal-portrait-area" id="tpPhotoArea">
+        <span class="bg-letter" id="tpLetter"></span>
+        <svg class="principal-portrait-svg" id="tpPortraitSvg" viewBox="0 0 280 340" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="tp-fig" x1="0.5" y1="0" x2="0.5" y2="1">
+              <stop offset="0%" stop-color="rgba(201,168,76,0.28)"/>
+              <stop offset="100%" stop-color="rgba(201,168,76,0.07)"/>
+            </linearGradient>
+            <linearGradient id="tp-fade" x1="0.5" y1="0" x2="0.5" y2="1">
+              <stop offset="0%" stop-color="#0c1120"/>
+              <stop offset="100%" stop-color="#07090f"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="140" cy="280" rx="110" ry="45" fill="rgba(201,168,76,0.06)"/>
+          <circle cx="140" cy="105" r="54" fill="url(#tp-fig)" stroke="rgba(201,168,76,0.3)" stroke-width="1.5"/>
+          <circle cx="140" cy="105" r="38" fill="rgba(12,17,32,0.5)"/>
+          <path id="tpBodyPath" d="M65 340 Q80 228 140 215 Q200 228 215 340Z" fill="url(#tp-fig)" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+          <path d="M118 215 L140 238 L162 215" stroke="rgba(201,168,76,0.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M140 238 L132 275 L140 285 L148 275Z" fill="rgba(201,168,76,0.15)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+          <text id="tpInitial" x="140" y="118" text-anchor="middle" dominant-baseline="middle"
+            font-family="Tajawal, Cairo, sans-serif" font-size="36" font-weight="900"
+            fill="rgba(201,168,76,0.92)"></text>
+          <rect x="0" y="270" width="280" height="70" fill="url(#tp-fade)" opacity="0.85"/>
+        </svg>
+        <img class="principal-photo-img" id="tpPhotoImg" src="" data-ext-idx="0" alt="" loading="lazy" onerror="window.tryNextPhotoExt ? tryNextPhotoExt(this) : this.style.display='none'" onload="window.onPhotoLoad ? onPhotoLoad(this, '.principal-portrait-area') : this.closest('.principal-portrait-area').classList.add('has-photo')" />
+        <div class="principal-badge-tag" id="tpBadge"></div>
+      </div>
+      <div class="principal-info">
+        <h2 class="principal-name" id="tpName"></h2>
+        <div class="principal-role-chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span id="tpSubject"></span>
+        </div>
+        <p class="principal-bio" id="tpBio"></p>
+        <div class="principal-chips" id="tpChips"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ======== PAGE: TOP STUDENTS ======== -->
@@ -2200,7 +2284,10 @@ footer::before {
 <div class="t-modal-overlay" id="tModal" onclick="closeTModal(event)" role="dialog" aria-modal="true" aria-labelledby="mName">
   <div class="t-modal-box">
     <button class="t-modal-close" onclick="closeTModalDirect()">✕</button>
-    <div class="t-modal-avatar" id="mAv"></div>
+    <div class="t-modal-avatar" id="mAv">
+      <span class="t-modal-avatar-letter" id="mAvLetter"></span>
+      <img class="t-modal-avatar-img" id="mAvImg" src="" data-ext-idx="0" alt="" onerror="window.tryNextPhotoExt ? tryNextPhotoExt(this) : this.style.display='none'" onload="window.onPhotoLoad ? onPhotoLoad(this, '.t-modal-avatar') : this.closest('.t-modal-avatar').classList.add('has-photo')" />
+    </div>
     <div class="t-modal-name" id="mName">—</div>
     <div class="t-modal-sub"><span id="mSub">—</span></div>
     <div class="t-modal-grid">
@@ -2405,9 +2492,32 @@ function updateCopyrightYear() {
   document.querySelectorAll('.copyright-year').forEach(el => { el.textContent = year; });
 }
 
+/* ============================================================
+   TEACHER / PRINCIPAL PHOTOS
+   Put real photo files in a "photos" folder next to this HTML
+   file. Name each file with the person's number (see the `num`
+   field on each teacher below, and the principal = 1), e.g.
+   photos/1.jpg, photos/2.jpg ... Any of jpg/jpeg/png/webp works —
+   the page tries each extension in turn. If no matching file is
+   found, the existing generated initial/avatar graphic is shown
+   instead, so nothing breaks before photos are added.
+============================================================ */
+const PHOTO_EXTS = ['jpg','jpeg','png','webp'];
+function tryNextPhotoExt(img) {
+  const idx = parseInt(img.dataset.extIdx || '0', 10) + 1;
+  if (idx >= PHOTO_EXTS.length) { img.style.display = 'none'; return; }
+  img.dataset.extIdx = idx;
+  img.src = `photos/${img.dataset.num}.${PHOTO_EXTS[idx]}`;
+}
+function onPhotoLoad(img, containerSelector) {
+  const container = img.closest(containerSelector);
+  if (container) container.classList.add('has-photo');
+}
+
 const teachers = [
   {
     name:'أ. محمد الصادق إبراهيم', subject:'لغة عربية',
+    num:2,
     spec:'لغة عربية', grade:'الثانوية', icon:'م', cat:'عربي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2415,6 +2525,7 @@ const teachers = [
   },
   {
     name:'أ. أحمد عبد القادر محمد', subject:'تدريس / مدرس',
+    num:3,
     spec:'تدريس / مدرس', grade:'الثانوية', icon:'أ', cat:'عام',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2422,6 +2533,7 @@ const teachers = [
   },
   {
     name:'أ. السيد السيد احمد عبد العال', subject:'لغة عربية',
+    num:4,
     spec:'لغة عربية', grade:'الثانوية', icon:'ا', cat:'عربي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2429,6 +2541,7 @@ const teachers = [
   },
   {
     name:'أ. محمد حنفي محمد محمد', subject:'لغة إنجليزية',
+    num:5,
     spec:'لغة إنجليزية', grade:'الثانوية', icon:'م', cat:'انجليزي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2436,6 +2549,7 @@ const teachers = [
   },
   {
     name:'أ. شاكر عبد العزيز إسماعيل', subject:'لغة إنجليزية',
+    num:6,
     spec:'لغة إنجليزية', grade:'الثانوية', icon:'ش', cat:'انجليزي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2443,6 +2557,7 @@ const teachers = [
   },
   {
     name:'أ. فاروق اسكندر متنائيل', subject:'لغة إنجليزية',
+    num:7,
     spec:'لغة إنجليزية', grade:'الثانوية', icon:'ف', cat:'انجليزي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2450,6 +2565,7 @@ const teachers = [
   },
   {
     name:'أ. السيد محمد أحمد علي سخيل', subject:'لغة إنجليزية',
+    num:8,
     spec:'لغة إنجليزية', grade:'الثانوية', icon:'ا', cat:'انجليزي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2457,6 +2573,7 @@ const teachers = [
   },
   {
     name:'أ. إبراهيم عبد اللطيف إبراهيم', subject:'لغة فرنسية',
+    num:9,
     spec:'لغة فرنسية', grade:'الثانوية', icon:'إ', cat:'فرنساوي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2464,6 +2581,7 @@ const teachers = [
   },
   {
     name:'أ. الحسين محمد السيد يوسف', subject:'لغة فرنسية',
+    num:10,
     spec:'لغة فرنسية', grade:'الثانوية', icon:'ا', cat:'فرنساوي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2471,6 +2589,7 @@ const teachers = [
   },
   {
     name:'أ. محمد إبراهيم أحمد', subject:'لغة فرنسية',
+    num:11,
     spec:'لغة فرنسية', grade:'الثانوية', icon:'م', cat:'فرنساوي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2478,6 +2597,7 @@ const teachers = [
   },
   {
     name:'أ. محمد موسى أحمد إبراهيم السعداوي', subject:'رياضيات',
+    num:12,
     spec:'رياضيات', grade:'الثانوية', icon:'م', cat:'رياضيات',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2485,6 +2605,7 @@ const teachers = [
   },
   {
     name:'أ. عبد المجيد محمد أحمد', subject:'تاريخ',
+    num:13,
     spec:'تاريخ', grade:'الثانوية', icon:'ع', cat:'تاريخ',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2492,6 +2613,7 @@ const teachers = [
   },
   {
     name:'أ. محمد عبد الله عبد المعطي علاوي', subject:'جغرافيا',
+    num:14,
     spec:'جغرافيا', grade:'الثانوية', icon:'م', cat:'جغرافيا',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2499,6 +2621,7 @@ const teachers = [
   },
   {
     name:'أ. عادل عوض عبد الملاك', subject:'تربية دينية مسيحية',
+    num:15,
     spec:'تربية دينية مسيحية', grade:'الثانوية', icon:'ع', cat:'دينية',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2506,6 +2629,7 @@ const teachers = [
   },
   {
     name:'أ. محمد محمد عبد الحميد عبد الحق', subject:'أخصائي اجتماعي',
+    num:16,
     spec:'أخصائي اجتماعي', grade:'الثانوية', icon:'م', cat:'اجتماعي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'ذ',
@@ -2513,6 +2637,7 @@ const teachers = [
   },
   {
     name:'أ. سهير جرجس المصيلحي', subject:'لغة عربية',
+    num:17,
     spec:'لغة عربية', grade:'الثانوية', icon:'س', cat:'عربي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2520,6 +2645,7 @@ const teachers = [
   },
   {
     name:'أ. أميرة عبد الناصر عبد المنعم', subject:'لغة عربية',
+    num:18,
     spec:'لغة عربية', grade:'الثانوية', icon:'أ', cat:'عربي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2527,6 +2653,7 @@ const teachers = [
   },
   {
     name:'أ. زينب محمد عبد الحميد عبد الحق', subject:'لغة فرنسية',
+    num:19,
     spec:'لغة فرنسية', grade:'الثانوية', icon:'ز', cat:'فرنساوي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2534,6 +2661,7 @@ const teachers = [
   },
   {
     name:'أ. هانم محمد أحمد شريف', subject:'لغة فرنسية',
+    num:20,
     spec:'لغة فرنسية', grade:'الثانوية', icon:'ه', cat:'فرنساوي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2541,6 +2669,7 @@ const teachers = [
   },
   {
     name:'أ. هبة حماد محمد حسانين', subject:'علم نفس',
+    num:21,
     spec:'علم نفس', grade:'الثانوية', icon:'ه', cat:'نفس',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2548,6 +2677,7 @@ const teachers = [
   },
   {
     name:'أ. سحر عبد العليم موسى خاطر', subject:'فلسفة',
+    num:22,
     spec:'فلسفة', grade:'الثانوية', icon:'س', cat:'فلسفة',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2555,6 +2685,7 @@ const teachers = [
   },
   {
     name:'أ. رباب أحمد السيد', subject:'فلسفة',
+    num:23,
     spec:'فلسفة', grade:'الثانوية', icon:'ر', cat:'فلسفة',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2562,6 +2693,7 @@ const teachers = [
   },
   {
     name:'أ. هالة جودة السيد', subject:'علم نفس',
+    num:24,
     spec:'علم نفس', grade:'الثانوية', icon:'ه', cat:'نفس',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2569,6 +2701,7 @@ const teachers = [
   },
   {
     name:'أ. فتحية عبد المحيد عبد الرحمن', subject:'تكنولوجيا',
+    num:25,
     spec:'تكنولوجيا', grade:'الثانوية', icon:'ف', cat:'تكنولوجيا',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2576,6 +2709,7 @@ const teachers = [
   },
   {
     name:'أ. نجلاء محمد عبده عطا الله', subject:'أخصائي اجتماعي',
+    num:26,
     spec:'أخصائي اجتماعي', grade:'الثانوية', icon:'ن', cat:'اجتماعي',
     where:'مدرسة شهيد حسن حمدي الثانوية',
     lang:'ar', gender:'أ',
@@ -2638,7 +2772,7 @@ const photos = [
 /* ============================================================
    PAGES SYSTEM
 ============================================================ */
-const PAGE_IDS = ['home','principal','students','memories','about'];
+const PAGE_IDS = ['home','principal','students','memories','about','teacher-profile'];
 
 function syncBNav(id) {
   document.querySelectorAll('.bnav-item').forEach(b => {
@@ -3081,6 +3215,7 @@ function buildTeacherRow(t) {
         <rect x="0" y="200" width="240" height="60" fill="url(#bg-${t.icon}-${t.name.length})" opacity="0.7"/>
       </svg>
       <div class="teacher-photo-badge">${t.subject}</div>
+      ${t.num ? `<img class="teacher-photo-img" src="photos/${t.num}.jpg" data-num="${t.num}" data-ext-idx="0" alt="${t.name}" loading="lazy" onerror="tryNextPhotoExt(this)" onload="onPhotoLoad(this, '.teacher-row-photo')" />` : ''}
     </div>
   `;
 
@@ -3107,7 +3242,7 @@ function buildTeacherRow(t) {
   row.innerHTML = photoPanel + infoPanel;
   row.lang = t.lang; // correct pronunciation for EN/FR bios under screen readers
 
-  row.onclick = () => openTModal(t);
+  row.onclick = () => openTeacherPage(t);
   return row;
 }
 
@@ -3165,8 +3300,61 @@ function filterTeachers(f, btn, fromDropdown) {
 /* ============================================================
    TEACHER MODAL
 ============================================================ */
+/* ============================================================
+   SINGLE TEACHER PROFILE PAGE
+============================================================ */
+function openTeacherPage(t) {
+  const genderIsMale = (t.gender === 'ذ' || t.gender === 'M');
+
+  document.getElementById('tpLetter').textContent   = t.icon;
+  document.getElementById('tpInitial').textContent  = t.icon;
+  document.getElementById('tpName').textContent     = t.name;
+  document.getElementById('tpSubject').textContent  = t.subject;
+  document.getElementById('tpBadge').textContent    = t.subject;
+  document.getElementById('tpBio').textContent      = t.bio;
+
+  // Body silhouette shape varies slightly by gender, matching the teacher-row cards
+  document.getElementById('tpBodyPath').setAttribute('d', genderIsMale
+    ? 'M65 340 Q80 228 140 215 Q200 228 215 340Z'
+    : 'M55 340 Q68 235 140 222 Q212 235 225 340Z');
+
+  const area = document.getElementById('tpPhotoArea');
+  const img  = document.getElementById('tpPhotoImg');
+  area.classList.remove('has-photo');
+  if (t.num) {
+    img.dataset.extIdx = '0';
+    img.dataset.num = t.num;
+    img.alt = t.name;
+    img.src = `photos/${t.num}.jpg`;
+  } else {
+    img.removeAttribute('src');
+  }
+
+  const chips = [];
+  if (t.age)   chips.push(`<div class="p-chip"><span class="lbl">السن</span><span class="val">${t.age} سنة</span></div>`);
+  if (t.exp)   chips.push(`<div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">${t.exp} سنوات</span></div>`);
+  if (t.spec)  chips.push(`<div class="p-chip"><span class="lbl">التخصص</span><span class="val">${t.spec}</span></div>`);
+  if (t.grade) chips.push(`<div class="p-chip"><span class="lbl">المرحلة</span><span class="val">${t.grade}</span></div>`);
+  if (t.from)  chips.push(`<div class="p-chip"><span class="lbl">المنشأ</span><span class="val">${t.from}</span></div>`);
+  if (t.where) chips.push(`<div class="p-chip"><span class="lbl">يُدرِّس في</span><span class="val">${t.where}</span></div>`);
+  document.getElementById('tpChips').innerHTML = chips.join('');
+
+  goPage('teacher-profile');
+}
+
 function openTModal(t) {
-  document.getElementById('mAv').textContent   = t.icon;
+  document.getElementById('mAvLetter').textContent = t.icon;
+  const avEl = document.getElementById('mAv');
+  const avImg = document.getElementById('mAvImg');
+  avEl.classList.remove('has-photo');
+  if (t.num) {
+    avImg.dataset.extIdx = '0';
+    avImg.dataset.num = t.num;
+    avImg.alt = t.name;
+    avImg.src = `photos/${t.num}.jpg`;
+  } else {
+    avImg.removeAttribute('src');
+  }
   document.getElementById('mName').textContent = t.name;
   document.getElementById('mSub').textContent  = t.subject;
   document.getElementById('mAgeCell').style.display = t.age ? '' : 'none';
