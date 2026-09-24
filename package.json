@@ -1,8 +1,8 @@
-﻿{
+{
   "name": "shaheed-hassan-hamdy-school",
   "version": "1.0.0",
   "private": true,
-  "description": "Ù…ÙˆÙ‚Ø¹ Ù…Ø¯Ø±Ø³Ø© Ø´Ù‡ÙŠØ¯ Ø­Ø³Ù† Ø­Ù…Ø¯ÙŠ Ù…Ø¹ Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø£Ø¯Ù…Ù† Ù…ØªØµÙ„Ø© Ø¨Ù‚Ø§Ø¹Ø¯Ø© Ø¨ÙŠØ§Ù†Ø§Øª Neon",
+  "description": "موقع مدرسة شهيد حسن حمدي مع لوحة تحكم أدمن متصلة بقاعدة بيانات Neon",
   "scripts": {
     "test": "node tests/photos.test.js && node tests/layout.test.js && node tests/security.test.js && node tests/settings-roundtrip.test.js"
   },
