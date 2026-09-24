@@ -90,8 +90,27 @@ check('admin.js escapes DB values before printing them (source check)', () => {
   assert.ok(/admEsc\(admSearchQuery\)/.test(src), 'search query echo must be escaped');
 });
 
+check('the old WhatsApp story modal is fully gone and the form posts to the API (source check)', () => {
+  const site = fs.readFileSync(path.join(ROOT, 'js', 'site.js'), 'utf8');
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert.ok(!site.includes('runSupportSequence'), 'story sequencer must be removed from site.js');
+  assert.ok(!site.includes('wa.me'), 'no WhatsApp links in public site JS');
+  assert.ok(!html.includes('wa.me'), 'no WhatsApp links in index.html');
+  assert.ok(!html.includes('support-slide'), 'story slides must be removed from index.html');
+  assert.ok(html.includes('id="cmpForm"'), 'complaint form must exist in index.html');
+  assert.ok(site.includes("fetch('/api/complaints'"), 'site must POST complaints to the API');
+});
+
+check('admin panel has a complaints tab with escaped rendering (source check)', () => {
+  const src = fs.readFileSync(path.join(ROOT, 'js', 'admin.js'), 'utf8');
+  assert.ok(src.includes("'/api/complaints'"), 'complaints schema must point to /api/complaints');
+  assert.ok(src.includes('renderComplaintList'), 'complaint list renderer must exist');
+  assert.ok(/admEsc\(c\.details\)/.test(src), 'complaint details must be escaped');
+  assert.ok(/admEsc\(c\.name\)/.test(src), 'complaint names must be escaped');
+});
+
 /* ---- جزء 2: السيرفر — api/_validate.js ---- */
-const { cleanText, cleanImage, cleanInt, cleanDate, inspectOptionalImage, MAX_IMAGE_LEN } =
+const { cleanText, cleanImage, cleanInt, cleanDate, inspectOptionalImage, cleanPhone, validateComplaint, COMPLAINT_TYPES, MAX_IMAGE_LEN } =
   require(path.join(ROOT, 'api', '_validate.js'));
 
 check('cleanText caps length and rejects non-strings', () => {
@@ -126,6 +145,48 @@ check('cleanInt and cleanDate keep DB columns safe', () => {
   assert.strictEqual(cleanDate('2008-03-15'), '2008-03-15');
   assert.strictEqual(cleanDate('15/03/2008'), null);
   assert.strictEqual(cleanDate(''), null);
+});
+
+/* ---- جزء 2ب: السيرفر — فحص نموذج الشكاوى ---- */
+
+check('cleanPhone normalizes Egyptian mobiles and rejects junk', () => {
+  assert.strictEqual(cleanPhone('01012345678'), '01012345678');
+  assert.strictEqual(cleanPhone('010 1234 5678'), '01012345678'); // مسافات بتتشال
+  assert.strictEqual(cleanPhone('010-1234-5678'), '01012345678'); // شرط بتتشال
+  assert.strictEqual(cleanPhone('01312345678'), null);  // 013 مش شبكة مصرية
+  assert.strictEqual(cleanPhone('0101234567'), null);   // 10 أرقام بس
+  assert.strictEqual(cleanPhone('010123456789'), null); // 12 رقم
+  assert.strictEqual(cleanPhone('hello'), null);
+  assert.strictEqual(cleanPhone(1012345678), null);     // لازم نص مش رقم
+});
+
+check('validateComplaint accepts a complete complaint and returns cleaned data', () => {
+  const img = 'data:image/jpeg;base64,' + Buffer.from('tiny').toString('base64');
+  const r = validateComplaint({
+    type: COMPLAINT_TYPES[0], name: '  أحمد محمد علي  ',
+    phone: '010 1234 5678', details: 'التفاصيل الكاملة للمشكلة اللي واجهتني',
+    images: [img],
+  });
+  assert.strictEqual(r.ok, true);
+  assert.strictEqual(r.data.name, 'أحمد محمد علي', 'name must be trimmed');
+  assert.strictEqual(r.data.phone, '01012345678', 'phone must be normalized');
+  assert.strictEqual(r.data.images.length, 1);
+  assert.strictEqual(validateComplaint({ type: COMPLAINT_TYPES[0], name: 'أحمد محمد علي', phone: '01012345678', details: 'تفاصيل كافية بدون صور' }).ok, true, 'images are optional');
+});
+
+check('validateComplaint rejects every invalid piece of input', () => {
+  const base = { type: COMPLAINT_TYPES[1], name: 'أحمد محمد علي', phone: '01012345678', details: 'تفاصيل كافية جدًا للشكوى', images: [] };
+  assert.strictEqual(validateComplaint(null).ok, false);
+  assert.strictEqual(validateComplaint('string').ok, false);
+  assert.strictEqual(validateComplaint({ ...base, type: 'نوع مش موجود في القائمة' }).ok, false, 'unknown type must fail');
+  assert.strictEqual(validateComplaint({ ...base, name: 'اح' }).ok, false, 'too-short name must fail');
+  assert.strictEqual(validateComplaint({ ...base, phone: '01312345678' }).ok, false, 'bad phone must fail');
+  assert.strictEqual(validateComplaint({ ...base, details: 'قصير' }).ok, false, 'too-short details must fail');
+  const img = 'data:image/jpeg;base64,' + Buffer.from('tiny').toString('base64');
+  assert.strictEqual(validateComplaint({ ...base, images: Array(6).fill(img) }).ok, false, '6 images must fail (max 5)');
+  assert.strictEqual(validateComplaint({ ...base, images: ['not-an-image'] }).ok, false, 'invalid image must fail');
+  assert.strictEqual(validateComplaint({ ...base, images: 'not-an-array' }).ok, false, 'non-array images must fail');
+  assert.strictEqual(validateComplaint({ ...base, website: 'http://spam.example' }).ok, false, 'filled honeypot must fail (bot)');
 });
 
 /* ---- جزء 3: السيرفر — api/_auth.js ---- */

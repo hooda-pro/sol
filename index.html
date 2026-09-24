@@ -152,7 +152,7 @@
       <span class="mmenu-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>تواصل مع دعم</span>
+      <span>الشكاوى والاقتراحات</span>
     </button>
   </div>
   <div class="mmenu-divider"></div>
@@ -336,7 +336,7 @@
         </div>
         <button class="btn-gold home-cta-btn" onclick="openSupportModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          تواصل معانا
+          قدّم شكوى أو اقتراح
         </button>
       </div>
     </div>
@@ -777,54 +777,69 @@
   </div>
 </div>
 
-<!-- SUPPORT MODAL — full-screen, sequential "story" reveal -->
-<div class="support-modal" id="supportModal" role="dialog" aria-modal="true" aria-label="تواصل مع الدعم">
-  <div class="support-topbar">
-    <button class="support-close" onclick="closeSupportModal()" aria-label="إغلاق">✕</button>
-    <div class="support-progress-track" id="supportProgressTrack">
-      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
-      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
-      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
-      <div class="support-progress-seg"><div class="support-progress-fill"></div></div>
+<!-- COMPLAINTS MODAL — نموذج شكاوى/اقتراحات بيرفع مباشرة للوحة الأدمن -->
+<div class="support-modal" id="supportModal" role="dialog" aria-modal="true" aria-label="الشكاوى والاقتراحات">
+  <div class="support-card">
+    <div class="support-head">
+      <div class="support-head-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="support-head-text">
+        <h3 class="support-title">الشكاوى والاقتراحات</h3>
+        <p class="support-subtitle">رسالتك بتوصل لإدارة الموقع مباشرة — وهنرد عليك واتساب في أقرب وقت.</p>
+      </div>
+      <button class="support-close" onclick="closeSupportModal()" aria-label="إغلاق">✕</button>
     </div>
-  </div>
 
-  <div class="support-stage">
-    <div class="support-slide" data-slide="0">
-      <div class="support-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <form id="cmpForm" novalidate>
+      <div class="support-field">
+        <label for="cmpType">نوع الشكوى <span class="req">*</span></label>
+        <select id="cmpType">
+          <option value="" selected disabled>اختار النوع...</option>
+          <option>مشكلة تقنية في الموقع</option>
+          <option>اقتراح لتطوير الموقع</option>
+          <option>طلب إزالة صورة</option>
+          <option>مشاركة صورة أو ذكرى</option>
+          <option>أخرى</option>
+        </select>
       </div>
-      <p>أهلاً بيك 👋<br>إحنا سعداء إنك بتزور موقع مدرسة شهيد حسن حمدي.</p>
-    </div>
-    <div class="support-slide" data-slide="1">
-      <div class="support-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="support-field">
+        <label for="cmpName">الاسم بالكامل <span class="req">*</span></label>
+        <input id="cmpName" type="text" maxlength="100" autocomplete="name" placeholder="مثال: أحمد محمد علي">
       </div>
-      <p>لو عندك أي اقتراح لتطوير الموقع، أو حابب تبلّغ عن مشكلة تقنية واجهتك وانت بتستخدمه...</p>
-    </div>
-    <div class="support-slide" data-slide="2">
-      <div class="support-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+      <div class="support-field">
+        <label for="cmpPhone">رقم الموبايل (عليه واتساب) <span class="req">*</span></label>
+        <input id="cmpPhone" class="support-phone" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="01xxxxxxxxx">
+        <small>هنرد عليك على الرقم ده — لازم يكون رقم مصري متوفر عليه واتساب.</small>
       </div>
-      <p>إحنا في انتظار رسالتك، وهنحاول نحل مشكلتك ونرد عليك في أقرب وقت ممكن.</p>
-    </div>
-    <div class="support-slide" data-slide="3">
-      <div class="support-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div class="support-field">
+        <label for="cmpDetails">تفاصيل الشكوى <span class="req">*</span></label>
+        <textarea id="cmpDetails" rows="4" maxlength="2000" placeholder="اشرح المشكلة أو الاقتراح بالتفصيل..."></textarea>
       </div>
-      <p>ولو انت حد صورته اتنزلت على الموقع وحابب نشيلها، تقدر تطلب منا كده وهتتشال فورًا.<br><strong>خصوصيتك بالنسبالنا حاجة مهمة قوي.</strong></p>
-    </div>
-  </div>
+      <div class="support-field">
+        <label>صور توضيحية <span class="opt">(اختياري — لحد 5 صور)</span> <span id="cmpPhotoCount"></span></label>
+        <button type="button" class="support-pickbtn" id="cmpPhotoPick">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          أضف صور
+        </button>
+        <input type="file" id="cmpPhotoInput" accept="image/*" multiple hidden>
+        <div class="support-previews" id="cmpPreviews"></div>
+      </div>
+      <!-- فخ بوتات: الحقل ده مش بيظهر للبشر — أي برنامج آلي بيملاه بنرفض الطلب -->
+      <input type="text" id="cmpWebsite" class="support-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <p class="support-err" id="cmpErr"></p>
+      <button type="submit" class="btn-gold support-submit" id="cmpSubmit">إرسال الشكوى</button>
+      <p class="support-privacy">بياناتك بتتستخدم بس عشان نرد على شكواك — ومش بتتعرض في أي مكان عام على الموقع.</p>
+    </form>
 
-  <div class="support-actions" id="supportActions">
-    <button class="support-btn-back" onclick="closeSupportModal()">رجوع</button>
-    <!-- ⚠️ TODO: put the real WhatsApp number here — wa.me needs digits only,
-         full international format, no +, no spaces, no leading 0.
-         Egypt example: number 01012345678 → https://wa.me/201012345678 -->
-    <a class="support-btn-whatsapp" href="https://wa.me/20XXXXXXXXXX" target="_blank" rel="noopener noreferrer">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.33 4.95L2 22l5.24-1.37a9.94 9.94 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm5.86 14.24c-.25.7-1.45 1.34-2 1.42-.53.08-1.15.11-1.86-.12-.43-.14-.98-.32-1.68-.63-2.96-1.28-4.9-4.25-5.04-4.45-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.3.6-.37.8-.37h.57c.18 0 .43-.03.66.5.25.6.85 2.05.92 2.2.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.6.17.3.77 1.27 1.66 2.06 1.14 1.02 2.1 1.34 2.4 1.49.3.15.47.13.65-.08.18-.2.75-.88.95-1.18.2-.3.4-.25.66-.15.27.1 1.7.8 1.99.95.3.15.5.22.57.35.07.13.07.75-.18 1.45z"/></svg>
-      تواصل معانا
-    </a>
+    <div class="support-done" id="cmpDoneView" hidden>
+      <div class="support-done-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h4>تم استلام رسالتك بنجاح</h4>
+      <p>رقم المتابعة: <strong id="cmpDoneId"></strong><br>هنراجعها ونرد عليك واتساب في أقرب وقت ممكن.</p>
+      <button type="button" class="btn-gold support-submit" onclick="closeSupportModal()">تمام</button>
+    </div>
   </div>
 </div>
 

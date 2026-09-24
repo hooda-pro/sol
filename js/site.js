@@ -1277,56 +1277,187 @@ function initSettings() {
 }
 
 /* ============================================================
-   SUPPORT MODAL — full-screen sequential "story" reveal.
-   Each slide fades in, holds for a set duration, fades out, then
-   the next one takes over — ending on the back / WhatsApp actions.
+   COMPLAINTS MODAL — نموذج الشكاوى والاقتراحات.
+   بيرفع الشكوى لقاعدة البيانات مباشرة، والأدمن بيشوفها في تبويب
+   "الشكاوى" في لوحة التحكم. مفيش واتساب ولا روابط خارجية هنا.
 ============================================================ */
-const SUPPORT_SLIDE_MS = 3400;
-let _supportTimer = null;
+const CMP_MAX_IMAGES = 5;
+let cmpImages = [];   // صور مضغوطة جاهزة للإرسال (data:image/jpeg;base64,...)
+let cmpPending = 0;   // صور لسه بتتظغط — نمنع الإرسال لحد ما تخلص
 
 function openSupportModal() {
   const modal = document.getElementById('supportModal');
   if (!modal) return;
+  resetComplaintForm();
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
-  runSupportSequence();
 }
 function closeSupportModal() {
   const modal = document.getElementById('supportModal');
   if (modal) modal.classList.remove('open');
   document.body.style.overflow = '';
-  clearTimeout(_supportTimer);
 }
-function runSupportSequence() {
-  const modal = document.getElementById('supportModal');
-  const slides = Array.from(modal.querySelectorAll('.support-slide'));
-  const fills = Array.from(modal.querySelectorAll('.support-progress-fill'));
-  const actions = document.getElementById('supportActions');
-  if (!slides.length) return;
 
-  clearTimeout(_supportTimer);
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  modal.classList.toggle('no-motion', reduceMotion);
+function resetComplaintForm() {
+  cmpImages = []; cmpPending = 0;
+  const form = document.getElementById('cmpForm');
+  const done = document.getElementById('cmpDoneView');
+  if (form) { form.reset(); form.hidden = false; }
+  if (done) done.hidden = true;
+  const err = document.getElementById('cmpErr');
+  if (err) { err.textContent = ''; err.style.display = 'none'; }
+  const btn = document.getElementById('cmpSubmit');
+  if (btn) { btn.disabled = false; btn.textContent = 'إرسال الشكوى'; }
+  const fileInput = document.getElementById('cmpPhotoInput');
+  if (fileInput) fileInput.value = '';
+  renderCmpPreviews();
+}
 
-  slides.forEach(s => s.classList.remove('active'));
-  actions.classList.remove('show');
-  fills.forEach(f => { f.style.transition = 'none'; f.style.width = '0%'; });
+// ضغط الصورة قبل الإرسال: أقصى بُعد 1000px وجودة JPEG 0.8 — الصورة بتطلع
+// ~120KB بدل عدة ميجا، فالـ 5 صور يفضلوا تحت حد Vercel للـ body (4.5MB).
+// نفس فكرة الضغط المستخدمة في لوحة الأدمن.
+function cmpCompressImage(file, maxDim = 1000, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = Math.round(height * (maxDim / width)); width = maxDim; }
+          else { width = Math.round(width * (maxDim / height)); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        // JPEG مبيدعمش الشفافية — نملا الخلفية أبيض الأول عشان الصور الشفافة
+        // (سكرينشوت PNG مثلًا) متطلعش بخلفية سودا.
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
-  let i = 0;
-  function step() {
-    if (i > 0) slides[i - 1].classList.remove('active');
-    if (i >= slides.length) { actions.classList.add('show'); return; }
-    slides[i].classList.add('active');
-    const fill = fills[i];
-    if (fill) {
-      requestAnimationFrame(() => {
-        fill.style.transition = reduceMotion ? 'none' : `width ${SUPPORT_SLIDE_MS}ms linear`;
-        fill.style.width = '100%';
-      });
-    }
-    _supportTimer = setTimeout(() => { i++; step(); }, SUPPORT_SLIDE_MS);
+function cmpShowErr(msg) {
+  const err = document.getElementById('cmpErr');
+  if (!err) return;
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+async function handleCmpPhotos(fileList) {
+  const files = Array.from(fileList || []);
+  if (!files.length) return;
+  const room = CMP_MAX_IMAGES - cmpImages.length - cmpPending;
+  if (files.length > room) {
+    cmpShowErr(`مسموح ${CMP_MAX_IMAGES} صور كحد أقصى — هنضيف أول ${Math.max(room, 0)} بس`);
   }
-  step();
+  for (const f of files.slice(0, Math.max(room, 0))) {
+    if (!f.type || !f.type.startsWith('image/')) { cmpShowErr('الملفات المسموحة صور بس'); continue; }
+    cmpPending++;
+    try {
+      cmpImages.push(await cmpCompressImage(f));
+    } catch (e) {
+      cmpShowErr('تعذر قراءة إحدى الصور');
+    }
+    cmpPending--;
+    renderCmpPreviews();
+  }
+}
+
+function removeCmpImage(i) {
+  cmpImages.splice(i, 1);
+  renderCmpPreviews();
+}
+
+// المعاينات بتتبنى بـ DOM API مش innerHTML — عادة آمنة بتمنع أي ثغرة حقن.
+function renderCmpPreviews() {
+  const wrap = document.getElementById('cmpPreviews');
+  const count = document.getElementById('cmpPhotoCount');
+  const pick = document.getElementById('cmpPhotoPick');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  cmpImages.forEach((src, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'support-thumb';
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = 'صورة مرفقة ' + (i + 1);
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'support-thumb-x';
+    x.textContent = '✕';
+    x.setAttribute('aria-label', 'حذف الصورة ' + (i + 1));
+    x.onclick = () => removeCmpImage(i);
+    cell.appendChild(img);
+    cell.appendChild(x);
+    wrap.appendChild(cell);
+  });
+  if (count) count.textContent = cmpImages.length ? `(${cmpImages.length}/${CMP_MAX_IMAGES})` : '';
+  if (pick) pick.disabled = cmpImages.length + cmpPending >= CMP_MAX_IMAGES;
+}
+
+async function submitComplaint(e) {
+  e.preventDefault();
+  const err = document.getElementById('cmpErr');
+  if (err) err.style.display = 'none';
+  if (cmpPending > 0) { cmpShowErr('لحظة واحدة — الصور لسه بتتجهز'); return; }
+
+  const type = (document.getElementById('cmpType') || {}).value || '';
+  const name = ((document.getElementById('cmpName') || {}).value || '').trim();
+  const phone = ((document.getElementById('cmpPhone') || {}).value || '').replace(/\D/g, '');
+  const details = ((document.getElementById('cmpDetails') || {}).value || '').trim();
+  const website = ((document.getElementById('cmpWebsite') || {}).value || '');
+
+  // نفس فحوصات السيرفر بالظبط — الرسائل هنا لراحة الزائر، والسيرفر بيفحص تاني.
+  if (!type) { cmpShowErr('اختار نوع الشكوى'); return; }
+  if (name.length < 5) { cmpShowErr('اكتب اسمك بالكامل'); return; }
+  if (!/^01[0125][0-9]{8}$/.test(phone)) { cmpShowErr('اكتب رقم موبايل مصري صحيح (11 رقم يبدأ بـ 01)'); return; }
+  if (details.length < 10) { cmpShowErr('اكتب تفاصيل أكتر عن الشكوى (10 حروف على الأقل)'); return; }
+
+  const btn = document.getElementById('cmpSubmit');
+  btn.disabled = true; btn.textContent = '...جاري الإرسال';
+  try {
+    const r = await fetch('/api/complaints', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, name, phone, details, images: cmpImages, website }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      cmpShowErr(d.error || 'حصل خطأ، حاول تاني');
+      btn.disabled = false; btn.textContent = 'إرسال الشكوى';
+      return;
+    }
+    // نجاح: نظهر شاشة التأكيد برقم المتابعة ونخفي النموذج.
+    document.getElementById('cmpForm').hidden = true;
+    const done = document.getElementById('cmpDoneView');
+    document.getElementById('cmpDoneId').textContent = '#' + d.id;
+    done.hidden = false;
+  } catch (e2) {
+    cmpShowErr('تعذر الاتصال بالسيرفر — تأكد من الإنترنت وحاول تاني');
+    btn.disabled = false; btn.textContent = 'إرسال الشكوى';
+  }
+}
+
+function initComplaintForm() {
+  const form = document.getElementById('cmpForm');
+  const pick = document.getElementById('cmpPhotoPick');
+  const input = document.getElementById('cmpPhotoInput');
+  if (!form || !pick || !input) return;
+  form.addEventListener('submit', submitComplaint);
+  // زرار حقيقي بيفتح الـ input المخفي — أضمن من الحيل البصرية على الموبايل.
+  pick.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    handleCmpPhotos(input.files);
+    input.value = ''; // نفس الصورة تتختار تاني لو اتحذفت بالغلط
+  });
 }
 
 /* ============================================================
@@ -1474,6 +1605,7 @@ window.addEventListener('DOMContentLoaded', () => {
   try { initTiltCards(); } catch (err) { console.error('initTiltCards failed:', err); }
   try { initCounters(); } catch (err) { console.error('initCounters failed:', err); }
   try { initSettings(); } catch (err) { console.error('initSettings failed:', err); }
+  try { initComplaintForm(); } catch (err) { console.error('initComplaintForm failed:', err); }
   try { setupAboutReveal(); } catch (err) { console.error('setupAboutReveal failed:', err); }
   setTimeout(setupReveal, 300);
 

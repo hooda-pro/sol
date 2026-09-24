@@ -49,7 +49,81 @@ function inspectOptionalImage(v) {
   return cleaned ? { state: 'ok', value: cleaned } : { state: 'invalid', value: null };
 }
 
+/* ============================================================
+   الشكاوى — نموذج عام أي زائر يقدر يبعته، فده أهم فحص في المشروع.
+============================================================ */
+
+// أنواع الشكاوى المعروضة في النموذج — أي قيمة تانية مرفوضة حتى لو حد
+// ظبط الفرونت على إيده، عشان ميدخلش في قاعدة البيانات غير قيم مفهومة.
+const COMPLAINT_TYPES = [
+  'مشكلة تقنية في الموقع',
+  'اقتراح لتطوير الموقع',
+  'طلب إزالة صورة',
+  'مشاركة صورة أو ذكرى',
+  'أخرى',
+];
+
+const MAX_COMPLAINT_IMAGES = 5;
+// صورة الشكوى الواحدة ~675KB كحد أقصى، ومجموع الصور ~3MB. أصرم من الحد
+// العام للصور لأن 5 صور × 2.5M حرف كانوا هيعدّوا حد Vercel للـ body (4.5MB).
+const MAX_COMPLAINT_IMAGE_LEN = 900_000;
+const MAX_COMPLAINT_IMAGES_TOTAL = 4_000_000;
+
+// صيغة الموبايل المصري: 11 رقم يبدأ بـ 010/011/012/015.
+const PHONE_RE = /^01[0125][0-9]{8}$/;
+
+// بيشيل المسافات والشرط وأي رموز (الناس بتكتب الرقم بأشكال كتير) وبعدين
+// بيفحص الصيغة. بيرجع الرقم نضيف أو null.
+function cleanPhone(v) {
+  if (typeof v !== 'string') return null;
+  const digits = v.replace(/\D/g, '');
+  return PHONE_RE.test(digits) ? digits : null;
+}
+
+// فحص شكوى كاملة قبل التخزين. بيرجع { ok, error } عند الرفض برسالة عربية
+// واضحة للزائر، أو { ok:true, data:{...} } بنسخة منضّفة جاهزة للإدخال.
+function validateComplaint(body) {
+  if (!body || typeof body !== 'object') return { ok: false, error: 'طلب غير صالح' };
+  // فخ بوتات (honeypot): حقل مخفي في النموذج البشر مبيشوفوهش فبيسيبوه فاضي،
+  // البوتات بتملاه — أي قيمة فيه تعني إن ده مش بني آدم.
+  if (body.website) return { ok: false, error: 'طلب غير صالح' };
+
+  const type = cleanText(body.type, 60);
+  if (!type || !COMPLAINT_TYPES.includes(type.trim())) return { ok: false, error: 'اختار نوع الشكوى' };
+
+  const name = cleanText(body.name, 100);
+  if (!name || name.trim().length < 5) return { ok: false, error: 'اكتب اسمك بالكامل' };
+
+  const phone = cleanPhone(body.phone);
+  if (!phone) return { ok: false, error: 'اكتب رقم موبايل مصري صحيح (11 رقم يبدأ بـ 01)' };
+
+  const details = cleanText(body.details, 2000);
+  if (!details || details.trim().length < 10) return { ok: false, error: 'اكتب تفاصيل أكتر عن الشكوى (10 حروف على الأقل)' };
+
+  // الصور اختيارية. لو اتبعتت: array لحد 5، كل واحدة data:image سليمة ومتحجمة.
+  let images = body.images;
+  if (images === undefined || images === null) images = [];
+  if (!Array.isArray(images)) return { ok: false, error: 'الصور غير صالحة' };
+  if (images.length > MAX_COMPLAINT_IMAGES) return { ok: false, error: `مسموح ${MAX_COMPLAINT_IMAGES} صور كحد أقصى` };
+  let total = 0;
+  const cleaned = [];
+  for (const im of images) {
+    if (typeof im === 'string' && im.length > MAX_COMPLAINT_IMAGE_LEN) {
+      return { ok: false, error: 'فيه صورة أكبر من الحد المسموح' };
+    }
+    const ok = cleanImage(im);
+    if (!ok) return { ok: false, error: 'فيه صورة غير صالحة — المسموح صور فقط' };
+    total += ok.length;
+    cleaned.push(ok);
+  }
+  if (total > MAX_COMPLAINT_IMAGES_TOTAL) return { ok: false, error: 'حجم الصور كله أكبر من المسموح — جرب صور أقل' };
+
+  return { ok: true, data: { type: type.trim(), name: name.trim(), phone, details: details.trim(), images: cleaned } };
+}
+
 module.exports = {
   cleanText, cleanImage, cleanInt, cleanDate, inspectOptionalImage,
+  cleanPhone, validateComplaint,
+  COMPLAINT_TYPES, MAX_COMPLAINT_IMAGES, MAX_COMPLAINT_IMAGE_LEN,
   MAX_TEXT_LEN, MAX_LONGTEXT_LEN, MAX_IMAGE_LEN,
 };

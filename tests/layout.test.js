@@ -94,6 +94,10 @@ const mustHave = [
   ['html.light-mode .home-card {', 'light-mode explore cards'],
   ['html.light-mode .bnav-svg path {', 'light-mode bottom nav'],
   ['html.light-mode .stat-label { color:var(--text-muted); }', 'light-mode stat labels stay readable'],
+  ['.support-card {', 'complaint modal card'],
+  ['.support-previews {', 'complaint photo previews'],
+  ['.support-hp {', 'complaint honeypot hidden off-screen'],
+  ['html.light-mode .support-modal {', 'light-mode complaint overlay'],
 ];
 mustHave.forEach(([needle, label]) => {
   if (siteCss.includes(needle)) console.log(`  PASS  css has ${label}`);
@@ -108,10 +112,18 @@ else { console.log(`  FAIL  backdrop-filter twins: ${bfWebkit} prefixed of ${bfA
 if (/\.teacher-photo-img\s*\{[^}]*display\s*:\s*none/.test(siteCss)) { console.log('  FAIL  .teacher-photo-img still uses display:none'); problems++; }
 else console.log('  PASS  no display:none on .teacher-photo-img');
 
+// مودال القصة القديم (سلايدات متتابعة + زر واتساب) اتشال نهائي — أي بقايا منه تعتبر رجوع للوراء
+['support-btn-whatsapp', 'support-progress-fill', 'support-slide', 'support-stage', 'no-motion'].forEach(gone => {
+  if (siteCss.includes(gone)) { console.log(`  FAIL  leftover from the old story modal in css: ${gone}`); problems++; }
+  else console.log(`  PASS  no ${gone} in css`);
+});
+
 [['.adm-grid { grid-template-columns:1fr;', 'admin single-column cards'],
- ['.adm-tabs { display:grid;', 'admin 3-column tabs'],
+ ['.adm-tabs { display:grid;', 'admin tabs grid'],
  ['.adm-form-actions {', 'admin sticky actions'],
- ['.adm-card-actions .adm-btn { flex:0 0 auto; width:44px;', 'admin 44px touch buttons']]
+ ['.adm-card-actions .adm-btn { flex:0 0 auto; width:44px;', 'admin 44px touch buttons'],
+ ['.cmp-card {', 'admin complaint cards'],
+ ['.cmp-viewer {', 'admin complaint image viewer']]
 .forEach(([needle, label]) => {
   if (injected.includes(needle)) console.log(`  PASS  admin css has ${label}`);
   else { console.log(`  FAIL  admin css missing ${label}`); problems++; }

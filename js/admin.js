@@ -185,7 +185,7 @@ function injectAdminStyles() {
     .adm-brand-icon { width:36px; height:36px; }
 
     /* التابات: 3 أعمدة متساوية بتملأ الصف — من غير سكرول أفقي */
-    .adm-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:0.3rem; }
+    .adm-tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:0.3rem; }
     .adm-tab { padding:0.6rem 0.2rem; font-size:0.74rem; min-height:42px; white-space:normal; line-height:1.35; }
 
     .adm-toolbar { gap:0.55rem; }
@@ -241,6 +241,25 @@ function injectAdminStyles() {
     .adm-login-wrap { margin:1.5rem auto 0; }
     .adm-login-card { padding:1.6rem 1.2rem; border-radius:14px; }
   }
+
+  /* ===== تبويب الشكاوى ===== */
+  .cmp-card { grid-column:1/-1; background:var(--surface); border:1px solid var(--border2); border-radius:12px; padding:1.1rem 1.2rem; }
+  .cmp-is-done { opacity:0.7; }
+  .cmp-head { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+  .cmp-type { background:var(--gold-dim); border:1px solid var(--border); color:var(--gold); font-size:0.72rem; font-weight:800; padding:0.22rem 0.7rem; border-radius:50px; }
+  .cmp-status { background:rgba(224,92,92,0.12); border:1px solid rgba(224,92,92,0.35); color:#e8857f; font-size:0.7rem; font-weight:800; padding:0.22rem 0.7rem; border-radius:50px; }
+  .cmp-status.done { background:rgba(46,196,113,0.12); border-color:rgba(46,196,113,0.35); color:#4ecf8d; }
+  .cmp-meta { margin-inline-start:auto; font-size:0.7rem; color:var(--text-muted,#9a9488); }
+  .cmp-person { display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap; margin-top:0.7rem; font-size:0.85rem; color:var(--text); }
+  .cmp-phone { color:var(--text-muted,#9a9488); font-size:0.8rem; letter-spacing:0.5px; }
+  .cmp-wa { font-size:0.72rem; font-weight:700; color:#4ecf8d; text-decoration:none; border:1px solid rgba(46,196,113,0.35); padding:0.2rem 0.65rem; border-radius:50px; }
+  .cmp-wa:hover { background:rgba(46,196,113,0.12); }
+  .cmp-details { margin:0.7rem 0 0; font-size:0.85rem; line-height:1.9; color:var(--text); white-space:pre-wrap; }
+  .cmp-imgs { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.8rem; }
+  .cmp-thumb { width:84px; height:84px; object-fit:cover; border-radius:10px; border:1px solid var(--border2); cursor:zoom-in; }
+  .cmp-actions { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.9rem; }
+  .cmp-viewer { position:fixed; inset:0; z-index:9999; background:rgba(5,7,12,0.92); display:flex; align-items:center; justify-content:center; padding:1.5rem; cursor:zoom-out; }
+  .cmp-viewer img { max-width:100%; max-height:100%; border-radius:12px; }
   `;
   document.head.appendChild(s);
 }
@@ -373,6 +392,14 @@ const ADMIN_SCHEMAS = {
     ],
     itemTitle: p => p.title || '(بدون عنوان)', itemSub: () => '',
   },
+  // الشكاوى بتيجي من نموذج الموقع العام — مفيش "إضافة/تعديل" من اللوحة،
+  // عرض + تغيير حالة + حذف بس (custom renderer تحت).
+  complaints: {
+    label: 'الشكاوى', api: '/api/complaints', idField: 'id', custom: 'complaints',
+    fields: [],
+    emptyText: 'مفيش شكاوى لسه — أول ما حد يقدّم من نموذج الموقع هتظهر هنا.',
+    itemTitle: c => c.name, itemSub: c => `${c.type} ${c.phone}`,
+  },
 };
 
 let admActiveTab = 'teachers';
@@ -382,6 +409,7 @@ let admSearchQuery = '';
 function renderAdminDashboard(tab) {
   admActiveTab = tab;
   admSearchQuery = '';
+  const schema = ADMIN_SCHEMAS[tab];
   const root = document.getElementById('adminRoot');
   const tabs = Object.keys(ADMIN_SCHEMAS).map(k => `
     <button class="adm-tab ${k === tab ? 'active' : ''}" data-tab="${k}">${ADMIN_SCHEMAS[k].label}</button>
@@ -391,16 +419,17 @@ function renderAdminDashboard(tab) {
     <div class="adm-toolbar">
       <div class="adm-search">
         ${ADM_ICON.search}
-        <input id="admSearchInput" type="text" placeholder="ابحث بالاسم...">
+        <input id="admSearchInput" type="text" placeholder="${schema.custom ? 'ابحث بالاسم أو النوع أو الرقم...' : 'ابحث بالاسم...'}">
       </div>
       <span class="adm-count" id="admCount"></span>
-      <button id="admAddBtn" class="adm-btn adm-btn-gold">${ADM_ICON.plus}<span>إضافة جديد</span></button>
+      ${schema.custom ? '' : `<button id="admAddBtn" class="adm-btn adm-btn-gold">${ADM_ICON.plus}<span>إضافة جديد</span></button>`}
     </div>
     <div id="admList" class="adm-grid"><p style="color:var(--text-muted,#9a9488);">جاري التحميل...</p></div>
     <div id="admFormWrap"></div>
   `);
   document.querySelectorAll('.adm-tab').forEach(b => b.onclick = () => renderAdminDashboard(b.dataset.tab));
-  document.getElementById('admAddBtn').onclick = () => openAdminForm({});
+  const admAddBtn = document.getElementById('admAddBtn');
+  if (admAddBtn) admAddBtn.onclick = () => openAdminForm({});
   document.getElementById('admSearchInput').addEventListener('input', (e) => {
     admSearchQuery = e.target.value.trim();
     renderAdminList();
@@ -440,13 +469,16 @@ function renderAdminList() {
   if (countEl) countEl.textContent = `${filtered.length} / ${admItems.length}`;
 
   if (!admItems.length) {
-    listEl.innerHTML = `<div class="adm-empty" style="grid-column:1/-1;">${ADM_ICON.image}<p>مفيش عناصر لسه. دوس "إضافة جديد".</p></div>`;
+    listEl.innerHTML = `<div class="adm-empty" style="grid-column:1/-1;">${ADM_ICON.image}<p>${schema.emptyText || 'مفيش عناصر لسه. دوس "إضافة جديد".'}</p></div>`;
     return;
   }
   if (!filtered.length) {
     listEl.innerHTML = `<div class="adm-empty" style="grid-column:1/-1;">${ADM_ICON.search}<p>مفيش نتايج للبحث "${admEsc(admSearchQuery)}"</p></div>`;
     return;
   }
+
+  // تبويب الشكاوى ليه عرض خاص (مش كروت CRUD عادية).
+  if (schema.custom === 'complaints') { renderComplaintList(filtered); return; }
 
   listEl.innerHTML = filtered.map(item => {
     const thumb = admImgSrc(item.photo_data || item.image_data);
@@ -486,6 +518,85 @@ function renderAdminList() {
       admToast('تعذر الاتصال بالسيرفر', false);
     }
   });
+}
+
+/* ============================================================
+   COMPLAINTS TAB — عرض الشكاوى الواصلة من نموذج الموقع
+============================================================ */
+function admComplaintDate(iso) {
+  try {
+    return new Date(iso).toLocaleString('ar-EG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  } catch (e) { return ''; }
+}
+
+function renderComplaintList(items) {
+  const listEl = document.getElementById('admList');
+  if (!listEl) return;
+  listEl.innerHTML = items.map(c => {
+    const done = c.status === 'تمت المراجعة';
+    // admImgSrc بيرفض أي قيمة مش data:image سليمة — حماية من تخزين بايظ قديم.
+    const imgs = (Array.isArray(c.images) ? c.images : []).map(admImgSrc).filter(Boolean);
+    // الرقم متخزن بعد تحقق السيرفر (01xxxxxxxxx) — نحوّله لصيغة دولية لزر الرد.
+    const wa = 'https://wa.me/2' + String(c.phone).replace(/\D/g, '');
+    return `
+    <div class="cmp-card${done ? ' cmp-is-done' : ''}">
+      <div class="cmp-head">
+        <span class="cmp-type">${admEsc(c.type)}</span>
+        <span class="cmp-status${done ? ' done' : ''}">${done ? 'تمت المراجعة' : 'جديدة'}</span>
+        <span class="cmp-meta">#${c.id} · ${admEsc(admComplaintDate(c.created_at))}</span>
+      </div>
+      <div class="cmp-person">
+        <strong>${admEsc(c.name)}</strong>
+        <span class="cmp-phone" dir="ltr">${admEsc(c.phone)}</span>
+        <a class="cmp-wa" href="${wa}" target="_blank" rel="noopener noreferrer">رد واتساب ↗</a>
+      </div>
+      <p class="cmp-details">${admEsc(c.details)}</p>
+      ${imgs.length ? `<div class="cmp-imgs">${imgs.map((src, i) => `<img class="cmp-thumb" src="${src}" alt="مرفق ${i + 1}" loading="lazy">`).join('')}</div>` : ''}
+      <div class="cmp-actions">
+        <button class="adm-btn adm-btn-ghost cmpToggleBtn" data-id="${c.id}" data-status="${done ? 'جديدة' : 'تمت المراجعة'}">${done ? 'إرجاع كجديدة' : 'تمت المراجعة ✓'}</button>
+        <button class="adm-btn adm-btn-danger cmpDelBtn" data-id="${c.id}">${ADM_ICON.trash}<span>حذف</span></button>
+      </div>
+    </div>`;
+  }).join('');
+
+  listEl.querySelectorAll('.cmpToggleBtn').forEach(b => b.onclick = async () => {
+    try {
+      const r = await adminFetch(`/api/complaints?id=${b.dataset.id}`, {
+        method: 'PUT', body: JSON.stringify({ status: b.dataset.status })
+      });
+      if (r.status === 401) { forceAdminLogout(); return; }
+      if (!r.ok) { admToast('تعذر تحديث الحالة', false); return; }
+      admToast(b.dataset.status === 'تمت المراجعة' ? 'اتعلّمت كـ مُراجعة' : 'رجعت جديدة');
+      loadAdminList();
+    } catch (e) { admToast('تعذر الاتصال بالسيرفر', false); }
+  });
+  listEl.querySelectorAll('.cmpDelBtn').forEach(b => b.onclick = async () => {
+    if (!confirm('متأكد إنك عايز تحذف الشكوى دي نهائي؟')) return;
+    try {
+      const r = await adminFetch(`/api/complaints?id=${b.dataset.id}`, { method: 'DELETE' });
+      if (r.status === 401) { forceAdminLogout(); return; }
+      if (!r.ok) { admToast('تعذر الحذف، حاول تاني', false); return; }
+      admToast('اتحذفت بنجاح');
+      loadAdminList();
+    } catch (e) { admToast('تعذر الاتصال بالسيرفر', false); }
+  });
+  // ضغطة على أي مرفق تفتحه مكبّر — العارض بيتقفل بأي ضغطة.
+  listEl.querySelectorAll('.cmp-thumb').forEach(img => img.onclick = () => openCmpViewer(img.src));
+}
+
+// عارض مرفقات بسيط — overlay بيتبني ويتشال بـ DOM API (مفيش innerHTML ببيانات خارجة).
+function openCmpViewer(src) {
+  if (!src) return;
+  const root = document.getElementById('adminRoot');
+  if (!root) return;
+  const v = document.createElement('div');
+  v.className = 'cmp-viewer';
+  const im = document.createElement('img');
+  im.src = src;
+  im.alt = 'صورة مرفقة بالشكوى';
+  v.appendChild(im);
+  v.onclick = () => v.remove();
+  root.appendChild(v);
 }
 
 function fileToResizedBase64(file, maxDim = 900, quality = 0.82) {
