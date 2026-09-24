@@ -1995,3 +1995,56 @@ html.light-mode .bnav-label { color:rgba(36,29,16,0.5); }
 
 /* مودال الشكاوى: غطاء فاتح هادي — الكارت نفسه بيتلوّن بالمتغيرات تلقائي */
 html.light-mode .support-modal { background:rgba(36,29,16,0.4); }
+
+/* ============================================================
+   الوضع الفاتح — الجولة الثانية: بقايا ألوان كانت مكتوبة يدويًا
+   بأبيض/رمادي فاتح ثابت (مصممة للوضع الغامق) فكانت بتختفي أو
+   تبهت على الخلفية العاجية
+   ============================================================ */
+
+/* نصوص كانت رمادي-فاتح ثابت → بتتبع حبر الهوية الفاتحة */
+html.light-mode .nav-links a { color:var(--text-dim); }
+html.light-mode .filter-tab { color:var(--text-dim); }
+html.light-mode .mmenu-item { color:var(--text-dim); }
+html.light-mode .mmenu-sub { color:var(--text-muted); }
+html.light-mode .mmenu-header { border-bottom-color:var(--border2); }
+html.light-mode .mmenu-divider { background:var(--border2); }
+
+/* زرار موقع الوزارة جوه القائمة: أحمر هادي يتقري على الفاتح */
+html.light-mode .mmenu-school-btn { background:rgba(160,28,28,0.08); border-color:rgba(160,28,28,0.32); color:#a01c1c; }
+html.light-mode .mmenu-school-btn:hover { background:rgba(160,28,28,0.16); border-color:rgba(160,28,28,0.45); color:#8f1d1d; }
+
+/* أسطح كانت بيضاء شفافة (بتتلمع على الغامق بس) → رمادي دافئ خفيف */
+html.light-mode .hamburger { background:var(--surface); }
+html.light-mode .t-chip { background:var(--surface); }
+html.light-mode .t-modal-close { background:var(--surface); }
+html.light-mode .theme-swatch { border-color:var(--border2); }
+html.light-mode .theme-swatch.active { border-color:var(--gold); }
+html.light-mode .loader-bar { background:var(--surface2); }
+html.light-mode .bnav-home-inner { background:var(--surface); }
+
+/* نص فوق سطح ذهبي: var(--bg) كانت سوداء في الغامق (تباين تمام)، لكن
+   في الفاتح بتتقلب عاجية على ذهبي = باهت. نثبّت حبرًا غامقًا دايمًا. */
+html.light-mode .btn-gold,
+html.light-mode .nav-links a.active,
+html.light-mode .filter-tab.active,
+html.light-mode .principal-badge-tag,
+html.light-mode .teacher-photo-badge,
+html.light-mode .rank-badge,
+html.light-mode .play-btn,
+html.light-mode .mmenu-new-badge,
+html.light-mode .about-member-avatar,
+html.light-mode #scrollTop,
+html.light-mode .bnav-item.active .bnav-icon svg,
+html.light-mode .bnav-home.active svg { color:#241d10; }
+
+/* تسمية كارت الصورة بتقعد فوق تدرج غامق ثابت — لازم تفضل فاتحة حتى في
+   الوضع الفاتح، وإلا بتبقى حبر غامق فوق خلفية غامقة = مش باينة */
+html.light-mode .photo-card::after { color:#fff; }
+
+/* طبقات التعتيم ورا القوائم والمودالات: بني دافئ بدل الأسود التقيل */
+html.light-mode #mobileMenuOverlay { background:rgba(36,29,16,0.35); }
+html.light-mode .settings-modal { background:rgba(36,29,16,0.42); }
+
+/* رسالة خطأ نموذج الشكاوى: أحمر أعمق يتقري على الكارت الفاتح */
+html.light-mode .support-err { background:rgba(179,57,47,0.09); border-color:rgba(179,57,47,0.4); color:#a8352c; }

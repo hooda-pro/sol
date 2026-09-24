@@ -88,6 +88,14 @@ function injectAdminStyles() {
     font-family:'Cairo',sans-serif;
     -webkit-overflow-scrolling:touch;   /* smooth kinetic scrolling on iOS */
     overscroll-behavior:contain;        /* the page behind must not scroll along */
+    /* اللوحة مصممة غامقة دايمًا (خلفيتها inline #07090f) — من غير تثبيت
+       المتغيرات دي، تفعيل الوضع الفاتح في الموقع كان بيقلب --text لحبر
+       غامق فوق الخلفية الغامقة واللوحة كلها بتبقى غير مقروءة. */
+    --bg:#07090f; --bg2:#0c1120; --bg3:#111827;
+    --surface:rgba(255,255,255,0.04); --surface2:rgba(255,255,255,0.07);
+    --border:rgba(201,168,76,0.15); --border2:rgba(255,255,255,0.07);
+    --text:#e8e4dc; --text-dim:rgba(232,228,220,0.55); --text-muted:rgba(232,228,220,0.4);
+    --white:#ffffff; --shc:0,0,0;
   }
   .adm-shell { max-width:1080px; margin:0 auto; padding:calc(1.6rem + env(safe-area-inset-top)) 1.2rem 6rem; }
   .adm-topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.6rem; flex-wrap:wrap; padding-bottom:1.2rem; border-bottom:1px solid var(--border2); }

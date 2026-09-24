@@ -98,6 +98,13 @@ const mustHave = [
   ['.support-previews {', 'complaint photo previews'],
   ['.support-hp {', 'complaint honeypot hidden off-screen'],
   ['html.light-mode .support-modal {', 'light-mode complaint overlay'],
+  ['html.light-mode .btn-gold,', 'light-mode dark ink on gold buttons'],
+  ['html.light-mode .mmenu-item { color:var(--text-dim); }', 'light-mode mobile menu items readable'],
+  ['html.light-mode .nav-links a { color:var(--text-dim); }', 'light-mode nav links readable'],
+  ['html.light-mode .filter-tab { color:var(--text-dim); }', 'light-mode filter tabs readable'],
+  ['html.light-mode .photo-card::after { color:#fff; }', 'photo captions stay light over dark gradient'],
+  ['html.light-mode .support-err {', 'light-mode complaint error readable'],
+  ['html.light-mode .mmenu-school-btn {', 'light-mode ministry button readable'],
 ];
 mustHave.forEach(([needle, label]) => {
   if (siteCss.includes(needle)) console.log(`  PASS  css has ${label}`);
@@ -123,7 +130,8 @@ else console.log('  PASS  no display:none on .teacher-photo-img');
  ['.adm-form-actions {', 'admin sticky actions'],
  ['.adm-card-actions .adm-btn { flex:0 0 auto; width:44px;', 'admin 44px touch buttons'],
  ['.cmp-card {', 'admin complaint cards'],
- ['.cmp-viewer {', 'admin complaint image viewer']]
+ ['.cmp-viewer {', 'admin complaint image viewer'],
+  ['--text:#e8e4dc;', 'admin pins dark palette (unaffected by light mode)']]
 .forEach(([needle, label]) => {
   if (injected.includes(needle)) console.log(`  PASS  admin css has ${label}`);
   else { console.log(`  FAIL  admin css missing ${label}`); problems++; }
