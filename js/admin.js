@@ -68,8 +68,7 @@ function injectAdminStyles() {
   .adm-subtitle { font-size:0.78rem; color:var(--text-muted,#9a9488); margin:0.15rem 0 0; }
   .adm-btn { display:inline-flex; align-items:center; gap:0.4rem; border:none; cursor:pointer; font-family:'Cairo',sans-serif; font-weight:700; border-radius:9px; padding:0.6rem 1.1rem; font-size:0.88rem; transition:transform .15s,opacity .15s; }
   .adm-btn:active { transform:scale(0.97); }
-  .adm-btn svg { width:16px; height:16px; flex-shrink:0; }
-  .adm-btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#07090f; }
+  .adm-btn svg { width:16px; height:16px; flex-shrink:0; }  .adm-btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#07090f; }
   .adm-btn-gold:hover { opacity:0.92; }
   .adm-btn-ghost { background:var(--surface2); color:var(--text); border:1px solid var(--border2); }
   .adm-btn-ghost:hover { background:var(--surface); }
@@ -77,8 +76,9 @@ function injectAdminStyles() {
   .adm-btn-danger:hover { background:rgba(176,42,42,0.7); }
   .adm-btn-icon { padding:0.5rem; }
 
-  .adm-tabs { display:flex; gap:0.4rem; background:var(--surface); border:1px solid var(--border2); border-radius:11px; padding:0.3rem; margin-bottom:1.2rem; flex-wrap:wrap; }
-  .adm-tab { flex:1; min-width:110px; text-align:center; padding:0.55rem 0.8rem; border-radius:8px; border:none; cursor:pointer; font-family:'Cairo',sans-serif; font-weight:700; font-size:0.86rem; background:transparent; color:var(--text-muted,#9a9488); transition:all .15s; }
+  .adm-tabs { display:flex; gap:0.4rem; background:var(--surface); border:1px solid var(--border2); border-radius:11px; padding:0.3rem; margin-bottom:1.2rem; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .adm-tabs::-webkit-scrollbar { display:none; }
+  .adm-tab { flex:0 0 auto; text-align:center; padding:0.6rem 1rem; border-radius:8px; border:none; cursor:pointer; font-family:'Cairo',sans-serif; font-weight:700; font-size:0.86rem; background:transparent; color:var(--text-muted,#9a9488); transition:all .15s; min-height:40px; white-space:nowrap; }
   .adm-tab.active { background:var(--gold); color:#07090f; }
   .adm-tab:not(.active):hover { color:var(--text); background:var(--surface2); }
 
@@ -124,10 +124,11 @@ function injectAdminStyles() {
   .adm-modal-close { background:var(--surface2); border:none; color:var(--text); width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
   .adm-modal-close svg { width:14px; height:14px; }
 
-  .adm-img-drop { border:1.5px dashed var(--border2); border-radius:10px; padding:0.9rem; text-align:center; cursor:pointer; transition:border-color .15s,background .15s; position:relative; }
-  .adm-img-drop:hover { border-color:var(--gold); background:var(--gold-dim); }
-  .adm-img-drop svg { width:20px; height:20px; color:var(--gold); margin-bottom:0.3rem; }
-  .adm-img-drop input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .adm-img-drop { border:1.5px dashed var(--border2); border-radius:10px; padding:0.9rem; display:flex; align-items:center; gap:0.7rem; transition:border-color .15s,background .15s; }
+  .adm-img-pickbtn { display:flex; align-items:center; gap:0.5rem; background:var(--surface2); border:1px solid var(--border2); color:var(--text); border-radius:9px; padding:0.65rem 1rem; font-family:'Cairo',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; min-height:44px; white-space:nowrap; }
+  .adm-img-pickbtn:active { transform:scale(0.97); }
+  .adm-img-pickbtn svg { width:18px; height:18px; color:var(--gold); flex-shrink:0; }
+  .adm-img-drop input[type=file] { display:none; }
   .adm-img-preview { display:flex; align-items:center; gap:0.7rem; margin-top:0.6rem; }
   .adm-img-preview img { width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid var(--border2); }
 
@@ -135,12 +136,52 @@ function injectAdminStyles() {
   .adm-toast.success { border-color:rgba(76,175,80,0.5); }
   .adm-toast.success svg { color:#7ed08a; width:16px; height:16px; }
 
-  @media (max-width:560px) {
-    .adm-grid { grid-template-columns:1fr 1fr; }
-    .adm-tab { min-width:80px; font-size:0.78rem; padding:0.5rem 0.4rem; }
+  /* ===== شاشات واسعة: التابات بتملأ الصف بالتساوي ===== */
+  @media (min-width:641px) {
+    .adm-tab { flex:1 1 0; min-width:110px; }
   }
-  @media (max-width:380px) {
-    .adm-grid { grid-template-columns:1fr; }
+
+  /* ===== موبايل: شيت كامل الشاشة من تحت، أزرار وحقول أكبر للمس ===== */
+  @media (max-width:640px) {
+    .adm-shell { padding:1rem 0.85rem 5.5rem; }
+    .adm-topbar { margin-bottom:1.1rem; padding-bottom:0.9rem; }
+    .adm-title { font-size:1.05rem; }
+    .adm-subtitle { font-size:0.72rem; }
+    .adm-brand-icon { width:36px; height:36px; }
+
+    .adm-toolbar { gap:0.55rem; }
+    .adm-search { min-width:100%; order:1; }
+    .adm-count { order:2; }
+    #admAddBtn { order:3; flex:1; justify-content:center; }
+
+    .adm-grid { grid-template-columns:1fr 1fr; gap:0.6rem; }
+    .adm-card { padding:0.7rem; border-radius:11px; }
+    .adm-thumb { width:44px; height:44px; }
+    .adm-card-name { font-size:0.85rem; }
+    .adm-card-sub { font-size:0.72rem; }
+    .adm-card-actions .adm-btn span { display:none; }
+    .adm-card-actions .adm-btn { padding:0.55rem; min-height:40px; }
+
+    /* الفورم بيبقى شيت ثابت من تحت الشاشة، مش نافذة عايمة في النص */
+    .adm-overlay { align-items:flex-end; padding:0; }
+    .adm-modal {
+      max-width:100%; width:100%; border-radius:18px 18px 0 0;
+      max-height:92vh; display:flex; flex-direction:column; padding:0;
+      animation:admSheetUp .22s ease-out;
+    }
+    @keyframes admSheetUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+    .adm-modal-head { padding:1.1rem 1.2rem 0.8rem; margin-bottom:0; border-bottom:1px solid var(--border2); flex-shrink:0; }
+    .adm-modal-head::before {
+      content:''; position:absolute; top:0.5rem; left:50%; transform:translateX(-50%);
+      width:40px; height:4px; border-radius:3px; background:var(--border2);
+    }
+    .adm-modal { position:relative; }
+    #admForm { flex:1; overflow-y:auto; padding:1.1rem 1.2rem 1.2rem; -webkit-overflow-scrolling:touch; }
+    #admForm > div[style*="flex"] { position:sticky; bottom:-1.2rem; background:var(--bg2); margin:1rem -1.2rem -1.2rem; padding:0.9rem 1.2rem calc(0.9rem + env(safe-area-inset-bottom,0px)); border-top:1px solid var(--border2); }
+
+    .adm-field input, .adm-field select, .adm-field textarea { font-size:1rem; padding:0.75rem 0.9rem; }
+    .adm-btn { min-height:44px; }
+    .adm-img-pickbtn { min-height:48px; flex:1; justify-content:center; }
   }
   `;
   document.head.appendChild(s);
@@ -423,14 +464,13 @@ function openAdminForm(item) {
     if (f.type === 'image') {
       return `<div class="adm-field">
         <label>${f.label}${f.required && isNew ? ' *' : ' (اختياري — سيب فاضي لو مش عايز تغيّرها)'}</label>
-        <label class="adm-img-drop">
-          ${ADM_ICON.upload}
-          <div style="font-size:0.82rem;">دوس هنا أو اسحب صورة</div>
-          <input type="file" accept="image/*" data-field="${f.key}" data-imgfield="1">
-        </label>
-        <div class="adm-img-preview" id="preview-${f.key}" style="${val ? '' : 'display:none;'}">
-          <img src="${val || ''}">
-          <span style="font-size:0.8rem;color:var(--text-muted,#9a9488);">الصورة الحالية</span>
+        <div class="adm-img-drop">
+          <button type="button" class="adm-img-pickbtn" id="pickbtn-${f.key}">${ADM_ICON.upload}<span>اختار صورة</span></button>
+          <input type="file" accept="image/*" id="imginput-${f.key}" data-field="${f.key}" data-imgfield="1">
+          <div class="adm-img-preview" id="preview-${f.key}" style="${val ? '' : 'display:none;'}margin-top:0;">
+            <img src="${val || ''}">
+            <span style="font-size:0.8rem;color:var(--text-muted,#9a9488);">الصورة الحالية</span>
+          </div>
         </div>
       </div>`;
     }
@@ -460,9 +500,12 @@ function openAdminForm(item) {
   document.getElementById('admCancelBtn2').onclick = closeForm;
   document.getElementById('admFormOverlay').onclick = (e) => { if (e.target.id === 'admFormOverlay') closeForm(); };
 
-  // Live preview when a new image file is picked
+  // زرار "اختار صورة" الحقيقي بيفتح الـ input المخفي — أضمن بكتير من حيلة
+  // الـ input الشفاف فوق الزرار، اللي بتبوظ أحيانًا على بعض متصفحات الموبايل.
   schema.fields.filter(f => f.type === 'image').forEach(f => {
-    const input = document.querySelector(`[data-imgfield][data-field="${f.key}"]`);
+    const btn = document.getElementById(`pickbtn-${f.key}`);
+    const input = document.getElementById(`imginput-${f.key}`);
+    btn.addEventListener('click', () => input.click());
     input.addEventListener('change', () => {
       if (!input.files || !input.files[0]) return;
       const reader = new FileReader();

@@ -32,11 +32,13 @@ module.exports = async (req, res) => {
       const t = req.body || {};
       const rows = await sql`
         UPDATE teachers SET
-          name=${t.name}, subject=${t.subject}, spec=${t.spec}, grade=${t.grade},
-          icon=${t.icon}, cat=${t.cat}, "where"=${t.where}, lang=${t.lang},
-          gender=${t.gender}, bio=${t.bio},
+          name=COALESCE(${t.name}, name), subject=COALESCE(${t.subject}, subject),
+          spec=COALESCE(${t.spec}, spec), grade=COALESCE(${t.grade}, grade),
+          icon=COALESCE(${t.icon}, icon), cat=COALESCE(${t.cat}, cat),
+          "where"=COALESCE(${t.where}, "where"), lang=COALESCE(${t.lang}, lang),
+          gender=COALESCE(${t.gender}, gender), bio=COALESCE(${t.bio}, bio),
           photo_data=COALESCE(${t.photo_data}, photo_data),
-          sort_order=${t.sort_order || 0}
+          sort_order=COALESCE(${t.sort_order}, sort_order)
         WHERE id=${id}
         RETURNING *`;
       if (!rows.length) return res.status(404).json({ error: 'مش موجود' });

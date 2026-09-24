@@ -12,10 +12,11 @@ module.exports = async (req, res) => {
     if (req.method === 'POST') {
       if (!requireAuth(req, res)) return;
       const s = req.body || {};
+      const dob = s.dob || null; // فاضي أو undefined يبقى NULL (عمود DATE مش بيقبل نص فاضي)
       const rows = await sql`
         INSERT INTO students (rank, name, icon, grade, score, "from", dob, quote, photo_data)
         VALUES (${s.rank || 0}, ${s.name}, ${s.icon || (s.name ? s.name.trim().slice(0,1) : 'ط')},
-                ${s.grade}, ${s.score}, ${s.from}, ${s.dob || null}, ${s.quote || ''}, ${s.photo_data || null})
+                ${s.grade}, ${s.score}, ${s.from}, ${dob}, ${s.quote || ''}, ${s.photo_data || null})
         RETURNING *`;
       return res.status(201).json(rows[0]);
     }
@@ -25,10 +26,13 @@ module.exports = async (req, res) => {
       const id = parseInt(req.query.id, 10);
       if (!id) return res.status(400).json({ error: 'id مطلوب' });
       const s = req.body || {};
+      const dob = s.dob || null;
       const rows = await sql`
         UPDATE students SET
-          rank=${s.rank}, name=${s.name}, icon=${s.icon}, grade=${s.grade},
-          score=${s.score}, "from"=${s.from}, dob=${s.dob || null}, quote=${s.quote},
+          rank=COALESCE(${s.rank}, rank), name=COALESCE(${s.name}, name),
+          icon=COALESCE(${s.icon}, icon), grade=COALESCE(${s.grade}, grade),
+          score=COALESCE(${s.score}, score), "from"=COALESCE(${s.from}, "from"),
+          dob=COALESCE(${dob}, dob), quote=COALESCE(${s.quote}, quote),
           photo_data=COALESCE(${s.photo_data}, photo_data)
         WHERE id=${id}
         RETURNING *`;
