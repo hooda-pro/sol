@@ -137,5 +137,31 @@ else console.log('  PASS  no display:none on .teacher-photo-img');
   else { console.log(`  FAIL  admin css missing ${label}`); problems++; }
 });
 
+// ---- فحوصات SEO / PWA / التحميل الكسول للوحة الأدمن ----
+const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+const siteJs = fs.readFileSync(path.join(ROOT, 'js', 'site.js'), 'utf8');
+[
+  ['rel="manifest"', 'PWA manifest linked'],
+  ['property="og:image"', 'og:image (معاينة واتساب/فيسبوك)'],
+  ['rel="canonical"', 'canonical URL'],
+  ['name="twitter:card" content="summary_large_image"', 'twitter large card'],
+].forEach(([needle, label]) => {
+  if (indexHtml.includes(needle)) console.log(`  PASS  index.html has ${label}`);
+  else { console.log(`  FAIL  index.html missing ${label}`); problems++; }
+});
+// admin.js (~44KB) ميتنزّلش مع كل زائر — بيتحمّل كسولًا من site.js عند #/admin بس
+if (indexHtml.includes('src="js/admin.js"')) { console.log('  FAIL  admin.js still eagerly loaded in index.html'); problems++; }
+else console.log('  PASS  admin.js not in index.html (lazy-loaded)');
+if (siteJs.includes("s.src = 'js/admin.js'") && siteJs.includes("navigator.serviceWorker.register('/sw.js')")) console.log('  PASS  site.js lazy-loads admin.js and registers the service worker');
+else { console.log('  FAIL  site.js missing lazy admin loader or SW registration'); problems++; }
+try {
+  JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.webmanifest'), 'utf8'));
+  console.log('  PASS  manifest.webmanifest is valid JSON');
+} catch (e) { console.log('  FAIL  manifest.webmanifest invalid JSON'); problems++; }
+['robots.txt', 'sitemap.xml', 'sw.js'].forEach(f => {
+  if (fs.existsSync(path.join(ROOT, f))) console.log(`  PASS  ${f} exists`);
+  else { console.log(`  FAIL  ${f} missing`); problems++; }
+});
+
 console.log(problems ? `\n${problems} problem(s) found.` : '\nAll CSS/layout checks passed.');
 process.exit(problems ? 1 : 0);

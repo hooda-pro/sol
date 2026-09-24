@@ -1,0 +1,7 @@
+# مدرسة شهيد حسن حمدي الثانوية — قواعد الزحف
+# كل الصفحات متاحة للأرشفة، ما عدا دوال الـ API (مش صفحات أصلًا).
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://nu-rsch.vercel.app/sitemap.xml

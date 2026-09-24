@@ -522,6 +522,12 @@ function initStars() {
   }
   function draw() {
     ctx.clearRect(0, 0, W, H);
+    // الوضع الفاتح: النجوم مش بتبين على الخلفية الفاتحة أصلًا، فمنرسمهاش
+    // خالص توفيرًا للبطارية — وبنرجع نرسمها تلقائيًا أول ما يرجع الوضع الغامق.
+    if (document.documentElement.classList.contains('light-mode')) {
+      if (!document.hidden) requestAnimationFrame(draw);
+      return;
+    }
     stars.forEach(s => {
       if (!reduceMotion) {
         s.a += s.speed * s.dir;
@@ -1586,16 +1592,43 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
+   ADMIN LAZY-LOAD
+   لوحة الأدمن (js/admin.js ~44KB) ملهاش لازمة لأي زائر عادي، فبتتحمّل
+   بس أول مرة حد يفتح #/admin. الدالة دي "بديل مؤقت": أول ما admin.js
+   يخلص تحميل بيعرّف checkAdminRoute الحقيقية مكانها وبيضيف مستمع
+   hashchange خاص بيه — واحنا بنشيل البديل عشان الاتنين متشتغلش مع بعض.
+============================================================ */
+let _adminScriptRequested = false;
+function checkAdminRoute() {
+  const path = location.hash.replace(/^#\/?/, '');
+  if (path !== 'admin' && !path.startsWith('admin/')) return;
+  if (_adminScriptRequested) return;
+  _adminScriptRequested = true;
+  const stub = checkAdminRoute; // مرجع للبديل ده قبل ما admin.js يبدّله
+  const s = document.createElement('script');
+  s.src = 'js/admin.js';
+  s.onload = () => {
+    window.removeEventListener('hashchange', stub);
+    checkAdminRoute(); // هنا بقت النسخة الكاملة اللي جهت مع admin.js
+  };
+  // لو التحميل فشل (النت وقع مثلًا) نسمح بمحاولة تانية مع أول تغيير في الرابط
+  s.onerror = () => { _adminScriptRequested = false; };
+  document.body.appendChild(s);
+}
+window.addEventListener('hashchange', checkAdminRoute);
+
+/* ============================================================
    INIT
 ============================================================ */
 window.addEventListener('DOMContentLoaded', () => {
   // Hide the loader on a guaranteed timer FIRST, so a future error in any
   // init function below can never leave the whole site stuck on the splash screen.
-  // 1900ms gives the staggered word-drop animation (last word lands ~1.4s in) a beat to breathe.
+  // 1000ms: أنيميشن نزول الكلمات بقى أسرع (آخر كلمة بتوصل ~0.98s)، يعني
+  // الزائر يدخل الموقع في ~1.4s بدل ~2.7s، وشاشة التحميل متبقاش حاجز.
   setTimeout(() => {
     const l = document.getElementById('loader');
     if (l) l.classList.add('gone');
-  }, 1900);
+  }, 1000);
 
   try { updateCopyrightYear(); } catch (err) { console.error('updateCopyrightYear failed:', err); }
   try { updateBNavNotch(); } catch (err) { console.error('updateBNavNotch failed:', err); }
@@ -1620,4 +1653,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   loadLiveData();
   checkAdminRoute();
+
+  // PWA — تسجيل الـ service worker: الموقع يتثبّت كتطبيق على الموبايل،
+  // ويفتح أسرع بكتير في الزيارات اللي بعد الأولى (الملفات الثابتة متخزنة محليًا).
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW registration failed:', err));
+  }
 });

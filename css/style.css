@@ -113,7 +113,7 @@ a { text-decoration:none; color:inherit; }
   position:fixed; inset:0; background:var(--bg);
   z-index:99999; display:flex; flex-direction:column;
   align-items:center; justify-content:center; gap:1.6rem;
-  transition:opacity 0.8s ease, visibility 0.8s;
+  transition:opacity 0.4s ease, visibility 0.4s;
 }
 #loader.gone { opacity:0; visibility:hidden; pointer-events:none; }
 .loader-ring {
@@ -145,8 +145,8 @@ a { text-decoration:none; color:inherit; }
   display:inline-block; transform-style:preserve-3d;
   transform-origin:center 120%;
   opacity:0;
-  animation:wordDrop3D 0.9s cubic-bezier(0.32,0.02,0.4,1) both;
-  animation-delay:calc(var(--i) * 0.17s);
+  animation:wordDrop3D 0.65s cubic-bezier(0.32,0.02,0.4,1) both;
+  animation-delay:calc(var(--i) * 0.11s);
 }
 @media (prefers-reduced-motion: reduce) {
   .loader-name .lw { opacity:1; animation:none; transform:none; }
@@ -158,7 +158,7 @@ a { text-decoration:none; color:inherit; }
 .loader-fill {
   height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2));
   border-radius:2px; transform-origin:left;
-  animation:progressLoad 1.95s ease forwards;
+  animation:progressLoad 0.95s ease forwards;
 }
 
 /* ========== NAVBAR ========== */
