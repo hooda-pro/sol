@@ -87,11 +87,24 @@ const mustHave = [
   ['.s-dob {', 'student dob class'],
   ['.teacher-row-photo { min-height:0; aspect-ratio:4/3; }', 'mobile poster photo'],
   ['.students-grid { grid-template-columns:1fr; gap:1rem; }', 'mobile students column'],
+  ['--shc:      0,0,0;', 'shadow color variable (dark default)'],
+  ['--shc:96,74,36', 'warm shadows in light mode'],
+  ['html.light-mode #navbar {', 'light-mode navbar'],
+  ['html.light-mode .hero-bg-gradient {', 'light-mode hero veil'],
+  ['html.light-mode .home-card {', 'light-mode explore cards'],
+  ['html.light-mode .bnav-svg path {', 'light-mode bottom nav'],
+  ['html.light-mode .stat-label { color:var(--text-muted); }', 'light-mode stat labels stay readable'],
 ];
 mustHave.forEach(([needle, label]) => {
   if (siteCss.includes(needle)) console.log(`  PASS  css has ${label}`);
   else { console.log(`  FAIL  css missing ${label}: ${needle}`); problems++; }
 });
+
+// كل backdrop-filter لازم يكون ليه توأم ببادئة -webkit- (Samsung Internet والإصدارات الأقدم)
+const bfAll = (siteCss.match(/backdrop-filter:/g) || []).length;
+const bfWebkit = (siteCss.match(/-webkit-backdrop-filter:/g) || []).length;
+if (bfAll === bfWebkit * 2) console.log('  PASS  every backdrop-filter has a -webkit- twin');
+else { console.log(`  FAIL  backdrop-filter twins: ${bfWebkit} prefixed of ${bfAll} total`); problems++; }
 if (/\.teacher-photo-img\s*\{[^}]*display\s*:\s*none/.test(siteCss)) { console.log('  FAIL  .teacher-photo-img still uses display:none'); problems++; }
 else console.log('  PASS  no display:none on .teacher-photo-img');
 

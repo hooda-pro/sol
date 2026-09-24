@@ -17,6 +17,8 @@
   --text-dim: rgba(232,228,220,0.55);
   --text-muted:rgba(232,228,220,0.4);
   --white:    #ffffff;
+  /* مكوّنات لون الظلال — بتتقلب لبني دافئ في الوضع الفاتح بدل الأسود الثقيل */
+  --shc:      0,0,0;
   --radius:   20px;
   --radius-sm:12px;
   /* env() resolves to 0px in a normal browser tab, so this is a no-op there —
@@ -49,7 +51,7 @@ html.light-mode {
   --surface:rgba(20,15,5,0.035); --surface2:rgba(20,15,5,0.06);
   --border:rgba(120,90,20,0.22); --border2:rgba(20,15,5,0.09);
   --text:#241d10; --text-dim:rgba(36,29,16,0.62); --text-muted:rgba(36,29,16,0.52);
-  --white:#171310;
+  --white:#171310; --shc:96,74,36;
 }
 
 /* ========== RESET ========== */
@@ -69,6 +71,7 @@ body {
   min-height:100vh;
   min-height:100svh;
   overscroll-behavior-y: none;
+  -webkit-tap-highlight-color:transparent;
 }
 body.menu-open { overflow:hidden; }
 ::-webkit-scrollbar { width:6px; }
@@ -163,7 +166,7 @@ a { text-decoration:none; color:inherit; }
   position:fixed; top:0; left:0; right:0; z-index:1000;
   height:var(--nav-h);
   background:rgba(7,9,15,0.88);
-  backdrop-filter:blur(24px) saturate(1.3);
+  -webkit-backdrop-filter:blur(24px) saturate(1.3); backdrop-filter:blur(24px) saturate(1.3);
   border-bottom:1px solid var(--border);
   display:flex; align-items:center; justify-content:space-between;
   padding:0 2.5rem;
@@ -172,7 +175,7 @@ a { text-decoration:none; color:inherit; }
 }
 #navbar.scrolled {
   background:rgba(7,9,15,0.97);
-  box-shadow:0 8px 40px rgba(0,0,0,0.5);
+  box-shadow:0 8px 40px rgba(var(--shc),0.5);
 }
 .nav-brand {
   display:flex; align-items:center; gap:12px; cursor:pointer; text-align:right;
@@ -289,7 +292,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 #mobileMenuOverlay {
   position:fixed; inset:0; background:rgba(0,0,0,0.6);
   z-index:1999; opacity:0; pointer-events:none;
-  transition:opacity 0.35s; backdrop-filter:blur(3px);
+  transition:opacity 0.35s; -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
 }
 #mobileMenuOverlay.show { opacity:1; pointer-events:all; }
 
@@ -390,7 +393,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   color:var(--gold); font-size:0.75rem; font-weight:700;
   padding:8px 22px; border-radius:50px;
   margin-bottom:2rem; animation:fadeUp 0.7s 0.2s both;
-  backdrop-filter:blur(8px); letter-spacing:0.5px;
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); letter-spacing:0.5px;
 }
 .hero-pill svg { width:15px; height:15px; }
 .hero-title {
@@ -470,7 +473,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   border-radius:16px;
   position:relative; overflow:hidden;
   transition:border-color 0.4s var(--ease-standard), transform 0.4s var(--ease-standard), box-shadow 0.4s var(--ease-standard);
-  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
   cursor:default;
 }
 .stat-cell::before {
@@ -486,7 +489,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .stat-cell:hover { 
   border-color:rgba(201,168,76,0.28); 
   transform:translateY(-6px);
-  box-shadow:0 20px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,168,76,0.1);
+  box-shadow:0 20px 40px rgba(var(--shc),0.35), 0 0 0 1px rgba(201,168,76,0.1);
 }
 .stat-cell:hover::before { opacity:1; }
 .stat-cell:hover::after  { opacity:1; }
@@ -617,7 +620,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   background:linear-gradient(135deg,var(--gold),var(--gold2));
   color:var(--bg); font-size:0.65rem; font-weight:700;
   padding:5px 18px; border-radius:50px; white-space:nowrap;
-  box-shadow:0 4px 14px rgba(0,0,0,0.4);
+  box-shadow:0 4px 14px rgba(var(--shc),0.4);
 }
 /* Info side */
 .principal-info {
@@ -679,7 +682,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .teacher-row:hover {
   border-color:var(--border);
   transform:translateY(-5px);
-  box-shadow:0 24px 55px rgba(0,0,0,0.45);
+  box-shadow:0 24px 55px rgba(var(--shc),0.45);
 }
 
 /* The image panel — full height, fills its column */
@@ -753,7 +756,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   background:linear-gradient(135deg, var(--gold), var(--gold2));
   color:var(--bg); font-size:0.62rem; font-weight:700;
   padding:4px 14px; border-radius:50px; white-space:nowrap;
-  box-shadow:0 4px 14px rgba(0,0,0,0.4);
+  box-shadow:0 4px 14px rgba(var(--shc),0.4);
   letter-spacing:0.3px;
 }
 
@@ -802,7 +805,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 /* Teacher modal */
 .t-modal-overlay {
   position:fixed; inset:0; background:rgba(0,0,0,0.88);
-  backdrop-filter:blur(16px); z-index:3000;
+  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); z-index:3000;
   display:flex; align-items:center; justify-content:center; padding:1.5rem;
   opacity:0; pointer-events:none; transition:opacity 0.4s;
 }
@@ -813,7 +816,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   max-width:480px; width:100%; position:relative;
   transform:scale(0.88) translateY(30px);
   transition:transform 0.45s var(--ease-bounce), opacity 0.45s var(--ease-bounce);
-  box-shadow:0 40px 80px rgba(0,0,0,0.6);
+  box-shadow:0 40px 80px rgba(var(--shc),0.6);
   max-height:90vh; overflow-y:auto; overscroll-behavior:contain;
 }
 .t-modal-overlay.open .t-modal-box { transform:scale(1) translateY(0); }
@@ -903,8 +906,8 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   z-index:200;
   opacity:0; transform:translateY(-8px) scale(0.97); transform-origin:top center; pointer-events:none;
   transition:opacity 0.25s ease, transform 0.25s var(--ease-bounce);
-  box-shadow:0 20px 50px rgba(0,0,0,0.5);
-  backdrop-filter:blur(16px);
+  box-shadow:0 20px 50px rgba(var(--shc),0.5);
+  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
 }
 .filter-dropdown.open {
   opacity:1; transform:translateY(0) scale(1); pointer-events:all;
@@ -934,7 +937,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   border-radius:var(--radius); padding:2.2rem; text-align:center;
   position:relative; overflow:hidden;
 }
-.student-card:hover { transform:translateY(-8px) scale(1.02); border-color:var(--border); box-shadow:0 24px 60px rgba(0,0,0,0.5); }
+.student-card:hover { transform:translateY(-8px) scale(1.02); border-color:var(--border); box-shadow:0 24px 60px rgba(var(--shc),0.5); }
 .student-card::before {
   content:''; position:absolute; top:0; left:0; right:0; height:3px;
   background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));
@@ -1019,7 +1022,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   background:rgba(12,17,32,0.5); border:1px solid var(--border2);
   cursor:pointer;
 }
-.video-card:hover { border-color:var(--border); transform:translateY(-6px) scale(1.02); box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+.video-card:hover { border-color:var(--border); transform:translateY(-6px) scale(1.02); box-shadow:0 20px 50px rgba(var(--shc),0.5); }
 .video-thumb { aspect-ratio:16/9; background:linear-gradient(135deg,var(--bg2),var(--bg3)); display:flex; align-items:center; justify-content:center; position:relative; }
 .video-thumb::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--gold-dim),rgba(12,17,32,0.8)); }
 .play-btn {
@@ -1068,7 +1071,7 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   display:flex; align-items:center; justify-content:center;
   cursor:pointer; position:relative;
 }
-.photo-card:hover { border-color:var(--border); transform:scale(1.05); z-index:2; box-shadow:0 16px 40px rgba(0,0,0,0.5); }
+.photo-card:hover { border-color:var(--border); transform:scale(1.05); z-index:2; box-shadow:0 16px 40px rgba(var(--shc),0.5); }
 .photo-card svg { opacity:0.35; transition:all 0.3s; }
 .photo-card:hover svg { opacity:0.65; transform:scale(1.1); }
 .photo-card::after {
@@ -1446,7 +1449,7 @@ footer::before {
 }
 .home-card:hover {
   transform:translateY(-6px); border-color:rgba(201,168,76,0.3);
-  box-shadow:0 22px 44px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.08);
+  box-shadow:0 22px 44px rgba(var(--shc),0.4), 0 0 0 1px rgba(201,168,76,0.08);
 }
 .home-card:hover::before, .home-card:hover::after { opacity:1; }
 .home-card:active { transform:scale(0.985); transition:transform 0.13s var(--ease-press); }
@@ -1618,7 +1621,7 @@ footer::before {
 
   /* Core layout */
   .section-wrap { padding:2.5rem 1rem 6rem; }
-  .hero-section { padding:1.5rem 1.2rem 0.5rem; min-height:calc(100svh - var(--mobile-nav-h)); }
+  .hero-section { padding:1.5rem 1.2rem 0.5rem; min-height:calc(100vh - var(--mobile-nav-h)); min-height:calc(100svh - var(--mobile-nav-h)); }
   .hero-pill { font-size:0.68rem; padding:6px 16px; margin-bottom:1.4rem; }
   .hero-title { font-size:clamp(2rem,10vw,2.8rem); margin-bottom:1rem; }
   .hero-title .sub { font-size:0.36em; letter-spacing:2.5px; }
@@ -1742,7 +1745,7 @@ footer::before {
   position:absolute; bottom:0; left:0; right:0;
   width:100%; height:100%;
   pointer-events:none;
-  filter:drop-shadow(0 -3px 14px rgba(0,0,0,0.6));
+  filter:drop-shadow(0 -3px 14px rgba(var(--shc),0.6));
 }
 .bnav-svg path { fill:rgba(8,11,20,0.98); }
 
@@ -1853,7 +1856,7 @@ footer::before {
 
 /* ---- 3) كروت المدرسين: صورة أنضف ونصوص أوضح ---- */
 .teacher-row-photo { border-inline-end:1px solid var(--border2); }
-.teacher-photo-badge { backdrop-filter:blur(8px); letter-spacing:0; }
+.teacher-photo-badge { -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); letter-spacing:0; }
 .t-bio-short {
   display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
   overflow:hidden; margin-bottom:1.1rem;
@@ -1919,3 +1922,47 @@ html.light-mode .t-modal-overlay { background:rgba(20,15,5,0.45); }
   .footer-links { gap:0.9rem 1.3rem; margin-bottom:1.8rem; }
 }
 
+
+/* ============================================================
+   إعادة تلوين الوضع الفاتح — كل سطح كان غامقًا بشكل ثابت
+   (ألوان مكتوبة يدويًا) بقى بيتبع الهوية الفاتحة العاجية
+   ============================================================ */
+
+/* النافبار: زجاج عاجي */
+html.light-mode #navbar { background:rgba(250,247,239,0.85); }
+html.light-mode #navbar.scrolled { background:rgba(250,247,239,0.97); box-shadow:0 8px 30px rgba(var(--shc),0.18); }
+
+/* الـ hero: غطاء عاجي + عنوان بذهب أعمق يقرأ على الفاتح */
+html.light-mode .hero-bg-gradient {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% -5%, rgba(255,253,246,0.95) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 45% at 85% 90%, rgba(201,168,76,0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 38% at 10% 80%, rgba(74,127,193,0.08) 0%, transparent 55%),
+    linear-gradient(175deg, #f9f6ef 0%, #efe9db 45%, #f9f6ef 100%);
+}
+html.light-mode .hero-bg-gradient::after {
+  background-image:linear-gradient(rgba(140,105,35,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(140,105,35,0.07) 1px, transparent 1px);
+}
+html.light-mode .hero-title .main { background:linear-gradient(135deg,var(--gold),#8f6d1f,var(--gold)); background-size:300% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+html.light-mode .hero-title .sub { color:var(--text-muted); }
+html.light-mode .hero-pill { background:rgba(201,168,76,0.13); }
+html.light-mode .btn-ghost { border-color:rgba(36,29,16,0.28); }
+
+/* الكروت والأقسام */
+html.light-mode .stat-cell { background:rgba(255,255,255,0.72); }
+html.light-mode .stat-label { color:var(--text-muted); }
+html.light-mode .principal-info { background:linear-gradient(135deg, rgba(255,255,255,0.55), rgba(247,244,238,0.35)); }
+html.light-mode .teacher-row-info { background:linear-gradient(135deg, rgba(255,255,255,0.45), transparent); }
+html.light-mode .video-card { background:rgba(255,255,255,0.7); }
+html.light-mode .video-thumb::before { background:linear-gradient(135deg, var(--gold-dim), rgba(255,255,255,0.5)); }
+html.light-mode .school-info-strip { background:linear-gradient(135deg, rgba(255,255,255,0.8), rgba(243,237,222,0.92)); }
+html.light-mode .home-card { background:linear-gradient(160deg, rgba(255,255,255,0.92), rgba(246,241,229,0.95)); }
+html.light-mode .home-cta { background:linear-gradient(135deg, var(--gold-dim), rgba(255,255,255,0.72) 55%); }
+html.light-mode .fdrop-item { color:var(--text-dim); }
+
+/* شريط التنقل السفلي (موبايل) */
+html.light-mode .bnav-svg { filter:drop-shadow(0 -3px 12px rgba(var(--shc),0.18)); }
+html.light-mode .bnav-svg path { fill:rgba(251,248,241,0.98); }
+html.light-mode .bnav-home { background:rgba(251,248,241,0.98); border:1px solid var(--border2); }
+html.light-mode .bnav-icon svg { color:rgba(36,29,16,0.42); }
+html.light-mode .bnav-label { color:rgba(36,29,16,0.5); }
