@@ -7,6 +7,10 @@ const { sql } = require('./_db');
 const { requireAuth } = require('./_auth');
 
 module.exports = async (req, res) => {
+  // مهم: منع أي تخزين مؤقت (Cache) لرد الـ API — من غير ده، Vercel أو
+  // المتصفح ممكن يفضل يعرض بيانات قديمة للزوار حتى بعد ما تعدّل من لوحة
+  // الأدمن، وده بالظبط اللي كان بيمنع الصور الجديدة من الظهور للزوار.
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   try {
     if (req.method === 'GET') {
       const rows = await sql`SELECT * FROM teachers ORDER BY sort_order ASC, id ASC`;

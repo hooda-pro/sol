@@ -312,9 +312,9 @@ let photos = DEFAULT_PHOTOS.slice();
 async function loadLiveData() {
   try {
     const [tRes, sRes, pRes] = await Promise.all([
-      fetch('/api/teachers').catch(() => null),
-      fetch('/api/students').catch(() => null),
-      fetch('/api/photos').catch(() => null),
+      fetch('/api/teachers', { cache: 'no-store' }).catch(() => null),
+      fetch('/api/students', { cache: 'no-store' }).catch(() => null),
+      fetch('/api/photos', { cache: 'no-store' }).catch(() => null),
     ]);
     if (tRes && tRes.ok) {
       const data = await tRes.json();

@@ -3,6 +3,7 @@ const { sql } = require('./_db');
 const { requireAuth } = require('./_auth');
 
 module.exports = async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   try {
     if (req.method === 'GET') {
       const rows = await sql`SELECT * FROM students ORDER BY rank ASC, id ASC`;
