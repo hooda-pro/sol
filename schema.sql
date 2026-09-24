@@ -60,3 +60,15 @@ CREATE TABLE IF NOT EXISTS complaints (
   created_at  TIMESTAMPTZ DEFAULT now()
 );
 
+-- ============================================================
+-- إعدادات الموقع العامة (key/value): بيانات المدير وشريط إحصائيات
+-- الرئيسية بتتخزن هنا وبتتعدل من لوحة الأدمن (تبويب "المدير" وتبويب
+-- "معلومات الموقع") بدون أي تعديل في الكود — والزائر بيشوفها لحظيًا.
+-- لو الجداول اللي فوق موجودة عندك خلاص، شغّل الجزء ده لوحده في Neon.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS site_settings (
+  key         TEXT PRIMARY KEY,           -- principal / stats
+  value       JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at  TIMESTAMPTZ DEFAULT now()
+);
+
