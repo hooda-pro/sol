@@ -108,6 +108,11 @@
   </div>
 </nav>
 
+<!-- زر الرجوع العائم: أيقونة زجاجية ثابتة فوق — بتظهر في أي صفحة غير الرئيسية -->
+<button id="floatBack" class="float-back" onclick="goBackSmart()" aria-label="رجوع للصفحة السابقة" title="رجوع">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+</button>
+
 <!-- ======== MOBILE MENU ======== -->
 <div id="mobileMenuOverlay" onclick="closeMenu()"></div>
 <div id="mobileMenu">
@@ -386,7 +391,7 @@
     <div class="principal-hero-row reveal">
       <!-- Arabic RTL: photo panel is first in DOM = appears on RIGHT visually -->
       <div class="principal-portrait-area">
-        <span class="bg-letter">ف</span>
+        <span class="bg-letter" id="principalBgLetter">ف</span>
         <!-- portrait initial below reflects real principal's name: فتحي -->
         <svg class="principal-portrait-svg" viewBox="0 0 280 340" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -395,14 +400,14 @@
               <stop offset="100%" stop-color="rgba(201,168,76,0.07)"/>
             </linearGradient>
             <linearGradient id="p-fade" x1="0.5" y1="0" x2="0.5" y2="1">
-              <stop offset="0%" stop-color="#0c1120"/>
-              <stop offset="100%" stop-color="#07090f"/>
+              <stop offset="0%" stop-color="#0c1120" class="pv-bg-a"/>
+              <stop offset="100%" stop-color="#07090f" class="pv-bg-b"/>
             </linearGradient>
           </defs>
           <ellipse cx="140" cy="280" rx="110" ry="45" fill="rgba(201,168,76,0.06)"/>
           <!-- Head -->
           <circle cx="140" cy="105" r="54" fill="url(#p-fig)" stroke="rgba(201,168,76,0.3)" stroke-width="1.5"/>
-          <circle cx="140" cy="105" r="38" fill="rgba(12,17,32,0.5)"/>
+          <circle cx="140" cy="105" r="38" fill="rgba(12,17,32,0.5)" class="pv-face"/>
           <!-- Body -->
           <path d="M65 340 Q80 228 140 215 Q200 228 215 340Z" fill="url(#p-fig)" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
           <!-- Collar -->
@@ -410,22 +415,22 @@
           <!-- Tie -->
           <path d="M140 238 L132 275 L140 285 L148 275Z" fill="rgba(201,168,76,0.15)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
           <!-- Initial -->
-          <text x="140" y="118" text-anchor="middle" dominant-baseline="middle"
+          <text id="principalInitial" x="140" y="118" text-anchor="middle" dominant-baseline="middle"
             font-family="Tajawal, Cairo, sans-serif" font-size="36" font-weight="900"
             fill="rgba(201,168,76,0.92)">ف</text>
           <!-- Bottom fade -->
           <rect x="0" y="270" width="280" height="70" fill="url(#p-fade)" opacity="0.85"/>
         </svg>
-        <img class="principal-photo-img" src="photos/1.jpg" data-num="1" data-ext-idx="0" alt="أ. فتحي محمد حسن مرسي" loading="lazy" onerror="window.tryNextPhotoExt ? tryNextPhotoExt(this) : this.style.display='none'" onload="window.onPhotoLoad ? onPhotoLoad(this, '.principal-portrait-area') : this.closest('.principal-portrait-area').classList.add('has-photo')" />
-        <div class="principal-badge-tag">مدير المدرسة — إدارة الحسنية</div>
+        <img class="principal-photo-img" id="principalPhoto" src="photos/1.jpg" data-num="1" data-ext-idx="0" alt="أ. فتحي محمد حسن مرسي" loading="lazy" onerror="window.tryNextPhotoExt ? tryNextPhotoExt(this) : this.style.display='none'" onload="window.onPhotoLoad ? onPhotoLoad(this, '.principal-portrait-area') : this.closest('.principal-portrait-area').classList.add('has-photo')" />
+        <div class="principal-badge-tag" id="principalBadge">مدير المدرسة — إدارة الحسنية</div>
       </div>
       <div class="principal-info">
-        <h2 class="principal-name">أ. فتحي محمد حسن مرسي</h2>
+        <h2 class="principal-name" id="principalName">أ. فتحي محمد حسن مرسي</h2>
         <div class="principal-role-chip">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          مدير المدرسة — رئيس الهيئة الإدارية
+          <span id="principalRoleText">مدير المدرسة — رئيس الهيئة الإدارية</span>
         </div>
-        <p class="principal-bio">
+        <p class="principal-bio" id="principalBio">
           الأستاذ فتحي محمد حسن مرسي، مدير مدرسة شهيد حسن حمدي الثانوية بإدارة الحسنية.
         </p>
         <div class="principal-chips">
@@ -504,10 +509,7 @@
 <!-- ======== PAGE: SINGLE TEACHER PROFILE ======== -->
 <div class="page" id="page-teacher-profile">
   <div class="section-wrap">
-    <button class="tp-back-btn" onclick="goPage('principal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-      رجوع لكادر المدرسين
-    </button>
+    <!-- الرجوع من هنا بيتم بزر الرجوع العائم الزجاجي (#floatBack) -->
     <div class="principal-hero-row reveal">
       <div class="principal-portrait-area" id="tpPhotoArea">
         <span class="bg-letter" id="tpLetter"></span>
@@ -518,13 +520,13 @@
               <stop offset="100%" stop-color="rgba(201,168,76,0.07)"/>
             </linearGradient>
             <linearGradient id="tp-fade" x1="0.5" y1="0" x2="0.5" y2="1">
-              <stop offset="0%" stop-color="#0c1120"/>
-              <stop offset="100%" stop-color="#07090f"/>
+              <stop offset="0%" stop-color="#0c1120" class="pv-bg-a"/>
+              <stop offset="100%" stop-color="#07090f" class="pv-bg-b"/>
             </linearGradient>
           </defs>
           <ellipse cx="140" cy="280" rx="110" ry="45" fill="rgba(201,168,76,0.06)"/>
           <circle cx="140" cy="105" r="54" fill="url(#tp-fig)" stroke="rgba(201,168,76,0.3)" stroke-width="1.5"/>
-          <circle cx="140" cy="105" r="38" fill="rgba(12,17,32,0.5)"/>
+          <circle cx="140" cy="105" r="38" fill="rgba(12,17,32,0.5)" class="pv-face"/>
           <path id="tpBodyPath" d="M65 340 Q80 228 140 215 Q200 228 215 340Z" fill="url(#tp-fig)" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
           <path d="M118 215 L140 238 L162 215" stroke="rgba(201,168,76,0.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
           <path d="M140 238 L132 275 L140 285 L148 275Z" fill="rgba(201,168,76,0.15)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>

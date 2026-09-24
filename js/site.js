@@ -345,13 +345,105 @@ const videos = [
   { title:'معرض العلوم والإبداع', meta:'فبراير ٢٠٢٧ · مختبر العلوم' },
 ];
 
-const DEFAULT_PHOTOS = [
-  'حفل التخرج ٢٠٢٧','يوم الكتاب العالمي','بطولة القدم الداخلية',
-  'معرض العلوم','معرض الفنون الطلابي','تكريم المتفوقين',
-  'يوم البيئة المدرسي','المسرحية السنوية','الرحلة المدرسية',
-  'الحفل الموسيقي','اجتماع أولياء الأمور','تجارب المختبر',
-].map(title => ({ id: null, title, image_data: null }));
-let photos = DEFAULT_PHOTOS.slice();
+// مفيش صور افتراضية وهمية — لو لسه مفيش صور مضافة من لوحة الأدمن بيظهر
+// للزائر حالة "غير متاح بعد" بدل كروت فاضية بأيقونات.
+const DEFAULT_PHOTOS = [];
+let photos = [];
+
+/* ============================================================
+   إعدادات الموقع العامة (بيانات المدير + أرقام شريط الإحصائيات)
+   بتيجي من /api/settings (جدول site_settings) — الأدمن بيعدلها من
+   لوحة التحكم، والزائر بيشوف التحديث مباشرة. أي حقل ناقص بيفضل
+   على قيمته الافتراضية من الـ HTML.
+============================================================ */
+let siteSettings = {};
+
+// حالة "مفيش محتوى" الموحدة — النصوص هنا ثابتة من الكود (مش من المستخدم)
+// فمفيش حاجة محتاجة escape. لو القسم فاضي بنعرض الرسالة دي مكانه.
+function emptyStateHtml(msg, sub) {
+  return `<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p>${msg}</p>
+    ${sub ? `<small>${sub}</small>` : ''}
+  </div>`;
+}
+
+function applySiteSettings() {
+  try { if (siteSettings.principal) applyPrincipalSettings(siteSettings.principal); }
+  catch (e) { console.error('applyPrincipalSettings failed:', e); }
+  try { if (Array.isArray(siteSettings.stats)) applyStatsSettings(siteSettings.stats); }
+  catch (e) { console.error('applyStatsSettings failed:', e); }
+}
+
+// بيانات المدير: نصوص بتتحط بـ textContent فقط (مفيش innerHTML) فمفيش أي
+// احتمال XSS حتى لو حد دخل نص غريب — والصورة بتعدي على نفس safePhotoSrc
+// اللي بتستخدمه صور المدرسين.
+function applyPrincipalSettings(p) {
+  if (!p || typeof p !== 'object') return;
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el && typeof value === 'string' && value.trim()) el.textContent = value.trim();
+  };
+  setText('principalName', p.name);
+  setText('principalRoleText', p.role);
+  setText('principalBadge', p.badge);
+  setText('principalBio', p.bio);
+
+  if (p.name) {
+    const initial = String(p.name).replace(/^\s*(أ|ا|إ|آ)\.?\s+/, '').trim().slice(0, 1);
+    if (initial) {
+      const bgLetter = document.getElementById('principalBgLetter');
+      if (bgLetter) bgLetter.textContent = initial;
+      const initialText = document.getElementById('principalInitial');
+      if (initialText) initialText.textContent = initial;
+    }
+  }
+
+  const img = document.getElementById('principalPhoto');
+  const photo = safePhotoSrc(p.photo_data);
+  if (img && photo) {
+    // صورة من قاعدة البيانات (data URL بتتحمل دايمًا) — بنوقف منطق
+    // تجربة photos/N.jpg الافتراضي عشان onerror ميسترجعش الصورة القديمة.
+    img.removeAttribute('data-num');
+    img.alt = (p.name || 'مدير المدرسة').trim();
+    img.src = photo;
+    img.style.display = '';
+    const area = img.closest('.principal-portrait-area');
+    if (area) area.classList.add('has-photo');
+  }
+}
+
+// أرقام الشريط: بنحدث الأهداف والتسميات بالترتيب على كروت الصفحة الرئيسية.
+// لو العداد كان خلص قبل ما التحديث يوصل بنكتب الرقم النهائي على طول.
+function applyStatsSettings(stats) {
+  const cells = document.querySelectorAll('.stats-strip .stat-cell');
+  stats.slice(0, cells.length).forEach((st, i) => {
+    const cell = cells[i];
+    if (!cell || !st || typeof st !== 'object') return;
+    const numEl = cell.querySelector('.stat-num');
+    const lblEl = cell.querySelector('.stat-label');
+    const target = parseInt(st.target, 10);
+    if (numEl && Number.isFinite(target) && target >= 0) {
+      numEl.dataset.target = target;
+      if (numEl.dataset.counted === '1') numEl.textContent = target;
+    }
+    if (lblEl && typeof st.label === 'string' && st.label.trim()) lblEl.textContent = st.label.trim();
+    // اللاحقة (زي %) عنصر اختياري: بيتخلق لو محتاجينه وبيتشال لو مش محتاجينه
+    let suf = cell.querySelector('.stat-suf');
+    const suffix = typeof st.suffix === 'string' ? st.suffix.trim() : '';
+    if (suffix) {
+      if (!suf && numEl) {
+        suf = document.createElement('span');
+        suf.className = 'stat-suf';
+        suf.style.cssText = "color:var(--gold);font-family:'Tajawal',sans-serif;font-weight:900;";
+        numEl.after(suf);
+      }
+      suf.textContent = suffix;
+    } else if (suf) {
+      suf.remove();
+    }
+  });
+}
 
 /* ============================================================
    تحميل البيانات من قاعدة البيانات (Neon عبر /api)
@@ -360,10 +452,11 @@ let photos = DEFAULT_PHOTOS.slice();
 ============================================================ */
 async function loadLiveData() {
   try {
-    const [tRes, sRes, pRes] = await Promise.all([
+    const [tRes, sRes, pRes, setRes] = await Promise.all([
       fetch('/api/teachers', { cache: 'no-store' }).catch(() => null),
       fetch('/api/students', { cache: 'no-store' }).catch(() => null),
       fetch('/api/photos', { cache: 'no-store' }).catch(() => null),
+      fetch('/api/settings', { cache: 'no-store' }).catch(() => null),
     ]);
     if (tRes && tRes.ok) {
       const data = await tRes.json();
@@ -376,6 +469,13 @@ async function loadLiveData() {
     if (pRes && pRes.ok) {
       const data = await pRes.json();
       if (Array.isArray(data) && data.length) photos = data;
+    }
+    if (setRes && setRes.ok) {
+      const data = await setRes.json();
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
+        siteSettings = data;
+        applySiteSettings();
+      }
     }
     // إعادة رسم أي صفحة اتعرضت بالفعل بالبيانات الافتراضية قبل ما الداتا توصل
     const teachersList = document.getElementById('teachersList');
@@ -432,6 +532,10 @@ function goPage(id, linkEl) {
   target.classList.add('active');
   syncBNav(id);
 
+  // زر الرجوع العائم: بيظهر في أي صفحة غير الرئيسية ويختفي في الرئيسية
+  const fb = document.getElementById('floatBack');
+  if (fb) fb.classList.toggle('show', id !== 'home');
+
   // update nav active
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
   if (linkEl) { linkEl.classList.add('active'); }
@@ -445,6 +549,24 @@ function goPage(id, linkEl) {
   if (id === 'memories'  && !document.getElementById('videosGrid').childElementCount)   { renderMemories(); }
 
   setTimeout(setupReveal, 80);
+}
+
+/* ============================================================
+   زر الرجوع العائم — رجوع ذكي حسب سياق الصفحة:
+   من صفحة المدرّس نرجع لقائمة المدرسين مباشرة (مش history.back عشان
+   نتجنب أي سجل متكرر)، ومن باقي الصفحات نستخدم سجل المتصفح لو فيه
+   صفحة سابقة داخل الموقع نفسه، وإلا نرجع للرئيسية.
+============================================================ */
+function goBackSmart() {
+  const tpActive = document.getElementById('page-teacher-profile');
+  if (tpActive && tpActive.classList.contains('active')) { goPage('principal'); return; }
+  try {
+    if (history.length > 1 && document.referrer) {
+      const ref = new URL(document.referrer);
+      if (ref.origin === location.origin) { history.back(); return; }
+    }
+  } catch (e) { /* أي مشكلة في السجل — نكمّل للرئيسية تحت */ }
+  goPage('home');
 }
 
 /* ============================================================
@@ -841,8 +963,8 @@ function buildTeacherRow(t) {
         <!-- Background gradient wash -->
         <defs>
           <linearGradient id="bg-${uid}" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#0c1120"/>
-            <stop offset="100%" stop-color="#07090f"/>
+            <stop offset="0%" stop-color="#0c1120" class="pv-bg-a"/>
+            <stop offset="100%" stop-color="#07090f" class="pv-bg-b"/>
           </linearGradient>
           <linearGradient id="figure-${uid}" x1="0.5" y1="0" x2="0.5" y2="1">
             <stop offset="0%" stop-color="rgba(201,168,76,0.22)"/>
@@ -858,7 +980,7 @@ function buildTeacherRow(t) {
         <!-- Person silhouette — head -->
         <circle cx="120" cy="85" r="42" fill="url(#figure-${uid})" stroke="rgba(201,168,76,0.25)" stroke-width="1.5"/>
         <!-- Inner face detail -->
-        <circle cx="120" cy="85" r="30" fill="rgba(12,17,32,0.5)"/>
+        <circle cx="120" cy="85" r="30" fill="rgba(12,17,32,0.5)" class="pv-face"/>
         <!-- Body/shoulders -->
         ${genderIsMale
           ? `<path d="M60 260 Q70 185 120 175 Q170 185 180 260Z" fill="url(#figure-${uid})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
@@ -923,6 +1045,13 @@ function renderTeachersList(listId, tabsId, filter = 'all') {
   const list = document.getElementById(listId);
   list.innerHTML = '';
   const filtered = filter === 'all' ? teachers : teachers.filter(t => t.cat === filter);
+  if (!filtered.length) {
+    list.innerHTML = emptyStateHtml(
+      filter === 'all' ? 'قائمة المدرسين غير متاحة بعد' : 'لا يوجد مدرسون في هذا التصنيف بعد',
+      'يُضاف المحتوى من لوحة تحكم الأدمن'
+    );
+    return;
+  }
   filtered.forEach((t, i) => {
     const row = buildTeacherRow(t);
     row.style.transitionDelay = Math.min(i * 0.05, 0.4) + 's';
@@ -1074,6 +1203,10 @@ function renderStudents() {
   // Re-rendering (e.g. once the live data arrives from /api/students) must
   // replace the cards, not stack a second copy of them on top.
   grid.innerHTML = '';
+  if (!students.length) {
+    grid.innerHTML = emptyStateHtml('لوحة الشرف غير متاحة بعد', 'يُضاف الطلاب المتفوقون من لوحة تحكم الأدمن');
+    return;
+  }
   students.forEach((s, i) => {
     const dob = s.dob ? new Date(s.dob) : null;
     const dobValid = dob && !isNaN(dob);
@@ -1125,6 +1258,9 @@ function renderMemories() {
   const vGrid = document.getElementById('videosGrid');
   if (!vGrid) return;
   vGrid.innerHTML = ''; // re-renders replace the cards instead of duplicating them
+  if (!videos.length) {
+    vGrid.innerHTML = emptyStateHtml('لا توجد فيديوهات متاحة بعد');
+  }
   videos.forEach((v, i) => {
     const card = document.createElement('div');
     card.className = 'video-card video-reveal';
@@ -1158,6 +1294,10 @@ function renderMemoriesPhotosOnly() {
   const pGrid = document.getElementById('photosGrid');
   if (!pGrid) return;
   pGrid.innerHTML = '';
+  if (!photos.length) {
+    pGrid.innerHTML = emptyStateHtml('معرض الصور غير متاح بعد', 'تُضاف الصور من لوحة تحكم الأدمن');
+    return;
+  }
   photos.forEach((p, i) => {
     const label = typeof p === 'string' ? p : (p.title || '');
     // صور المعرض بتتطبع كـ background-image — أي قيمة مش data:image حقيقية
@@ -1494,7 +1634,7 @@ function initCounters() {
       const timer = setInterval(() => {
         cur = Math.min(cur + step, target);
         el.textContent = Math.floor(cur);
-        if (cur >= target) clearInterval(timer);
+        if (cur >= target) { clearInterval(timer); el.dataset.counted = '1'; }
       }, 18);
       obs.unobserve(el);
     });
@@ -1537,6 +1677,13 @@ function setupReversibleReveal(key, selector, options = {}) {
     entries.forEach(entry => {
       const el = entry.target;
       if (entry.isIntersecting) {
+        // تأخير الـ stagger بيكون خلص بعد أول دخول — مسحه (والخصائص اللي
+        // شغالة عليه) بيخلي ظهور العنصر أثناء السكرول السريع فوري وسلس
+        // بدل ما يستنى بقايا التأخير في كل مرة.
+        if (el.style.transitionDelay) {
+          el.style.transitionDelay = '';
+          el.classList.add('rvl-instant');
+        }
         el.classList.add('visible');
         el.classList.remove('exiting');
       } else {

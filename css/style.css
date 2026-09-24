@@ -542,18 +542,23 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 #teachersList { perspective:1600px; }
 .teacher-row.teacher-reveal {
   opacity:0;
-  transform:perspective(1600px) translateY(70px) rotateX(-16deg) scale(0.92);
-  transform-style:preserve-3d;
-  transition:opacity 0.75s var(--ease-out), transform 0.75s var(--ease-out);
+  transform:translateY(26px) scale(0.985);
+  transition:opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
   will-change:transform, opacity;
 }
 .teacher-row.teacher-reveal.exiting {
-  transform:perspective(1600px) translateY(-50px) rotateX(14deg) scale(0.94);
-  transition:opacity 0.55s var(--ease-standard), transform 0.55s var(--ease-standard);
+  opacity:0;
+  transform:translateY(-14px);
+  transition:opacity 0.35s var(--ease-standard), transform 0.35s var(--ease-standard);
 }
 .teacher-row.teacher-reveal.visible {
   opacity:1;
-  transform:perspective(1600px) translateY(0) rotateX(0deg) scale(1);
+  transform:none;
+}
+/* الـ visible بـ specificity أعلى من :hover — من غير القاعدة دي الكارت كان
+   بيتجاهل حركة الرفع عند الـ hover بعد ما يظهر */
+.teacher-row.teacher-reveal.visible:hover {
+  transform:translateY(-5px);
 }
 @media (prefers-reduced-motion: reduce) {
   .teacher-row.teacher-reveal,
@@ -1256,6 +1261,13 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .support-field input:focus, .support-field select:focus, .support-field textarea:focus {
   outline:none; border-color:var(--gold);
 }
+/* النافذة المنبثقة لقائمة الاختيار بتتلوّن بألوان نظام التشغيل (بيضا في
+   ويندوز/أندرويد غالبًا) — من غير تثبيت الألوان دي كان النص الفاتح بتاع
+   الوضع الداكن بيختفي تمامًا على الخلفية البيضا. */
+.support-field select { color-scheme:dark; }
+html.light-mode .support-field select { color-scheme:light; }
+.support-field select option { background:#111827; color:#f2ede1; }
+html.light-mode .support-field select option { background:#fffdf7; color:#241d10; }
 .support-field textarea { resize:vertical; min-height:96px; }
 .support-field small { display:block; margin-top:0.35rem; font-size:0.68rem; color:var(--text-muted); line-height:1.6; }
 .support-phone { direction:ltr; text-align:right; }
@@ -1311,16 +1323,41 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   .support-modal { transition:none; }
 }
 
-/* Teacher profile page — back button */
-.tp-back-btn {
-  display:inline-flex; align-items:center; gap:0.5rem;
-  padding:0.7rem 1.4rem; border-radius:50px; border:1px solid var(--border2);
-  background:var(--surface); color:var(--text-dim); font-weight:700; font-size:0.85rem;
-  cursor:pointer; transition:all 0.25s; font-family:'Cairo',sans-serif;
-  margin-bottom:2rem;
+/* زر الرجوع العائم — أيقونة زجاجية ثابتة أعلى الشاشة بتنزل وتطلع مع
+   السكرول، بتظهر في أي صفحة غير الرئيسية (بدل زرار الرجوع الثابت القديم) */
+.float-back {
+  position:fixed; top:calc(88px + env(safe-area-inset-top)); inset-inline-start:1rem; z-index:900;
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold); background:rgba(13,17,28,0.55);
+  border:1px solid var(--border2);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4); backdrop-filter:blur(16px) saturate(1.4);
+  box-shadow:0 8px 24px rgba(var(--shc),0.35);
+  opacity:0; visibility:hidden; transform:translateY(-10px) scale(0.9);
+  transition:opacity 0.3s, transform 0.3s var(--ease-bounce), visibility 0.3s, border-color 0.25s, color 0.25s;
 }
-.tp-back-btn:hover { border-color:var(--gold); color:var(--gold); transform:translateX(4px); }
-.tp-back-btn svg { width:16px; height:16px; transform:scaleX(-1); }
+.float-back.show { opacity:1; visibility:visible; transform:none; }
+.float-back:hover { border-color:var(--gold); transform:scale(1.08); }
+.float-back:active { transform:scale(0.92); }
+.float-back svg { width:20px; height:20px; }
+
+/* حالة "مفيش محتوى" الموحدة — بتظهر مكان أي قسم فاضي (ذكريات، طلاب، مدرسين) */
+.empty-state {
+  grid-column:1/-1; text-align:center; padding:3rem 1.5rem;
+  border:1px dashed var(--border); border-radius:16px;
+  background:var(--surface);
+}
+.empty-state svg { width:40px; height:40px; margin-bottom:0.7rem; opacity:0.55; color:var(--gold); }
+.empty-state p { margin:0; font-weight:700; font-size:0.95rem; color:var(--text-dim); }
+.empty-state small { display:block; margin-top:0.35rem; font-size:0.75rem; line-height:1.7; color:var(--text-muted); }
+
+/* تسريع الظهور المتكرر: بعد أول دخول للعنصر (وانتهاء تأخير الـ stagger)
+   الـ JS بيشيل التأخير ويضيف الكلاس ده — فنقصّر مدة الحركة نفسها عشان
+   الظهور أثناء السكرول السريع يبقى فوري الإحساس من غير ما يتقفل */
+.teacher-row.rvl-instant,
+.student-card.rvl-instant,
+.video-card.rvl-instant,
+.photo-card.rvl-instant { transition-duration:0.45s; }
 
 /* ========== ABOUT SITE PAGE ========== */
 /* ========== ABOUT PAGE ========== */
@@ -2048,3 +2085,33 @@ html.light-mode .settings-modal { background:rgba(36,29,16,0.42); }
 
 /* رسالة خطأ نموذج الشكاوى: أحمر أعمق يتقري على الكارت الفاتح */
 html.light-mode .support-err { background:rgba(179,57,47,0.09); border-color:rgba(179,57,47,0.4); color:#a8352c; }
+
+/* ============================================================
+   الوضع الفاتح — الجولة الثالثة: وضوح الأيقونات والبورتريهات
+   أيقونات كانت باهتة (شفافية 55%) أو بألوان داكنة ثابتة فبتختفي
+   أو تتلخبط فوق الخلفية العاجية
+   ============================================================ */
+
+/* أيقونات شريط الإحصائيات: الشفافية كانت مخليها شبه مخفية على الفاتح */
+html.light-mode .stat-icon { opacity:0.95; }
+html.light-mode .stat-cell:hover .stat-icon { opacity:1; }
+
+/* أيقونات كروت الاستكشاف: ذهبي أعمق فوق خلفية ذهبية أوضح */
+html.light-mode .home-card-icon { color:#8f6d1f; background:rgba(201,168,76,0.18); border-color:rgba(120,90,20,0.28); }
+
+/* أيقونات القائمة الجانبية والعناوين ومؤشر السكرول */
+html.light-mode .mmenu-icon { opacity:1; }
+html.light-mode .hero-scroll { color:rgba(36,29,16,0.6); }
+
+/* زر الرجوع العائم: زجاج عاجي في الفاتح */
+html.light-mode .float-back { background:rgba(255,253,246,0.72); color:#8f6d1f; box-shadow:0 8px 22px rgba(var(--shc),0.22); }
+
+/* البورتريهات التوضيحية (المدير/المدرسين لما مفيش صورة): الأجزاء الداكنة
+   الثابتة (#0c1120 / #07090f) كانت بتفضل بقع سودا فوق العاجي. الكلاسات
+   pv-* بتخلي الأجزاء دي تتقلب لدرجات عاجية في الوضع الفاتح. */
+.pv-bg-a { stop-color:#0c1120; }
+.pv-bg-b { stop-color:#07090f; }
+.pv-face { fill:rgba(12,17,32,0.5); }
+html.light-mode .pv-bg-a { stop-color:#f2ecdd; }
+html.light-mode .pv-bg-b { stop-color:#e7ddc8; }
+html.light-mode .pv-face { fill:rgba(255,255,255,0.6); }

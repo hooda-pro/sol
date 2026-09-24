@@ -9,7 +9,7 @@
    ⚠️ لو غيّرت أي ملف ثابت في الموقع، زوّد رقم CACHE_VERSION هنا
    عشان المتصفح يرمي المخزن القديم ويجيب الجديد.
 ============================================================ */
-const CACHE_VERSION = 'school-v1';
+const CACHE_VERSION = 'school-v2';
 const PRECACHE = [
   '/',
   '/index.html',

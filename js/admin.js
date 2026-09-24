@@ -196,8 +196,8 @@ function injectAdminStyles() {
     .adm-subtitle { font-size:0.72rem; }
     .adm-brand-icon { width:36px; height:36px; }
 
-    /* التابات: 3 أعمدة متساوية بتملأ الصف — من غير سكرول أفقي */
-    .adm-tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:0.3rem; }
+    /* التابات: شبكة 3 أعمدة متساوية بتملأ الصف — من غير سكرول أفقي */
+    .adm-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:0.3rem; }
     .adm-tab { padding:0.6rem 0.2rem; font-size:0.74rem; min-height:42px; white-space:normal; line-height:1.35; }
 
     .adm-toolbar { gap:0.55rem; }
@@ -272,6 +272,19 @@ function injectAdminStyles() {
   .cmp-actions { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.9rem; }
   .cmp-viewer { position:fixed; inset:0; z-index:9999; background:rgba(5,7,12,0.92); display:flex; align-items:center; justify-content:center; padding:1.5rem; cursor:zoom-out; }
   .cmp-viewer img { max-width:100%; max-height:100%; border-radius:12px; }
+
+  /* ===== تبويبات المدير / معلومات الموقع ===== */
+  .adm-settings-card { grid-column:1/-1; background:var(--surface); border:1px solid var(--border2); border-radius:12px; padding:1.2rem; max-width:660px; }
+  .adm-settings-card h3 { margin:0 0 0.3rem; font-family:'Tajawal',sans-serif; color:var(--text); font-weight:800; font-size:1.05rem; }
+  .adm-hint { margin:0 0 1.1rem; font-size:0.78rem; color:var(--text-muted,#9a9488); line-height:1.9; }
+  .adm-info-grid { grid-column:1/-1; display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:0.8rem; margin-bottom:0.2rem; }
+  .adm-info-card { background:var(--surface); border:1px solid var(--border2); border-radius:12px; padding:1rem 0.8rem; text-align:center; }
+  .adm-info-card .n { font-family:'Tajawal',sans-serif; font-weight:900; font-size:1.55rem; color:var(--gold); }
+  .adm-info-card .l { font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem; }
+  .adm-stat-row { display:grid; grid-template-columns:1fr 96px 84px; gap:0.5rem; margin-bottom:0.55rem; }
+  .adm-stat-row input { width:100%; padding:0.65rem 0.8rem; border-radius:9px; border:1px solid var(--border2); background:var(--bg2); color:var(--text); font-family:'Cairo',sans-serif; font-size:0.88rem; }
+  .adm-stat-row input:focus { outline:none; border-color:var(--gold); }
+  .adm-img-clear { padding:0.55rem 0.8rem; }
   `;
   document.head.appendChild(s);
 }
@@ -412,6 +425,28 @@ const ADMIN_SCHEMAS = {
     emptyText: 'مفيش شكاوى لسه — أول ما حد يقدّم من نموذج الموقع هتظهر هنا.',
     itemTitle: c => c.name, itemSub: c => `${c.type} ${c.phone}`,
   },
+  // بيانات المدير قيمة واحدة (مش قائمة) — بتتخزن في site_settings تحت
+  // مفتاح 'principal' وبتتعدل من فورم إعدادات خاص (custom: 'settings').
+  principal: {
+    label: 'المدير', api: '/api/settings', idField: 'id', custom: 'settings',
+    settingsKey: 'principal',
+    settingsHint: 'الاسم والوظيفة والنبذة والصورة بيظهروا في صفحة "المدير والمدرسين" للزوار فور الحفظ. الحقول اللي هتسيبها فاضية بتفضل على آخر قيمة محفوظة.',
+    fields: [
+      { key: 'name', label: 'اسم المدير', type: 'text', required: true },
+      { key: 'role', label: 'الوصف الوظيفي', type: 'text' },
+      { key: 'badge', label: 'الشارة (نص قصير فوق الاسم)', type: 'text' },
+      { key: 'bio', label: 'نبذة المدير', type: 'textarea' },
+      { key: 'photo_data', label: 'صورة المدير', type: 'image' },
+    ],
+    itemTitle: () => '', itemSub: () => '',
+  },
+  // إحصائيات وأرقام الموقع — عدادات من قاعدة البيانات + فورم تعديل شريط
+  // الإحصائيات اللي بيظهر للزوار في الرئيسية (custom: 'siteinfo').
+  siteinfo: {
+    label: 'معلومات الموقع', api: '/api/settings', idField: 'id', custom: 'siteinfo',
+    fields: [],
+    itemTitle: () => '', itemSub: () => '',
+  },
 };
 
 let admActiveTab = 'teachers';
@@ -429,11 +464,12 @@ function renderAdminDashboard(tab) {
   root.innerHTML = adminShell(`
     <div class="adm-tabs">${tabs}</div>
     <div class="adm-toolbar">
+      ${schema.custom && schema.custom !== 'complaints' ? '' : `
       <div class="adm-search">
         ${ADM_ICON.search}
         <input id="admSearchInput" type="text" placeholder="${schema.custom ? 'ابحث بالاسم أو النوع أو الرقم...' : 'ابحث بالاسم...'}">
       </div>
-      <span class="adm-count" id="admCount"></span>
+      <span class="adm-count" id="admCount"></span>`}
       ${schema.custom ? '' : `<button id="admAddBtn" class="adm-btn adm-btn-gold">${ADM_ICON.plus}<span>إضافة جديد</span></button>`}
     </div>
     <div id="admList" class="adm-grid"><p style="color:var(--text-muted,#9a9488);">جاري التحميل...</p></div>
@@ -442,7 +478,8 @@ function renderAdminDashboard(tab) {
   document.querySelectorAll('.adm-tab').forEach(b => b.onclick = () => renderAdminDashboard(b.dataset.tab));
   const admAddBtn = document.getElementById('admAddBtn');
   if (admAddBtn) admAddBtn.onclick = () => openAdminForm({});
-  document.getElementById('admSearchInput').addEventListener('input', (e) => {
+  const admSearchInput = document.getElementById('admSearchInput');
+  if (admSearchInput) admSearchInput.addEventListener('input', (e) => {
     admSearchQuery = e.target.value.trim();
     renderAdminList();
   });
@@ -458,6 +495,9 @@ function renderAdminDashboard(tab) {
 async function loadAdminList() {
   const schema = ADMIN_SCHEMAS[admActiveTab];
   const listEl = document.getElementById('admList');
+  // التبويبات المخصصة (المدير / معلومات الموقع) مش قوائم CRUD — ليها تحميل خاص
+  if (schema.custom === 'settings') { loadSettingsSection(schema); return; }
+  if (schema.custom === 'siteinfo') { renderSiteInfo(listEl); return; }
   try {
     const r = await adminFetch(schema.api);
     if (r.status === 401) { forceAdminLogout(); return; }
@@ -640,6 +680,266 @@ function fileToResizedBase64(file, maxDim = 900, quality = 0.82) {
   });
 }
 
+/* ============================================================
+   FIELD BUILDER — بناء HTML لحقل واحد من الـ schema.
+   مستخدم في مودال الإضافة/التعديل وفي فورم الإعدادات (تبويب المدير).
+   حقل الصورة فيه زر "إزالة" عشان الأدمن يقدر يمسح الصورة المخزنة
+   ويرجّع الصورة الافتراضية، مش بس يستبدلها.
+============================================================ */
+function admFieldHtml(f, val, isNew) {
+  if (f.type === 'textarea') {
+    return `<div class="adm-field"><label>${f.label}</label>
+      <textarea data-field="${f.key}" rows="3">${admEsc(val)}</textarea></div>`;
+  }
+  if (f.type === 'select') {
+    return `<div class="adm-field"><label>${f.label}</label>
+      <select data-field="${f.key}">
+        ${f.options.map(([v,l]) => `<option value="${v}" ${v===val?'selected':''}>${l}</option>`).join('')}
+      </select></div>`;
+  }
+  if (f.type === 'image') {
+    const cur = admImgSrc(val); // أي قيمة مش data:image سليمة متتعرضش
+    return `<div class="adm-field">
+      <label>${f.label}${f.required && isNew ? ' *' : ' (اختياري — سيب فاضي لو مش عايز تغيّرها)'}</label>
+      <div class="adm-img-drop">
+        <button type="button" class="adm-img-pickbtn" id="pickbtn-${f.key}">${ADM_ICON.upload}<span>اختار صورة</span></button>
+        <button type="button" class="adm-btn adm-btn-ghost adm-img-clear" id="clearbtn-${f.key}" style="${cur ? '' : 'display:none;'}">${ADM_ICON.trash}<span>إزالة</span></button>
+        <input type="file" accept="image/*" id="imginput-${f.key}" data-field="${f.key}" data-imgfield="1">
+        <div class="adm-img-preview" id="preview-${f.key}" style="${cur ? '' : 'display:none;'}margin-top:0;">
+          <img src="${cur}" alt="">
+          <span style="font-size:0.8rem;color:var(--text-muted,#9a9488);">الصورة الحالية</span>
+        </div>
+      </div>
+    </div>`;
+  }
+  return `<div class="adm-field"><label>${f.label}</label>
+    <input type="${f.type}" data-field="${f.key}" value="${admEsc(val)}"></div>`;
+}
+
+// ربط أزرار الصور داخل أي فورم (مودال CRUD أو فورم الإعدادات):
+// "اختار صورة" بيفتح الـ input المخفي، و"إزالة" بيخفي المعاينة ويعلّم
+// الحقل data-cleared=1 — عند الحفظ القيمة بتتبعت null فالسيرفر يمسحها.
+function bindImagePickers(container, fields) {
+  fields.filter(f => f.type === 'image').forEach(f => {
+    const btn = container.querySelector(`#pickbtn-${f.key}`);
+    const input = container.querySelector(`#imginput-${f.key}`);
+    const clearBtn = container.querySelector(`#clearbtn-${f.key}`);
+    const prev = container.querySelector(`#preview-${f.key}`);
+    if (!btn || !input || !prev) return;
+    btn.addEventListener('click', () => input.click());
+    input.addEventListener('change', () => {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        prev.dataset.cleared = '';
+        prev.style.display = 'flex';
+        prev.querySelector('img').src = reader.result;
+        prev.querySelector('span').textContent = 'معاينة الصورة الجديدة';
+        if (clearBtn) clearBtn.style.display = '';
+      };
+      reader.readAsDataURL(input.files[0]);
+    });
+    if (clearBtn) clearBtn.addEventListener('click', () => {
+      input.value = '';
+      prev.dataset.cleared = '1';
+      prev.style.display = 'none';
+      prev.querySelector('img').src = '';
+      clearBtn.style.display = 'none';
+    });
+  });
+}
+
+/* ============================================================
+   SETTINGS TABS — تبويب "المدير" (وأي إعدادات مستقبلية).
+   بيتعامل مع /api/settings (قيمة JSON واحدة لكل مفتاح) مش مع قوائم
+   CRUD، فليه فورم خاص — لكن بيعيد استخدام نفس بناء الحقول وأزرار
+   الصور عشان الشكل والسلوك يفضلوا موحدين مع باقي اللوحة.
+============================================================ */
+async function loadSettingsSection(schema) {
+  const listEl = document.getElementById('admList');
+  let value = {};
+  try {
+    const r = await adminFetch(`/api/settings?key=${encodeURIComponent(schema.settingsKey)}`);
+    if (r.status === 401) { forceAdminLogout(); return; }
+    const data = await r.json().catch(() => ({}));
+    if (data && data.value && typeof data.value === 'object' && !Array.isArray(data.value)) value = data.value;
+  } catch (e) {
+    listEl.innerHTML = `<p style="color:#e88;grid-column:1/-1;">تعذر تحميل البيانات. تأكد إن الـ API وقاعدة البيانات متظبطين.</p>`;
+    return;
+  }
+  renderSettingsForm(schema, value);
+}
+
+function renderSettingsForm(schema, value) {
+  const listEl = document.getElementById('admList');
+  const fieldsHtml = schema.fields
+    .map(f => admFieldHtml(f, value[f.key] ?? (f.default ?? ''), false))
+    .join('');
+  listEl.innerHTML = `
+    <div class="adm-settings-card">
+      <h3>${schema.label}</h3>
+      <p class="adm-hint">${schema.settingsHint || 'التغييرات هنا بتظهر للزوار فورًا بعد الحفظ.'}</p>
+      <form id="admSettingsForm">${fieldsHtml}
+        <div class="adm-form-actions" style="position:static;margin:1rem 0 0;">
+          <button type="submit" class="adm-btn adm-btn-gold">حفظ التعديلات</button>
+        </div>
+        <p id="admSettingsErr" class="adm-err"></p>
+      </form>
+    </div>`;
+
+  bindImagePickers(listEl, schema.fields);
+
+  document.getElementById('admSettingsForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('admSettingsErr');
+    errEl.style.display = 'none';
+    const submitBtn = e.target.querySelector('button[type=submit]');
+    const payload = {};
+    for (const f of schema.fields) {
+      if (f.type === 'image') continue;
+      const el = e.target.querySelector(`[data-field="${f.key}"]`);
+      const raw = el ? el.value : '';
+      if (f.required && !String(raw).trim()) {
+        errEl.textContent = `${f.label} مطلوب`;
+        errEl.style.display = 'block';
+        if (el) el.focus();
+        return;
+      }
+      payload[f.key] = f.type === 'number' ? (parseFloat(raw) || 0) : raw;
+    }
+    for (const f of schema.fields.filter(x => x.type === 'image')) {
+      const fileInput = e.target.querySelector(`[data-imgfield][data-field="${f.key}"]`);
+      const prev = document.getElementById(`preview-${f.key}`);
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        try { payload[f.key] = await fileToResizedBase64(fileInput.files[0]); }
+        catch (err) { errEl.textContent = 'تعذر قراءة الصورة'; errEl.style.display = 'block'; return; }
+      } else if (prev && prev.dataset.cleared === '1') {
+        // إزالة صريحة بالزرار — غير كده الحقل مش بيتبعت أصلًا فالسيرفر
+        // بيحتفظ بالصورة القديمة (دمج مع القيمة المخزنة).
+        payload[f.key] = null;
+      }
+    }
+    submitBtn.textContent = '...جاري الحفظ'; submitBtn.disabled = true;
+    try {
+      const r = await adminFetch(`/api/settings?key=${encodeURIComponent(schema.settingsKey)}`, {
+        method: 'PUT', body: JSON.stringify({ value: payload })
+      });
+      if (r.status === 401) { forceAdminLogout(); return; }
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        errEl.textContent = d.error || 'حصل خطأ، حاول تاني';
+        errEl.style.display = 'block';
+        submitBtn.textContent = 'حفظ التعديلات'; submitBtn.disabled = false;
+        return;
+      }
+      admToast('اتحفظت التعديلات');
+      loadSettingsSection(schema); // إعادة التحميل بيعرض الحالة المحفوظة فعلًا
+    } catch (err) {
+      errEl.textContent = 'تعذر الاتصال بالسيرفر';
+      errEl.style.display = 'block';
+      submitBtn.textContent = 'حفظ التعديلات'; submitBtn.disabled = false;
+    }
+  };
+}
+
+/* ============================================================
+   SITE INFO TAB — "معلومات الموقع":
+   ١) عدادات سريعة من قاعدة البيانات (مدرسين/طلاب/صور/شكاوى).
+   ٢) فورم تعديل شريط الإحصائيات اللي بيظهر للزوار في الرئيسية —
+      بيتخزن في site_settings تحت مفتاح 'stats' كمصفوفة ٤ خانات.
+============================================================ */
+async function renderSiteInfo(listEl) {
+  listEl.innerHTML = '<p style="color:var(--text-muted,#9a9488);grid-column:1/-1;">جاري التحميل...</p>';
+  // أي رد 401 هنا معناه كلمة السر مبقتش شغالة — بنوقف فورًا
+  // (forceAdminLogout بتتنادى جوه) من غير ما نرسم أرقام ناقصة.
+  let authFailed = false;
+  const fetchList = async (url) => {
+    try {
+      const r = await adminFetch(url);
+      if (r.status === 401) { authFailed = true; forceAdminLogout(); return []; }
+      const d = await r.json().catch(() => []);
+      return Array.isArray(d) ? d : [];
+    } catch (e) { return []; }
+  };
+  const [tch, std, ph, cmp] = await Promise.all([
+    fetchList('/api/teachers'), fetchList('/api/students'),
+    fetchList('/api/photos'), fetchList('/api/complaints'),
+  ]);
+  let statsVal = [];
+  try {
+    const r = await adminFetch('/api/settings?key=stats');
+    if (r.status === 401) { authFailed = true; forceAdminLogout(); }
+    else {
+      const d = await r.json().catch(() => ({}));
+      if (d && Array.isArray(d.value)) statsVal = d.value;
+    }
+  } catch (e) { /* نفضل على فاضي */ }
+  if (authFailed) return;
+
+  const newCmp = cmp.filter(c => c.status !== 'تمت المراجعة').length;
+  const infoCards = [
+    { n: tch.length, l: 'مدرس' },
+    { n: std.length, l: 'طالب متفوق' },
+    { n: ph.length, l: 'صورة في المعرض' },
+    { n: cmp.length, l: 'شكوى واردة' + (newCmp ? ` — ${newCmp} جديدة` : '') },
+  ].map(c => `<div class="adm-info-card"><div class="n">${c.n}</div><div class="l">${admEsc(c.l)}</div></div>`).join('');
+
+  const rows = [0, 1, 2, 3].map(i => {
+    const c = statsVal[i] || {};
+    return `<div class="adm-stat-row">
+      <input type="text" data-stat="label" data-i="${i}" value="${admEsc(c.label || '')}" placeholder="التسمية (مثال: طالب)">
+      <input type="number" data-stat="target" data-i="${i}" value="${c.target ?? ''}" min="0" placeholder="الرقم" dir="ltr">
+      <input type="text" data-stat="suffix" data-i="${i}" value="${admEsc(c.suffix || '')}" placeholder="لاحقة">
+    </div>`;
+  }).join('');
+
+  listEl.innerHTML = `
+    <div class="adm-info-grid">${infoCards}</div>
+    <div class="adm-settings-card">
+      <h3>شريط الإحصائيات في الصفحة الرئيسية</h3>
+      <p class="adm-hint">الخانات دي (٤ بالترتيب) هي اللي بتظهر للزوار في الشريط اللي تحت الواجهة مباشرة. "اللاحقة" اختيارية — مثال: % بجانب نسبة النجاح. سيبها فاضية لو مش محتاجها.</p>
+      <form id="admStatsForm">${rows}
+        <div class="adm-form-actions" style="position:static;margin:1rem 0 0;">
+          <button type="submit" class="adm-btn adm-btn-gold">حفظ الأرقام</button>
+        </div>
+        <p id="admStatsErr" class="adm-err"></p>
+      </form>
+    </div>`;
+
+  document.getElementById('admStatsForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('admStatsErr');
+    errEl.style.display = 'none';
+    const submitBtn = e.target.querySelector('button[type=submit]');
+    const value = [0, 1, 2, 3].map(i => {
+      const label = (e.target.querySelector(`[data-stat="label"][data-i="${i}"]`).value || '').trim();
+      const targetRaw = e.target.querySelector(`[data-stat="target"][data-i="${i}"]`).value;
+      const suffix = (e.target.querySelector(`[data-stat="suffix"][data-i="${i}"]`).value || '').trim();
+      return { label, target: Math.max(0, parseInt(targetRaw, 10) || 0), suffix };
+    });
+    submitBtn.textContent = '...جاري الحفظ'; submitBtn.disabled = true;
+    try {
+      const r = await adminFetch('/api/settings?key=stats', {
+        method: 'PUT', body: JSON.stringify({ value })
+      });
+      if (r.status === 401) { forceAdminLogout(); return; }
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        errEl.textContent = d.error || 'حصل خطأ، حاول تاني';
+        errEl.style.display = 'block';
+        submitBtn.textContent = 'حفظ الأرقام'; submitBtn.disabled = false;
+        return;
+      }
+      admToast('اتحفظت الأرقام');
+      submitBtn.textContent = 'حفظ الأرقام'; submitBtn.disabled = false;
+    } catch (err) {
+      errEl.textContent = 'تعذر الاتصال بالسيرفر';
+      errEl.style.display = 'block';
+      submitBtn.textContent = 'حفظ الأرقام'; submitBtn.disabled = false;
+    }
+  };
+}
+
 function openAdminForm(item) {
   const schema = ADMIN_SCHEMAS[admActiveTab];
   const isNew = !item[schema.idField];
@@ -650,32 +950,7 @@ function openAdminForm(item) {
     // بصيغة ISO كاملة (2008-03-15T00:00:00.000Z) فالحقل كان بيفضل فاضي وقت
     // التعديل. نقص أول 10 حروف عشان الصيغتين يظبطوا.
     if (f.type === 'date' && val) val = String(val).slice(0, 10);
-    if (f.type === 'textarea') {
-      return `<div class="adm-field"><label>${f.label}</label>
-        <textarea data-field="${f.key}" rows="3">${admEsc(val)}</textarea></div>`;
-    }
-    if (f.type === 'select') {
-      return `<div class="adm-field"><label>${f.label}</label>
-        <select data-field="${f.key}">
-          ${f.options.map(([v,l]) => `<option value="${v}" ${v===val?'selected':''}>${l}</option>`).join('')}
-        </select></div>`;
-    }
-    if (f.type === 'image') {
-      const cur = admImgSrc(val); // أي قيمة مش data:image سليمة متتعرضش
-      return `<div class="adm-field">
-        <label>${f.label}${f.required && isNew ? ' *' : ' (اختياري — سيب فاضي لو مش عايز تغيّرها)'}</label>
-        <div class="adm-img-drop">
-          <button type="button" class="adm-img-pickbtn" id="pickbtn-${f.key}">${ADM_ICON.upload}<span>اختار صورة</span></button>
-          <input type="file" accept="image/*" id="imginput-${f.key}" data-field="${f.key}" data-imgfield="1">
-          <div class="adm-img-preview" id="preview-${f.key}" style="${cur ? '' : 'display:none;'}margin-top:0;">
-            <img src="${cur}" alt="">
-            <span style="font-size:0.8rem;color:var(--text-muted,#9a9488);">الصورة الحالية</span>
-          </div>
-        </div>
-      </div>`;
-    }
-    return `<div class="adm-field"><label>${f.label}</label>
-      <input type="${f.type}" data-field="${f.key}" value="${admEsc(val)}"></div>`;
+    return admFieldHtml(f, val, isNew);
   }).join('');
 
   wrap.innerHTML = `
@@ -702,22 +977,7 @@ function openAdminForm(item) {
 
   // زرار "اختار صورة" الحقيقي بيفتح الـ input المخفي — أضمن بكتير من حيلة
   // الـ input الشفاف فوق الزرار، اللي بتبوظ أحيانًا على بعض متصفحات الموبايل.
-  schema.fields.filter(f => f.type === 'image').forEach(f => {
-    const btn = document.getElementById(`pickbtn-${f.key}`);
-    const input = document.getElementById(`imginput-${f.key}`);
-    btn.addEventListener('click', () => input.click());
-    input.addEventListener('change', () => {
-      if (!input.files || !input.files[0]) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const prev = document.getElementById(`preview-${f.key}`);
-        prev.style.display = 'flex';
-        prev.querySelector('img').src = reader.result;
-        prev.querySelector('span').textContent = 'معاينة الصورة الجديدة';
-      };
-      reader.readAsDataURL(input.files[0]);
-    });
-  });
+  bindImagePickers(wrap, schema.fields);
 
   document.getElementById('admForm').onsubmit = async (e) => {
     e.preventDefault();
@@ -744,6 +1004,9 @@ function openAdminForm(item) {
       if (fileInput && fileInput.files && fileInput.files[0]) {
         try { payload[f.key] = await fileToResizedBase64(fileInput.files[0]); }
         catch (err) { errEl.textContent = 'تعذر قراءة الصورة'; errEl.style.display = 'block'; return; }
+      } else if (document.getElementById(`preview-${f.key}`)?.dataset.cleared === '1') {
+        // الأدمن داس "إزالة" — null معناها امسح الصورة المخزنة من قاعدة البيانات
+        payload[f.key] = null;
       } else if (f.required && isNew) {
         errEl.textContent = `${f.label} مطلوبة`; errEl.style.display = 'block'; return;
       }
