@@ -472,8 +472,12 @@ async function loadLiveData() {
     }
     if (setRes && setRes.ok) {
       const data = await setRes.json();
+      // الـ API بيرجع الإعدادات ملفوفة: { settings:{ principal:.., stats:.. } }
+      // — بنفك الغلاف قبل التخزين، مع قبول الشكل المباشر لو اتغيّر مستقبلًا.
       if (data && typeof data === 'object' && !Array.isArray(data)) {
-        siteSettings = data;
+        const inner = (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings))
+          ? data.settings : data;
+        siteSettings = inner;
         applySiteSettings();
       }
     }

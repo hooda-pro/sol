@@ -14,12 +14,32 @@ const { cleanImage } = require('./_validate.js');
 
 const ALLOWED_KEYS = new Set(['principal', 'stats']);
 
+// مفاتيح قيمتها مصفوفة مش كائن. دي بتتخزن كما هي (استبدال كامل) — الدمج
+// الجزئي مالوش معنى مع المصفوفات، وكمان بيبوّظ شكلها (بصت لكائن أرقام).
+const ARRAY_KEYS = new Set(['stats']);
+
 // Ø­Ø¯ Ø£Ù‚ØµÙ‰ Ù„Ø­Ø¬Ù… Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„Ù…Ø®Ø²Ù†Ø© (ÙƒÙ†Øµ JSON) â€” ÙŠÙƒÙÙŠ ØµÙˆØ±Ø© base64 Ù…Ø¶ØºÙˆØ·Ø©
 // (Ø§Ù„ÙØ±ÙˆÙ†Øª Ø¨ÙŠØ¶ØºØ· Ù„Ù€ WebP ØµØºÙŠØ±) + Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù†ØµÙŠØ©ØŒ ÙˆØ¨ÙŠÙ…Ù†Ø¹ ØªØ®Ø²ÙŠÙ† payload Ø¶Ø®Ù….
 const MAX_VALUE_BYTES = 200 * 1024;
 
 function isPlainObject(v) {
   return !!v && typeof v === 'object' && !Array.isArray(v);
+}
+
+// إصلاح بيانات قديمة اتخزنت غلط: مفتاح زي stats لازم يكون مصفوفة، لكن نسخة
+// قديمة من كود الحفظ كانت بتعمل { ...old, ...array } فالمصفوفة كانت بتتحول
+// لكائن بمفاتيح رقمية { "0": {...}, "1": {...} }. الفرونت بيتأكد من
+// Array.isArray قبل ما يستخدمها، فكانت بتتجاهل تمامًا والزائر يفضل شايف
+// الأرقام الافتراضية من الـ HTML. هنا بنرجّعها مصفوفة عند القراءة.
+function normalizeValue(key, value) {
+  if (!ARRAY_KEYS.has(key)) return value;
+  if (Array.isArray(value)) return value;
+  if (!isPlainObject(value)) return value;
+  const keys = Object.keys(value);
+  if (!keys.length || !keys.every(k => /^\d+$/.test(k))) return value;
+  return keys
+    .sort((a, b) => Number(a) - Number(b))
+    .map(k => value[k]);
 }
 
 // ØªÙ†Ø¶ÙŠÙ ÙƒØ§Ø¦Ù† Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª: Ø¨Ù†Ø³Ù…Ø­ Ø¨Ù†ØµÙˆØµ Ø¨Ø³ (Ø­Ø¯ 5000 Ø­Ø±Ù Ù„Ù„Ø­Ù‚Ù„ â€” Ø§Ù„Ù†Ø¨Ø°Ø© Ù…Ø«Ù„Ù‹Ø§)ØŒ
@@ -92,13 +112,13 @@ module.exports = async function handler(req, res) {
       await ensureTable();
       if (key) {
         const rows = await sql`SELECT value FROM site_settings WHERE key = ${key} LIMIT 1`;
-        return res.status(200).json({ key, value: rows[0] ? rows[0].value : null });
+        return res.status(200).json({ key, value: rows[0] ? normalizeValue(key, rows[0].value) : null });
       }
       // Ø¨Ø¯ÙˆÙ† key: ÙƒÙ„ Ø§Ù„Ù…ÙØ§ØªÙŠØ­ Ø§Ù„Ù…Ø¹Ø±ÙˆÙØ© Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© (ØªØ­Ù…ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø²Ø§Ø¦Ø± Ø¨ÙŠØ³ØªØ®Ø¯Ù…Ù‡Ø§)
       const rows = await sql`SELECT key, value FROM site_settings`;
       const settings = {};
       for (const r of rows) {
-        if (ALLOWED_KEYS.has(r.key)) settings[r.key] = r.value;
+        if (ALLOWED_KEYS.has(r.key)) settings[r.key] = normalizeValue(r.key, r.value);
       }
       return res.status(200).json({ settings });
     } catch (err) {
@@ -121,11 +141,28 @@ module.exports = async function handler(req, res) {
       await ensureTable();
       // Ù†Ø¬ÙŠØ¨ Ø§Ù„Ù‚Ø¯ÙŠÙ… Ø§Ù„Ø£ÙˆÙ„ Ø¹Ø´Ø§Ù† Ù†Ø¯Ù…Ø¬: Ø­Ù‚Ù„ Ù…Ø´ Ù…Ø¨Ø¹ÙˆØª ÙŠÙØ¶Ù„ Ø²ÙŠ Ù…Ø§ Ù‡ÙˆØŒ
       // ÙˆØ­Ù‚Ù„ Ù…Ø¨Ø¹ÙˆØª Ø¨Ù€ null ÙŠØªÙ…Ø³Ø­ Ù…Ù† Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„Ù†Ù‡Ø§Ø¦ÙŠØ©.
-      const rows = await sql`SELECT value FROM site_settings WHERE key = ${key} LIMIT 1`;
-      const old = isPlainObject(rows[0] && rows[0].value) ? rows[0].value : {};
-      const merged = { ...old, ...cleaned.value };
-      for (const [k, v] of Object.entries(merged)) {
-        if (v === null) delete merged[k];
+      let merged;
+      if (Array.isArray(cleaned.value)) {
+        // مصفوفة (stats): استبدال كامل من غير دمج. الدمج بالـ spread كان
+        // بيحوّلها لكائن بمفاتيح رقمية، وساعتها Array.isArray في الفرونت
+        // بترجع false فالأرقام المحفوظة كانت بتتجاهل والزائر يفضل شايف
+        // القيم الافتراضية المكتوبة في index.html.
+        merged = cleaned.value.map(item => {
+          const cell = { ...item };
+          for (const [k, v] of Object.entries(cell)) {
+            if (v === null) delete cell[k];
+          }
+          return cell;
+        });
+      } else {
+        // كائن (principal): دمج مع القديم — حقل مش مبعوت يفضل زي ما هو،
+        // وحقل مبعوت بـ null يتمسح.
+        const rows = await sql`SELECT value FROM site_settings WHERE key = ${key} LIMIT 1`;
+        const old = isPlainObject(rows[0] && rows[0].value) ? rows[0].value : {};
+        merged = { ...old, ...cleaned.value };
+        for (const [k, v] of Object.entries(merged)) {
+          if (v === null) delete merged[k];
+        }
       }
       const mergedJson = JSON.stringify(merged);
       if (mergedJson.length > MAX_VALUE_BYTES) {
