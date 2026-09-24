@@ -595,11 +595,20 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 .principal-portrait-svg {
   position:absolute; inset:0; width:100%; height:100%; z-index:2;
 }
+/* IMPORTANT — never hide these photo <img>s with display:none.
+   display:none + loading="lazy" is a deadlock: an element with no layout box
+   is never treated as "in the viewport", so the browser never starts loading
+   it — which means the load event that was supposed to reveal it can never
+   fire, and the photo stays invisible forever (this was the real reason
+   photos added from the admin panel never showed up).
+   opacity:0 keeps the element laid out, so lazy loading still works and the
+   load event always fires. */
 .principal-photo-img {
   position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; z-index:3; display:none;
+  object-fit:cover; z-index:3; opacity:0;
+  transition:opacity 0.45s var(--ease-standard);
 }
-.principal-portrait-area.has-photo .principal-photo-img { display:block; }
+.principal-portrait-area.has-photo .principal-photo-img { opacity:1; }
 .principal-portrait-area.has-photo .principal-portrait-svg,
 .principal-portrait-area.has-photo .bg-letter { opacity:0; }
 .principal-badge-tag {
@@ -715,15 +724,27 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
   position:absolute; inset:0;
 }
 
-/* Real uploaded photo — sits above the generated placeholder graphic
-   when a matching numbered file is found, and is hidden otherwise */
+/* Real uploaded photo — sits above the generated placeholder graphic.
+   Hidden with opacity (see the note on .principal-photo-img above), never
+   with display:none, so a lazy-loaded photo still has a layout box and can
+   actually load. */
 .teacher-photo-img {
   position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; z-index:0; display:none;
+  object-fit:cover; z-index:3; opacity:0;
+  transition:opacity 0.45s var(--ease-standard);
 }
-.teacher-row-photo.has-photo .teacher-photo-img { display:block; }
+.teacher-row-photo.has-photo .teacher-photo-img { opacity:1; }
 .teacher-row-photo.has-photo .teacher-photo-letter,
 .teacher-row-photo.has-photo .teacher-portrait-svg { opacity:0; }
+/* With a real photo on screen both decorative washes (::before/::after sit at
+   z-index 1 and 2, i.e. *under* the photo) can't tint it any more — so add one
+   soft wash back on top of the photo only, to keep the subject badge readable
+   without darkening the person's face. */
+.teacher-row-photo.has-photo::before { opacity:0; }
+.teacher-row-photo.has-photo::after {
+  opacity:1;
+  background:linear-gradient(0deg, rgba(7,9,15,0.92) 0%, rgba(7,9,15,0.28) 30%, transparent 62%);
+}
 
 /* Gender / subject badge on the photo */
 .teacher-photo-badge {
@@ -816,9 +837,10 @@ button:focus-visible, a:focus-visible, [onclick]:focus-visible, input:focus-visi
 }
 .t-modal-avatar-img {
   position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; border-radius:50%; display:none;
+  object-fit:cover; border-radius:50%; opacity:0;
+  transition:opacity 0.4s var(--ease-standard);
 }
-.t-modal-avatar.has-photo .t-modal-avatar-img { display:block; }
+.t-modal-avatar.has-photo .t-modal-avatar-img { opacity:1; }
 .t-modal-avatar.has-photo .t-modal-avatar-letter { opacity:0; }
 .t-modal-name { font-family:'Tajawal',sans-serif; font-size:1.5rem; font-weight:900; color:var(--gold); text-align:center; margin-bottom:0.3rem; }
 .t-modal-sub { text-align:center; margin-bottom:1.5rem; }
@@ -1391,6 +1413,117 @@ footer::before {
 }
 .info-block h4 { font-family:'Tajawal',sans-serif; font-size:0.95rem; font-weight:900; color:var(--gold); margin-bottom:0.6rem; }
 .info-block p { color:var(--text-dim); font-size:0.82rem; line-height:1.8; }
+.info-icon {
+  width:46px; height:46px; border-radius:14px; margin-bottom:0.9rem;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--gold-dim); border:1px solid var(--border); color:var(--gold);
+}
+.info-icon svg { width:21px; height:21px; }
+
+/* ========== HOME PAGE V2: بوابة الأقسام + CTA + لمسات الـ hero ========== */
+.home-section { max-width:1200px; margin:0 auto; padding:1rem 2rem 4.5rem; }
+.home-section .school-info-strip { margin-top:0; }
+
+/* بطاقات "استكشف الموقع" — نفس لغة stat-cell (خط ذهبي علوي + توهج) بس أكبر */
+.home-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:1.1rem; }
+.home-card {
+  position:relative; overflow:hidden; cursor:pointer; text-align:right;
+  display:flex; flex-direction:column; align-items:flex-start; gap:0.7rem;
+  background:linear-gradient(160deg, rgba(18,25,45,0.55), rgba(12,17,32,0.85));
+  border:1px solid var(--border2); border-radius:var(--radius);
+  padding:1.7rem 1.35rem 1.4rem;
+  transition:transform 0.4s var(--ease-standard), border-color 0.4s var(--ease-standard), box-shadow 0.4s var(--ease-standard);
+}
+.home-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:0; transition:opacity 0.4s;
+}
+.home-card::after {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.07), transparent 65%);
+  opacity:0; transition:opacity 0.4s;
+}
+.home-card:hover {
+  transform:translateY(-6px); border-color:rgba(201,168,76,0.3);
+  box-shadow:0 22px 44px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.08);
+}
+.home-card:hover::before, .home-card:hover::after { opacity:1; }
+.home-card:active { transform:scale(0.985); transition:transform 0.13s var(--ease-press); }
+.home-card-icon {
+  width:52px; height:52px; border-radius:16px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--gold-dim); border:1px solid var(--border); color:var(--gold);
+  transition:transform 0.4s var(--ease-bounce);
+}
+.home-card:hover .home-card-icon { transform:scale(1.08) rotate(-4deg); }
+.home-card-icon svg { width:24px; height:24px; }
+.home-card-title { font-family:'Tajawal',sans-serif; font-size:1.02rem; font-weight:900; color:var(--text); }
+.home-card-desc { color:var(--text-dim); font-size:0.79rem; line-height:1.8; }
+.home-card-arrow {
+  margin-top:auto; display:inline-flex; align-items:center; gap:6px;
+  color:var(--gold); font-size:0.74rem; font-weight:700; letter-spacing:0.3px;
+}
+.home-card-arrow svg { width:15px; height:15px; transition:transform 0.3s; }
+.home-card:hover .home-card-arrow svg { transform:translateX(-4px); }
+
+/* بانر المشاركة قبل الفوتر */
+.home-cta {
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:space-between; gap:1.6rem; flex-wrap:wrap;
+  background:linear-gradient(135deg, var(--gold-dim), rgba(12,17,32,0.75) 55%);
+  border:1px solid var(--border); border-radius:var(--radius);
+  padding:2.2rem 2.4rem;
+}
+.home-cta::before {
+  content:''; position:absolute; top:-70%; left:-10%; width:50%; height:240%;
+  background:radial-gradient(ellipse, rgba(201,168,76,0.12), transparent 65%);
+  pointer-events:none;
+}
+.home-cta-text h3 { font-family:'Tajawal',sans-serif; font-size:1.25rem; font-weight:900; color:var(--text); margin-bottom:0.45rem; }
+.home-cta-text p { color:var(--text-dim); font-size:0.86rem; line-height:1.85; max-width:520px; }
+.home-cta .btn-gold { flex-shrink:0; position:relative; z-index:1; }
+
+/* زر النزول أسفل الـ hero */
+.hero-scroll {
+  position:absolute; bottom:1.5rem; left:50%; transform:translateX(-50%); z-index:3;
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  color:var(--text-muted); font-size:0.68rem; font-weight:600; letter-spacing:1.5px;
+  animation:fadeUp 0.8s 1.1s both;
+  transition:color 0.3s;
+}
+.hero-scroll:hover { color:var(--gold); }
+.hero-scroll svg { width:18px; height:18px; animation:scrollBounce 2.2s var(--ease-standard) infinite; }
+@keyframes scrollBounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(6px); } }
+
+/* شبكة هندسية خفيفة فوق تدرج الـ hero — إحساس عمق من غير أي مكتبات */
+.hero-bg-gradient::after {
+  content:''; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(201,168,76,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.035) 1px, transparent 1px);
+  background-size:46px 46px;
+  -webkit-mask-image:radial-gradient(ellipse 75% 65% at 50% 38%, #000 25%, transparent 78%);
+  mask-image:radial-gradient(ellipse 75% 65% at 50% 38%, #000 25%, transparent 78%);
+}
+
+@media (max-width:900px) {
+  .home-cards { grid-template-columns:repeat(2,1fr); }
+  .home-cta { padding:1.8rem 1.5rem; }
+}
+@media (max-width:600px) {
+  .home-cards { grid-template-columns:1fr; }
+  .home-section { padding:0.5rem 1.2rem 3.2rem; }
+  .home-cta { flex-direction:column; text-align:center; padding:1.7rem 1.3rem; }
+  .home-cta-text p { margin:0 auto; }
+  .home-cta .btn-gold { width:100%; justify-content:center; }
+  .hero-scroll span { font-size:0.62rem; }
+}
+@media (max-height:500px) {
+  .hero-scroll { display:none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll { animation:none; }
+  .hero-scroll svg { animation:none; }
+}
 
 /* ========== TOUCH / APP-LIKE PRESS FEEDBACK ==========
    A native app always gives an instant press response and never leaves a
@@ -1696,3 +1829,93 @@ footer::before {
   footer { padding-bottom:calc(78px + env(safe-area-inset-bottom) + 0.5rem) !important; }
   #scrollTop { bottom:calc(76px + env(safe-area-inset-bottom) + 0.4rem); }
 }
+
+/* ============================================================
+   UI POLISH — طبقة تحسين أخيرة فوق كل اللي فوق
+   ============================================================
+   متعمدة تكون في آخر الملف: القواعد هنا بتضبط التفاصيل (الفراغات،
+   التسلسل البصري، وتنظيم الموبايل) من غير ما تلمس أي قاعدة قديمة —
+   ولو حصل تعارض، القاعدة الأحدث هي اللي بتفوز. */
+
+/* ---- 1) إيقاع رأسي متسق لعناوين الأقسام على كل المقاسات ---- */
+.section-head { margin-bottom:clamp(2rem, 4.5vw, 3.5rem); }
+.section-title { letter-spacing:-0.4px; text-wrap:balance; }
+.section-desc { text-wrap:pretty; }
+.about-statement, .hero-title, .principal-bio { text-wrap:pretty; }
+
+/* ---- 2) التركيز بالكيبورد يبان دايمًا ---- */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline:2px solid var(--gold);
+  outline-offset:3px;
+  border-radius:12px;
+}
+:where(button, a) { -webkit-tap-highlight-color:transparent; }
+
+/* ---- 3) كروت المدرسين: صورة أنضف ونصوص أوضح ---- */
+.teacher-row-photo { border-inline-end:1px solid var(--border2); }
+.teacher-photo-badge { backdrop-filter:blur(8px); letter-spacing:0; }
+.t-bio-short {
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+  overflow:hidden; margin-bottom:1.1rem;
+}
+.t-location { line-height:1.7; }
+.t-meta-chips { gap:0.45rem; }
+.t-chip { line-height:1.7; }
+
+/* ---- 4) كارت الطالب: سطر تاريخ الميلاد بقى كلاس بدل ستايل inline ---- */
+.s-dob { font-size:0.68rem; color:var(--text-muted); margin-bottom:0.8rem; position:relative; z-index:1; }
+
+/* ---- 5) معرض الصور: عنوان الصورة لازم يبان (الـhover مش موجود على التاتش) ---- */
+.photo-card::after {
+  padding:2.4rem 0.85rem 0.85rem; line-height:1.55;
+  background:linear-gradient(0deg, rgba(7,9,15,0.96) 0%, rgba(7,9,15,0.5) 45%, transparent 100%);
+}
+@media (hover: none), (pointer: coarse) {
+  .photo-card::after { transform:translateY(0); }
+}
+
+/* ---- 6) قائمة التصفية ما تعديش حدود الشاشة ---- */
+.filter-dropdown { max-height:min(62vh, 430px); overflow-y:auto; overscroll-behavior:contain; }
+
+/* ---- 7) تباين محترم في الوضع الفاتح ---- */
+.footer-copy { color:var(--text-muted); border-top:1px solid var(--border2); }
+.footer-copy strong { color:var(--text-dim); }
+html.light-mode footer { background:rgba(20,15,5,0.045); }
+html.light-mode .t-modal-overlay { background:rgba(20,15,5,0.45); }
+/* أدوات إغلاق مودال الصور/الفيديو بتقف دايمًا على خلفية غامقة، فلازم تفضل
+   فاتحة حتى في الوضع الفاتح (حيث --white بتتقلب لحبر غامق). */
+.vid-modal-close { color:#fff; }
+
+
+/* ---- 8) الموبايل: تنظيم أنضف للشاشات الصغيرة ----
+   (بعد كل الـ media queries القديمة بالظبط، فهي اللي بتطبق في الآخر) */
+@media (max-width: 600px) {
+  .section-head { margin-bottom:1.9rem; }
+  .section-tag { margin-bottom:0.75rem; }
+  .section-line { margin-top:0.6rem; }
+
+  /* صورة المدرس بقت "بوستر" بنسبة 4:3 بدل شريط 180px كان بيقص الوش،
+     ومركز الصورة اتنقل لفوق شوية عشان الوش يفضل في الكادر */
+  .teacher-row-photo { min-height:0; aspect-ratio:4/3; }
+  .teacher-photo-img { object-position:center 25%; }
+  .teacher-photo-badge { font-size:0.6rem; padding:4px 12px; bottom:10px; }
+  .teacher-row-info { padding:1.15rem 1.15rem 1.3rem; }
+  .t-bio-short { -webkit-line-clamp:4; }
+
+  /* صورة المدير: نفس المعالجة */
+  .principal-portrait-area { min-height:0; aspect-ratio:4/3; }
+  .principal-photo-img { object-position:center 22%; }
+
+  /* الطلاب: عمود واحد مريح بدل عمودين مزنوقين */
+  .students-grid { grid-template-columns:1fr; gap:1rem; }
+  .student-card { padding:1.5rem 1.2rem; }
+
+  /* الذكريات */
+  .video-info { padding:0.9rem 1.05rem; }
+  .photo-card::after { font-size:0.72rem; padding:1.8rem 0.7rem 0.7rem; }
+
+  /* الفوتر والمودال */
+  .t-modal-box { border-radius:18px; }
+  .footer-links { gap:0.9rem 1.3rem; margin-bottom:1.8rem; }
+}
+

@@ -4,6 +4,7 @@
 function calcAge(dob) {
   const now = new Date();
   const d = new Date(dob);
+  if (isNaN(d)) return null; // تاريخ مش مفهوم — منعرضش "NaN سنة" للزائر
   let age = now.getFullYear() - d.getFullYear();
   const m = now.getMonth() - d.getMonth();
   if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
@@ -25,6 +26,31 @@ function updateCopyrightYear() {
 }
 
 /* ============================================================
+   OUTPUT ENCODING — حماية أساسية من XSS المحفوظ (Stored XSS)
+   ------------------------------------------------------------
+   أي قيمة جاية من قاعدة البيانات (اسم مدرس، نبذة، عنوان صورة...)
+   بتتطبع جوه innerHTML. من غير escaping، أي نص فيه < أو " كان
+   بيكسر الصفحة — ولو حد وصل لقاعدة البيانات كان هيقدر يزرع كود
+   خبيث يشتغل في متصفح كل زائر. القاعدة: أي حاجة من الداتا تعدي
+   على escapeHtml قبل ما تدخل الـ HTML.
+============================================================ */
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
+// صور قاعدة البيانات المفروض تكون data: URLs بس (بتترفع مضغوطة من لوحة
+// الأدمن). أي قيمة تانية — نص عادي، رابط خارجي، محاولة كسر attribute —
+// بتترفض تمامًا وبيترسم الـ placeholder بدلها. كمان السيرفر نفسه بيرفض
+// يخزن أي صورة مش بالشكل ده (api/_validate.js)، فده خط دفاع تاني.
+function safePhotoSrc(u) {
+  if (typeof u !== 'string') return '';
+  const s = u.trim();
+  return /^data:image\/(png|jpe?g|gif|webp|avif);base64,[a-z0-9+/=\s]+$/i.test(s) ? s : '';
+}
+
+/* ============================================================
    TEACHER / PRINCIPAL PHOTOS
    Put real photo files in a "photos" folder next to this HTML
    file. Name each file with the person's number (see the `num`
@@ -35,15 +61,38 @@ function updateCopyrightYear() {
    instead, so nothing breaks before photos are added.
 ============================================================ */
 const PHOTO_EXTS = ['jpg','jpeg','png','webp'];
+
+// Cleans up after a photo that can't be shown: hides the broken <img> and
+// takes .has-photo off its container so the generated placeholder graphic
+// (initial letter + silhouette) comes back instead of an empty panel.
+function photoFailed(img) {
+  img.style.display = 'none';
+  const holder = img.closest('.teacher-row-photo, .principal-portrait-area, .t-modal-avatar');
+  if (holder) holder.classList.remove('has-photo');
+}
+
 function tryNextPhotoExt(img) {
+  // No numbered file to walk through (e.g. a data: URL photo that failed to
+  // decode) — don't guess filenames, just fall back to the placeholder.
+  if (!img.dataset.num) { photoFailed(img); return; }
   const idx = parseInt(img.dataset.extIdx || '0', 10) + 1;
-  if (idx >= PHOTO_EXTS.length) { img.style.display = 'none'; return; }
+  if (idx >= PHOTO_EXTS.length) { photoFailed(img); return; }
   img.dataset.extIdx = idx;
   img.src = `photos/${img.dataset.num}.${PHOTO_EXTS[idx]}`;
 }
 function onPhotoLoad(img, containerSelector) {
   const container = img.closest(containerSelector);
   if (container) container.classList.add('has-photo');
+}
+// Data URLs and cached files can finish decoding *before* the row is inserted
+// into the page, in which case the load event already happened and will never
+// fire again. Checking `complete` right after rendering covers that case so a
+// photo is never left hidden waiting for an event that has passed.
+function syncPhotoState(img, containerSelector) {
+  if (img && img.complete && img.naturalWidth > 0) {
+    const container = img.closest(containerSelector);
+    if (container) container.classList.add('has-photo');
+  }
 }
 
 const DEFAULT_TEACHERS = [
@@ -330,11 +379,23 @@ async function loadLiveData() {
     }
     // إعادة رسم أي صفحة اتعرضت بالفعل بالبيانات الافتراضية قبل ما الداتا توصل
     const teachersList = document.getElementById('teachersList');
-    if (teachersList && teachersList.childElementCount) renderTeachersList('teachersList','filterTabs');
+    if (teachersList && teachersList.childElementCount) {
+      // خلي الفلتر اللي الزائر مختاره شغال بعد التحديث — كان بيرجع "الكل"
+      // لوحده بينما الزرار لسه باين مفعّل على التصنيف القديم (حالة متلخبطة).
+      const activeTab = document.querySelector('#filterTabs .filter-tab.active');
+      renderTeachersList('teachersList', 'filterTabs', (activeTab && activeTab.dataset.filter) || 'all');
+    }
     const studentsGrid = document.getElementById('studentsGrid');
     if (studentsGrid && studentsGrid.childElementCount) renderStudents();
     const photosGrid = document.getElementById('photosGrid');
-    if (photosGrid && photosGrid.childElementCount) { photosGrid.innerHTML=''; renderMemoriesPhotosOnly(); }
+    if (photosGrid && photosGrid.childElementCount) {
+      photosGrid.innerHTML='';
+      renderMemoriesPhotosOnly();
+      // الكروت الجديدة لازم تتراقب تاني بالـ IntersectionObserver — من غير
+      // الخطوة دي كانت بتفضل مخفية للأبد (opacity:0 + blur) لأن مراقب
+      // الكروت القديمة ماعمره ما شافها.
+      setTimeout(setupMemoriesReveal, 50);
+    }
   } catch (e) {
     console.warn('تعذر تحميل بيانات مباشرة، هيتم استخدام البيانات الافتراضية.', e);
   }
@@ -737,30 +798,51 @@ function initTiltCards() {
 /* ============================================================
    TEACHER ROWS
 ============================================================ */
+// Every teacher row renders its own SVG portrait with <defs> gradient ids
+// inside. Those ids used to be built from the teacher's initial + name length,
+// so any two teachers sharing both (very common: م + 24 chars...) produced
+// duplicate ids in the DOM — invalid HTML, and url(#...) always resolves to
+// the FIRST match in the document, i.e. one row could silently borrow another
+// row's gradients. A plain counter keeps every id unique whatever the data is.
+let _teacherRowSeq = 0;
+
 function buildTeacherRow(t) {
   const row = document.createElement('div');
   const isLangEn = t.lang === 'en';
   const isLangFr = t.lang === 'fr';
   row.className = `teacher-row teacher-reveal ${isLangEn ? 'lang-en' : isLangFr ? 'lang-fr' : ''}`;
 
+  const uid = ++_teacherRowSeq;
   // Generate a stylized SVG "portrait" using the teacher's initial
   // The image panel — full-height colored panel with large SVG figure silhouette + initial
   const genderIsMale = (t.gender === 'ذ' || t.gender === 'M');
+  // A photo uploaded from the admin panel arrives as a ready-to-use data: URL,
+  // so render it already active (has-photo is in the markup itself): the photo
+  // is visible from the very first paint, without depending on a load event —
+  // that dependency is exactly what used to keep uploaded photos invisible.
+  // safePhotoSrc drops anything that isn't a real data:image payload (XSS guard).
+  const dbPhoto = safePhotoSrc(t.photo_data);
+  // كل القيم النصية الجاية من قاعدة البيانات بتتعقم قبل ما تتطبع في الـ HTML
+  const eName = escapeHtml(t.name), eIcon = escapeHtml(t.icon),
+        eSubject = escapeHtml(t.subject), eSpec = escapeHtml(t.spec),
+        eGrade = escapeHtml(t.grade), eWhere = escapeHtml(t.where),
+        eFrom = escapeHtml(t.from || ''),
+        eBio = escapeHtml(String(t.bio || '').substring(0, 150));
   const photoPanel = `
-    <div class="teacher-row-photo">
-      <span class="teacher-photo-letter">${t.icon}</span>
+    <div class="teacher-row-photo${dbPhoto ? ' has-photo' : ''}">
+      <span class="teacher-photo-letter">${eIcon}</span>
       <svg class="teacher-portrait-svg" viewBox="0 0 240 260" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Background gradient wash -->
         <defs>
-          <linearGradient id="bg-${t.icon}-${t.name.length}" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="bg-${uid}" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#0c1120"/>
             <stop offset="100%" stop-color="#07090f"/>
           </linearGradient>
-          <linearGradient id="figure-${t.icon}-${t.name.length}" x1="0.5" y1="0" x2="0.5" y2="1">
+          <linearGradient id="figure-${uid}" x1="0.5" y1="0" x2="0.5" y2="1">
             <stop offset="0%" stop-color="rgba(201,168,76,0.22)"/>
             <stop offset="100%" stop-color="rgba(201,168,76,0.06)"/>
           </linearGradient>
-          <linearGradient id="glow-${t.icon}-${t.name.length}" x1="0.5" y1="0" x2="0.5" y2="1">
+          <linearGradient id="glow-${uid}" x1="0.5" y1="0" x2="0.5" y2="1">
             <stop offset="0%" stop-color="rgba(201,168,76,0.35)"/>
             <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
           </linearGradient>
@@ -768,42 +850,43 @@ function buildTeacherRow(t) {
         <!-- Subtle glow circle -->
         <ellipse cx="120" cy="200" rx="90" ry="40" fill="rgba(201,168,76,0.05)"/>
         <!-- Person silhouette — head -->
-        <circle cx="120" cy="85" r="42" fill="url(#figure-${t.icon}-${t.name.length})" stroke="rgba(201,168,76,0.25)" stroke-width="1.5"/>
+        <circle cx="120" cy="85" r="42" fill="url(#figure-${uid})" stroke="rgba(201,168,76,0.25)" stroke-width="1.5"/>
         <!-- Inner face detail -->
         <circle cx="120" cy="85" r="30" fill="rgba(12,17,32,0.5)"/>
         <!-- Body/shoulders -->
         ${genderIsMale
-          ? `<path d="M60 260 Q70 185 120 175 Q170 185 180 260Z" fill="url(#figure-${t.icon}-${t.name.length})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
-          : `<path d="M50 260 Q65 178 120 168 Q175 178 190 260Z" fill="url(#figure-${t.icon}-${t.name.length})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
+          ? `<path d="M60 260 Q70 185 120 175 Q170 185 180 260Z" fill="url(#figure-${uid})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
+          : `<path d="M50 260 Q65 178 120 168 Q175 178 190 260Z" fill="url(#figure-${uid})" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>`
         }
         <!-- Collar/jacket detail -->
         <path d="M100 175 L120 195 L140 175" stroke="rgba(201,168,76,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         <!-- Initial letter centered in head -->
         <text x="120" y="96" text-anchor="middle" dominant-baseline="middle"
           font-family="Tajawal, Cairo, sans-serif" font-size="28" font-weight="900"
-          fill="rgba(201,168,76,0.9)">${t.icon}</text>
+          fill="rgba(201,168,76,0.9)">${eIcon}</text>
         <!-- Bottom fade mask -->
-        <rect x="0" y="200" width="240" height="60" fill="url(#bg-${t.icon}-${t.name.length})" opacity="0.7"/>
+        <rect x="0" y="200" width="240" height="60" fill="url(#bg-${uid})" opacity="0.7"/>
       </svg>
-      <div class="teacher-photo-badge">${t.subject}</div>
-      ${t.photo_data ? `<img class="teacher-photo-img" src="${t.photo_data}" alt="${t.name}" loading="lazy" onload="onPhotoLoad(this, '.teacher-row-photo')" />`
-        : t.num ? `<img class="teacher-photo-img" src="photos/${t.num}.jpg" data-num="${t.num}" data-ext-idx="0" alt="${t.name}" loading="lazy" onerror="tryNextPhotoExt(this)" onload="onPhotoLoad(this, '.teacher-row-photo')" />` : ''}
+      <div class="teacher-photo-badge">${eSubject}</div>
+      ${dbPhoto
+        ? `<img class="teacher-photo-img" src="${dbPhoto}" alt="${eName}" decoding="async" onerror="photoFailed(this)" />`
+        : t.num ? `<img class="teacher-photo-img" src="photos/${t.num}.jpg" data-num="${t.num}" data-ext-idx="0" alt="${eName}" loading="lazy" onerror="tryNextPhotoExt(this)" onload="onPhotoLoad(this, '.teacher-row-photo')" />` : ''}
     </div>
   `;
 
   const infoPanel = `
     <div class="teacher-row-info">
-      <h3 class="t-name">${t.name}</h3>
+      <h3 class="t-name">${eName}</h3>
       <div class="t-location">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        ${t.from ? t.from + ' — ' : ''}${t.where}
+        ${eFrom ? eFrom + ' — ' : ''}${eWhere}
       </div>
-      <p class="t-bio-short">${t.bio.substring(0, 150)}...</p>
+      <p class="t-bio-short">${eBio}...</p>
       <div class="t-meta-chips">
-        ${t.age ? `<div class="t-chip">السن: <strong>${t.age} سنة</strong></div>` : ''}
-        ${t.exp ? `<div class="t-chip">الخبرة: <strong>${t.exp} سنة</strong></div>` : ''}
-        <div class="t-chip">التخصص: <strong>${t.spec}</strong></div>
-        <div class="t-chip">المرحلة: <strong>${t.grade}</strong></div>
+        ${t.age ? `<div class="t-chip">السن: <strong>${escapeHtml(t.age)} سنة</strong></div>` : ''}
+        ${t.exp ? `<div class="t-chip">الخبرة: <strong>${escapeHtml(t.exp)} سنة</strong></div>` : ''}
+        <div class="t-chip">التخصص: <strong>${eSpec}</strong></div>
+        <div class="t-chip">المرحلة: <strong>${eGrade}</strong></div>
       </div>
     </div>
   `;
@@ -813,6 +896,18 @@ function buildTeacherRow(t) {
   // which side each one lands on, so no JS branching is needed here.
   row.innerHTML = photoPanel + infoPanel;
   row.lang = t.lang; // correct pronunciation for EN/FR bios under screen readers
+
+  // الكارت كله بيفتح ملف المدرس — يبقى قابل للتشغيل بالكيبورد كمان مش بالماوس
+  // بس: tabindex بيخليه يوصله الـ Tab، و Enter/Space بيفعّلوه.
+  row.tabIndex = 0;
+  row.setAttribute('role', 'button');
+  row.setAttribute('aria-label', 'عرض ملف ' + (t.name || 'المدرس'));
+  row.onkeydown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTeacherPage(t); }
+  };
+
+  // Safety net for photos that were already decoded before this row existed.
+  syncPhotoState(row.querySelector('.teacher-photo-img'), '.teacher-row-photo');
 
   row.onclick = () => openTeacherPage(t);
   return row;
@@ -892,11 +987,15 @@ function openTeacherPage(t) {
 
   const area = document.getElementById('tpPhotoArea');
   const img  = document.getElementById('tpPhotoImg');
-  area.classList.remove('has-photo');
-  if (t.photo_data) {
+  // Show the real photo straight away when there is one (see the note in
+  // buildTeacherRow) instead of waiting for a load event that may never fire.
+  const dbPhoto = safePhotoSrc(t.photo_data); // أي قيمة مش data:image بتترفض
+  area.classList.toggle('has-photo', !!dbPhoto);
+  img.style.display = ''; // لو صورة قديمة فشلت واتخفت، منسيبش الحالة دي عالقة
+  if (dbPhoto) {
     img.removeAttribute('data-num');
     img.alt = t.name;
-    img.src = t.photo_data;
+    img.src = dbPhoto;
   } else if (t.num) {
     img.dataset.extIdx = '0';
     img.dataset.num = t.num;
@@ -905,14 +1004,15 @@ function openTeacherPage(t) {
   } else {
     img.removeAttribute('src');
   }
+  syncPhotoState(img, '.principal-portrait-area');
 
   const chips = [];
-  if (t.age)   chips.push(`<div class="p-chip"><span class="lbl">السن</span><span class="val">${t.age} سنة</span></div>`);
-  if (t.exp)   chips.push(`<div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">${t.exp} سنوات</span></div>`);
-  if (t.spec)  chips.push(`<div class="p-chip"><span class="lbl">التخصص</span><span class="val">${t.spec}</span></div>`);
-  if (t.grade) chips.push(`<div class="p-chip"><span class="lbl">المرحلة</span><span class="val">${t.grade}</span></div>`);
-  if (t.from)  chips.push(`<div class="p-chip"><span class="lbl">المنشأ</span><span class="val">${t.from}</span></div>`);
-  if (t.where) chips.push(`<div class="p-chip"><span class="lbl">يُدرِّس في</span><span class="val">${t.where}</span></div>`);
+  if (t.age)   chips.push(`<div class="p-chip"><span class="lbl">السن</span><span class="val">${escapeHtml(t.age)} سنة</span></div>`);
+  if (t.exp)   chips.push(`<div class="p-chip"><span class="lbl">سنوات الخبرة</span><span class="val">${escapeHtml(t.exp)} سنوات</span></div>`);
+  if (t.spec)  chips.push(`<div class="p-chip"><span class="lbl">التخصص</span><span class="val">${escapeHtml(t.spec)}</span></div>`);
+  if (t.grade) chips.push(`<div class="p-chip"><span class="lbl">المرحلة</span><span class="val">${escapeHtml(t.grade)}</span></div>`);
+  if (t.from)  chips.push(`<div class="p-chip"><span class="lbl">المنشأ</span><span class="val">${escapeHtml(t.from)}</span></div>`);
+  if (t.where) chips.push(`<div class="p-chip"><span class="lbl">يُدرِّس في</span><span class="val">${escapeHtml(t.where)}</span></div>`);
   document.getElementById('tpChips').innerHTML = chips.join('');
 
   goPage('teacher-profile');
@@ -922,11 +1022,13 @@ function openTModal(t) {
   document.getElementById('mAvLetter').textContent = t.icon;
   const avEl = document.getElementById('mAv');
   const avImg = document.getElementById('mAvImg');
-  avEl.classList.remove('has-photo');
-  if (t.photo_data) {
+  const avPhoto = safePhotoSrc(t.photo_data); // أي قيمة مش data:image بتترفض
+  avEl.classList.toggle('has-photo', !!avPhoto);
+  avImg.style.display = ''; // لو صورة قديمة فشلت واتخفت، منسيبش الحالة دي عالقة
+  if (avPhoto) {
     avImg.removeAttribute('data-num');
     avImg.alt = t.name;
-    avImg.src = t.photo_data;
+    avImg.src = avPhoto;
   } else if (t.num) {
     avImg.dataset.extIdx = '0';
     avImg.dataset.num = t.num;
@@ -935,6 +1037,7 @@ function openTModal(t) {
   } else {
     avImg.removeAttribute('src');
   }
+  syncPhotoState(avImg, '.t-modal-avatar');
   document.getElementById('mName').textContent = t.name;
   document.getElementById('mSub').textContent  = t.subject;
   document.getElementById('mAgeCell').style.display = t.age ? '' : 'none';
@@ -961,43 +1064,52 @@ function closeTModalDirect() {
 ============================================================ */
 function renderStudents() {
   const grid = document.getElementById('studentsGrid');
+  if (!grid) return;
+  // Re-rendering (e.g. once the live data arrives from /api/students) must
+  // replace the cards, not stack a second copy of them on top.
+  grid.innerHTML = '';
   students.forEach((s, i) => {
-    const hasDob = !!s.dob;
-    const age = hasDob ? calcAge(s.dob) : '—';
-    const dob = hasDob ? new Date(s.dob) : null;
-    const dobAr = hasDob ? `${dob.getFullYear()}/${String(dob.getMonth()+1).padStart(2,'0')}/${String(dob.getDate()).padStart(2,'0')}` : 'غير محدد';
+    const dob = s.dob ? new Date(s.dob) : null;
+    const dobValid = dob && !isNaN(dob);
+    const age = dobValid ? (calcAge(s.dob) ?? '—') : '—';
+    const dobAr = dobValid
+      ? `${dob.getFullYear()}/${String(dob.getMonth()+1).padStart(2,'0')}/${String(dob.getDate()).padStart(2,'0')}`
+      : 'غير محدد';
+    const sPhoto = safePhotoSrc(s.photo_data); // أي قيمة مش data:image بتترفض
     const card = document.createElement('div');
     card.className = 'student-card student-reveal';
     card.style.transitionDelay = Math.min(i * 0.07, 0.5) + 's';
     card.innerHTML = `
-      <div class="rank-badge rank-${s.rank <= 3 ? s.rank : ''}">${s.rank}</div>
-      <div class="s-avatar"${s.photo_data ? ` style="background-image:url(${s.photo_data});background-size:cover;background-position:center;color:transparent"` : ''}>${s.icon}</div>
-      <div class="s-name">${s.name}</div>
-      <div class="s-from">من ${s.from}</div>
-      <div class="s-grade">${s.grade}</div>
-      <div class="s-score">${s.score}</div>
+      <div class="rank-badge rank-${s.rank <= 3 ? s.rank : ''}">${escapeHtml(s.rank)}</div>
+      <div class="s-avatar"${sPhoto ? ` style="background-image:url(${sPhoto});background-size:cover;background-position:center;color:transparent"` : ''}>${escapeHtml(s.icon)}</div>
+      <div class="s-name">${escapeHtml(s.name)}</div>
+      <div class="s-from">${s.from ? 'من ' + escapeHtml(s.from) : ''}</div>
+      <div class="s-grade">${escapeHtml(s.grade)}</div>
+      <div class="s-score">${escapeHtml(s.score)}</div>
       <div class="s-score-label">المجموع التراكمي</div>
       <div class="s-age-live">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         العمر: <strong class="live-age">${age}</strong> سنة
       </div>
-      <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.8rem;">تاريخ الميلاد: ${dobAr}</div>
-      <div class="s-quote">"${s.quote}"</div>
+      <div class="s-dob">تاريخ الميلاد: ${dobAr}</div>
+      <div class="s-quote">"${escapeHtml(s.quote)}"</div>
     `;
     grid.appendChild(card);
   });
   setTimeout(setupStudentReveal, 50);
 
-  // Live age updates every minute
-  setInterval(() => {
-    students.forEach((s, i) => {
-      const cards = document.querySelectorAll('#studentsGrid .student-card');
-      if (cards[i]) {
-        const el = cards[i].querySelector('.live-age');
-        if (el) el.textContent = s.dob ? calcAge(s.dob) : '—';
-      }
-    });
-  }, 60000);
+  // Live age updates every minute — created once, not once per render.
+  if (!renderStudents._ageTimer) {
+    renderStudents._ageTimer = setInterval(() => {
+      students.forEach((s, i) => {
+        const cards = document.querySelectorAll('#studentsGrid .student-card');
+        if (cards[i]) {
+          const el = cards[i].querySelector('.live-age');
+          if (el) el.textContent = s.dob ? (calcAge(s.dob) ?? '—') : '—';
+        }
+      });
+    }, 60000);
+  }
 }
 
 /* ============================================================
@@ -1005,6 +1117,8 @@ function renderStudents() {
 ============================================================ */
 function renderMemories() {
   const vGrid = document.getElementById('videosGrid');
+  if (!vGrid) return;
+  vGrid.innerHTML = ''; // re-renders replace the cards instead of duplicating them
   videos.forEach((v, i) => {
     const card = document.createElement('div');
     card.className = 'video-card video-reveal';
@@ -1016,11 +1130,17 @@ function renderMemories() {
         </div>
       </div>
       <div class="video-info">
-        <div class="video-title">${v.title}</div>
-        <div class="video-meta">${v.meta}</div>
+        <div class="video-title">${escapeHtml(v.title)}</div>
+        <div class="video-meta">${escapeHtml(v.meta)}</div>
       </div>
     `;
-    card.onclick = () => { document.getElementById('vidTitle').textContent = v.title; document.getElementById('vidModal').classList.add('open'); };
+    const openVid = () => { document.getElementById('vidTitle').textContent = v.title; document.getElementById('vidModal').classList.add('open'); };
+    card.onclick = openVid;
+    // الكارت بيفتح مودال — يبقى شغال بالكيبورد كمان (Enter / Space)
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', 'تشغيل: ' + v.title);
+    card.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVid(); } };
     vGrid.appendChild(card);
   });
 
@@ -1033,8 +1153,10 @@ function renderMemoriesPhotosOnly() {
   if (!pGrid) return;
   pGrid.innerHTML = '';
   photos.forEach((p, i) => {
-    const label = typeof p === 'string' ? p : p.title;
-    const img = typeof p === 'string' ? null : p.image_data;
+    const label = typeof p === 'string' ? p : (p.title || '');
+    // صور المعرض بتتطبع كـ background-image — أي قيمة مش data:image حقيقية
+    // بتترفض (حماية + منع كسر التخطيط) وبيترسم أيقونة الصورة بدلها.
+    const img = typeof p === 'string' ? null : (safePhotoSrc(p.image_data) || null);
     const card = document.createElement('div');
     card.className = 'photo-card photo-reveal';
     card.setAttribute('data-label', label);
@@ -1046,7 +1168,13 @@ function renderMemoriesPhotosOnly() {
     } else {
       card.innerHTML = `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
     }
-    card.onclick = () => openPhotoModal(label, img);
+    const openPhoto = () => openPhotoModal(label, img);
+    card.onclick = openPhoto;
+    // الكارت بيفتح مودال — يبقى شغال بالكيبورد كمان (Enter / Space)
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', 'عرض صورة: ' + label);
+    card.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPhoto(); } };
     pGrid.appendChild(card);
   });
 }
@@ -1348,6 +1476,15 @@ window.addEventListener('DOMContentLoaded', () => {
   try { initSettings(); } catch (err) { console.error('initSettings failed:', err); }
   try { setupAboutReveal(); } catch (err) { console.error('setupAboutReveal failed:', err); }
   setTimeout(setupReveal, 300);
+
+  // لينكات "#" المؤقتة (زي زرار "موقع المدرسة الرسمي" لحد ما الرابط الحقيقي
+  // يجهز) — نمنع سلوكها الافتراضي عشان متضيفش مدخلات فاضية في الـ history
+  // مع كل ضغطة، ومتفتحش تبويبة جديدة فاضية لما يكون عليها target=_blank.
+  // اللينكات اللي عليها onclick (زي لينكات الـ nav) بتفضل شغالة عادي.
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[href="#"]');
+    if (a) e.preventDefault();
+  });
 
   loadLiveData();
   checkAdminRoute();

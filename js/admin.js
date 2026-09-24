@@ -50,6 +50,32 @@ const ADM_ICON = {
 };
 
 /* ============================================================
+   OUTPUT ENCODING — نفس قاعدة الموقع العام (site.js):
+   أي قيمة من قاعدة البيانات بتتطبع في HTML لازم تتعقّم الأول.
+   اللوحة بتعرض بيانات المدرسين/الطلاب/الصور خام — من غير ده
+   أي نص فيه < أو " كان هيكسر اللوحة نفسها.
+============================================================ */
+function admEsc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+function admImgSrc(u) {
+  if (typeof u !== 'string') return '';
+  const s = u.trim();
+  return /^data:image\/(png|jpe?g|gif|webp|avif);base64,[a-z0-9+/=\s]+$/i.test(s) ? s : '';
+}
+
+// لو السيرفر رد 401 يبقى كلمة السر المحفوظة مبقتش شغالة (اتغيرت من
+// إعدادات Vercel مثلًا) — نرجع لشاشة الدخول فورًا بدل ما اللوحة تعرض
+// "مفيش عناصر" وتدوّخ اللي قاعد.
+function forceAdminLogout() {
+  try { sessionStorage.removeItem('adminPass'); } catch (e) {}
+  ADMIN.pass = null;
+  renderAdminLogin();
+}
+
+/* ============================================================
    STYLE — تنسيقات لوحة الأدمن، محطوطة مرة واحدة جوه <head>
 ============================================================ */
 function injectAdminStyles() {
@@ -58,8 +84,12 @@ function injectAdminStyles() {
   s.id = 'adminStyles';
   s.textContent = `
   #adminRoot * { box-sizing: border-box; }
-  #adminRoot { font-family:'Cairo',sans-serif; }
-  .adm-shell { max-width:1080px; margin:0 auto; padding:1.6rem 1.2rem 6rem; }
+  #adminRoot {
+    font-family:'Cairo',sans-serif;
+    -webkit-overflow-scrolling:touch;   /* smooth kinetic scrolling on iOS */
+    overscroll-behavior:contain;        /* the page behind must not scroll along */
+  }
+  .adm-shell { max-width:1080px; margin:0 auto; padding:calc(1.6rem + env(safe-area-inset-top)) 1.2rem 6rem; }
   .adm-topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.6rem; flex-wrap:wrap; padding-bottom:1.2rem; border-bottom:1px solid var(--border2); }
   .adm-brand { display:flex; align-items:center; gap:0.7rem; }
   .adm-brand-icon { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:flex; align-items:center; justify-content:center; color:#07090f; flex-shrink:0; }
@@ -132,9 +162,14 @@ function injectAdminStyles() {
   .adm-img-preview { display:flex; align-items:center; gap:0.7rem; margin-top:0.6rem; }
   .adm-img-preview img { width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid var(--border2); }
 
-  .adm-toast { position:fixed; bottom:1.4rem; left:50%; transform:translateX(-50%) translateY(0); background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.7rem 1.3rem; border-radius:10px; font-size:0.85rem; z-index:10; display:flex; align-items:center; gap:0.5rem; box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+  .adm-form-actions { display:flex; gap:0.6rem; margin-top:0.4rem; }
+  .adm-form-actions .adm-btn { flex:1; justify-content:center; padding:0.75rem; }
+
+  .adm-toast { position:fixed; bottom:calc(1.4rem + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(0); background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.7rem 1.3rem; border-radius:10px; font-size:0.85rem; z-index:10; display:flex; align-items:center; gap:0.5rem; box-shadow:0 8px 24px rgba(0,0,0,0.4); max-width:calc(100% - 2rem); }
   .adm-toast.success { border-color:rgba(76,175,80,0.5); }
   .adm-toast.success svg { color:#7ed08a; width:16px; height:16px; }
+  .adm-toast.error { border-color:rgba(200,60,60,0.6); }
+  .adm-toast.error svg { color:#e88; width:16px; height:16px; }
 
   /* ===== شاشات واسعة: التابات بتملأ الصف بالتساوي ===== */
   @media (min-width:641px) {
@@ -143,30 +178,42 @@ function injectAdminStyles() {
 
   /* ===== موبايل: شيت كامل الشاشة من تحت، أزرار وحقول أكبر للمس ===== */
   @media (max-width:640px) {
-    .adm-shell { padding:1rem 0.85rem 5.5rem; }
+    .adm-shell { padding:calc(1rem + env(safe-area-inset-top)) 0.85rem 5.5rem; }
     .adm-topbar { margin-bottom:1.1rem; padding-bottom:0.9rem; }
     .adm-title { font-size:1.05rem; }
     .adm-subtitle { font-size:0.72rem; }
     .adm-brand-icon { width:36px; height:36px; }
 
+    /* التابات: 3 أعمدة متساوية بتملأ الصف — من غير سكرول أفقي */
+    .adm-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:0.3rem; }
+    .adm-tab { padding:0.6rem 0.2rem; font-size:0.74rem; min-height:42px; white-space:normal; line-height:1.35; }
+
     .adm-toolbar { gap:0.55rem; }
     .adm-search { min-width:100%; order:1; }
-    .adm-count { order:2; }
-    #admAddBtn { order:3; flex:1; justify-content:center; }
+    .adm-count { order:2; margin-inline-start:auto; }
+    #admAddBtn { order:3; flex:0 0 auto; }
 
-    .adm-grid { grid-template-columns:1fr 1fr; gap:0.6rem; }
-    .adm-card { padding:0.7rem; border-radius:11px; }
-    .adm-thumb { width:44px; height:44px; }
-    .adm-card-name { font-size:0.85rem; }
+    /* الكروت على الموبايل: صف واحد لكل عنصر — اسم مقروء + أزرار أيقونية كبيرة
+       ينفع تتلمس، بدل عمودين مزنوقين والنص بيتقطع فيهم */
+    .adm-grid { grid-template-columns:1fr; gap:0.6rem; }
+    .adm-card { flex-direction:row; align-items:center; gap:0.65rem; padding:0.65rem 0.7rem; border-radius:12px; }
+    .adm-card:hover { transform:none; }
+    .adm-card-top { flex:1; min-width:0; gap:0.65rem; }
+    .adm-thumb { width:46px; height:46px; border-radius:9px; }
+    .adm-card-name { font-size:0.88rem; }
     .adm-card-sub { font-size:0.72rem; }
+    .adm-card-actions { flex:0 0 auto; gap:0.4rem; }
+    .adm-card-actions .adm-btn { flex:0 0 auto; width:44px; height:44px; padding:0; justify-content:center; }
     .adm-card-actions .adm-btn span { display:none; }
-    .adm-card-actions .adm-btn { padding:0.55rem; min-height:40px; }
+    .adm-empty { padding:2.2rem 1rem; }
 
     /* الفورم بيبقى شيت ثابت من تحت الشاشة، مش نافذة عايمة في النص */
     .adm-overlay { align-items:flex-end; padding:0; }
     .adm-modal {
+      position:relative;
       max-width:100%; width:100%; border-radius:18px 18px 0 0;
-      max-height:92vh; display:flex; flex-direction:column; padding:0;
+      max-height:92vh; max-height:92dvh;
+      display:flex; flex-direction:column; padding:0;
       animation:admSheetUp .22s ease-out;
     }
     @keyframes admSheetUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
@@ -175,24 +222,35 @@ function injectAdminStyles() {
       content:''; position:absolute; top:0.5rem; left:50%; transform:translateX(-50%);
       width:40px; height:4px; border-radius:3px; background:var(--border2);
     }
-    .adm-modal { position:relative; }
-    #admForm { flex:1; overflow-y:auto; padding:1.1rem 1.2rem 1.2rem; -webkit-overflow-scrolling:touch; }
-    #admForm > div[style*="flex"] { position:sticky; bottom:-1.2rem; background:var(--bg2); margin:1rem -1.2rem -1.2rem; padding:0.9rem 1.2rem calc(0.9rem + env(safe-area-inset-bottom,0px)); border-top:1px solid var(--border2); }
+    /* الحقول هي اللي بتسكرول داخل الشيت، وأزرار الحفظ/الإلغاء بتفضل ملزوقة
+       تحت الشاشة دايمًا مهما كان طول الفورم */
+    #admForm { flex:1; overflow-y:auto; padding:1.1rem 1.2rem 0; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
+    .adm-form-actions {
+      position:sticky; bottom:0; margin:1.1rem -1.2rem 0;
+      padding:0.9rem 1.2rem calc(0.9rem + env(safe-area-inset-bottom));
+      background:var(--bg2); border-top:1px solid var(--border2);
+    }
+    #admFormErr { margin:0.8rem -1.2rem 0; }
 
+    .adm-search input { font-size:1rem; }
     .adm-field input, .adm-field select, .adm-field textarea { font-size:1rem; padding:0.75rem 0.9rem; }
     .adm-btn { min-height:44px; }
     .adm-img-pickbtn { min-height:48px; flex:1; justify-content:center; }
+    .adm-img-preview img { width:64px; height:64px; }
+
+    .adm-login-wrap { margin:1.5rem auto 0; }
+    .adm-login-card { padding:1.6rem 1.2rem; border-radius:14px; }
   }
   `;
   document.head.appendChild(s);
 }
 
-function admToast(msg) {
+function admToast(msg, ok = true) {
   const old = document.querySelector('.adm-toast');
   if (old) old.remove();
   const t = document.createElement('div');
-  t.className = 'adm-toast success';
-  t.innerHTML = `${ADM_ICON.check}<span>${msg}</span>`;
+  t.className = 'adm-toast ' + (ok ? 'success' : 'error');
+  t.innerHTML = `${ok ? ADM_ICON.check : ADM_ICON.close}<span>${admEsc(msg)}</span>`;
   document.getElementById('adminRoot').appendChild(t);
   setTimeout(() => t.remove(), 2600);
 }
@@ -361,6 +419,7 @@ async function loadAdminList() {
   const listEl = document.getElementById('admList');
   try {
     const r = await adminFetch(schema.api);
+    if (r.status === 401) { forceAdminLogout(); return; }
     const data = await r.json();
     admItems = Array.isArray(data) ? data : [];
     renderAdminList();
@@ -385,29 +444,31 @@ function renderAdminList() {
     return;
   }
   if (!filtered.length) {
-    listEl.innerHTML = `<div class="adm-empty" style="grid-column:1/-1;">${ADM_ICON.search}<p>مفيش نتايج للبحث "${admSearchQuery}"</p></div>`;
+    listEl.innerHTML = `<div class="adm-empty" style="grid-column:1/-1;">${ADM_ICON.search}<p>مفيش نتايج للبحث "${admEsc(admSearchQuery)}"</p></div>`;
     return;
   }
 
-  listEl.innerHTML = filtered.map(item => `
+  listEl.innerHTML = filtered.map(item => {
+    const thumb = admImgSrc(item.photo_data || item.image_data);
+    return `
     <div class="adm-card">
       <div class="adm-card-top">
         <div class="adm-thumb">
-          ${item.photo_data || item.image_data
-            ? `<img src="${item.photo_data || item.image_data}">`
-            : (schema.itemTitle(item) || '?').trim().slice(0,1)}
+          ${thumb
+            ? `<img src="${thumb}" alt="">`
+            : admEsc((schema.itemTitle(item) || '?').trim().slice(0,1))}
         </div>
         <div class="adm-card-text">
-          <div class="adm-card-name">${schema.itemTitle(item)}</div>
-          <div class="adm-card-sub">${schema.itemSub(item)}</div>
+          <div class="adm-card-name">${admEsc(schema.itemTitle(item))}</div>
+          <div class="adm-card-sub">${admEsc(schema.itemSub(item))}</div>
         </div>
       </div>
       <div class="adm-card-actions">
         <button class="adm-btn adm-btn-ghost admEditBtn" data-id="${item[schema.idField]}">${ADM_ICON.edit}<span>تعديل</span></button>
         <button class="adm-btn adm-btn-danger admDelBtn" data-id="${item[schema.idField]}">${ADM_ICON.trash}<span>حذف</span></button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   document.querySelectorAll('.admEditBtn').forEach(b => b.onclick = () => {
     const item = admItems.find(x => String(x[schema.idField]) === b.dataset.id);
@@ -415,9 +476,15 @@ function renderAdminList() {
   });
   document.querySelectorAll('.admDelBtn').forEach(b => b.onclick = async () => {
     if (!confirm('متأكد إنك عايز تحذف؟')) return;
-    await adminFetch(`${schema.api}?id=${b.dataset.id}`, { method: 'DELETE' });
-    admToast('اتحذف بنجاح');
-    loadAdminList();
+    try {
+      const r = await adminFetch(`${schema.api}?id=${b.dataset.id}`, { method: 'DELETE' });
+      if (r.status === 401) { forceAdminLogout(); return; }
+      if (!r.ok) { admToast('تعذر الحذف، حاول تاني', false); return; }
+      admToast('اتحذف بنجاح');
+      loadAdminList();
+    } catch (e) {
+      admToast('تعذر الاتصال بالسيرفر', false);
+    }
   });
 }
 
@@ -436,7 +503,12 @@ function fileToResizedBase64(file, maxDim = 900, quality = 0.82) {
         }
         const canvas = document.createElement('canvas');
         canvas.width = width; canvas.height = height;
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        const ctx = canvas.getContext('2d');
+        // JPEG مبيدعمش الشفافية — لو الأصل PNG شفاف (لوجو مثلًا) الخلفية كانت
+        // بتطلع سودا. نملاها أبيض الأول عشان النتيجة تفضل نضيفة.
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.src = reader.result;
@@ -450,10 +522,14 @@ function openAdminForm(item) {
   const isNew = !item[schema.idField];
   const wrap = document.getElementById('admFormWrap');
   const fieldsHtml = schema.fields.map(f => {
-    const val = item[f.key] !== undefined && item[f.key] !== null ? item[f.key] : (f.default !== undefined ? f.default : '');
+    let val = item[f.key] !== undefined && item[f.key] !== null ? item[f.key] : (f.default !== undefined ? f.default : '');
+    // input[type=date] بيفهم YYYY-MM-DD بس — قاعدة البيانات ممكن ترجّع التاريخ
+    // بصيغة ISO كاملة (2008-03-15T00:00:00.000Z) فالحقل كان بيفضل فاضي وقت
+    // التعديل. نقص أول 10 حروف عشان الصيغتين يظبطوا.
+    if (f.type === 'date' && val) val = String(val).slice(0, 10);
     if (f.type === 'textarea') {
       return `<div class="adm-field"><label>${f.label}</label>
-        <textarea data-field="${f.key}" rows="3">${val}</textarea></div>`;
+        <textarea data-field="${f.key}" rows="3">${admEsc(val)}</textarea></div>`;
     }
     if (f.type === 'select') {
       return `<div class="adm-field"><label>${f.label}</label>
@@ -462,20 +538,21 @@ function openAdminForm(item) {
         </select></div>`;
     }
     if (f.type === 'image') {
+      const cur = admImgSrc(val); // أي قيمة مش data:image سليمة متتعرضش
       return `<div class="adm-field">
         <label>${f.label}${f.required && isNew ? ' *' : ' (اختياري — سيب فاضي لو مش عايز تغيّرها)'}</label>
         <div class="adm-img-drop">
           <button type="button" class="adm-img-pickbtn" id="pickbtn-${f.key}">${ADM_ICON.upload}<span>اختار صورة</span></button>
           <input type="file" accept="image/*" id="imginput-${f.key}" data-field="${f.key}" data-imgfield="1">
-          <div class="adm-img-preview" id="preview-${f.key}" style="${val ? '' : 'display:none;'}margin-top:0;">
-            <img src="${val || ''}">
+          <div class="adm-img-preview" id="preview-${f.key}" style="${cur ? '' : 'display:none;'}margin-top:0;">
+            <img src="${cur}" alt="">
             <span style="font-size:0.8rem;color:var(--text-muted,#9a9488);">الصورة الحالية</span>
           </div>
         </div>
       </div>`;
     }
     return `<div class="adm-field"><label>${f.label}</label>
-      <input type="${f.type}" data-field="${f.key}" value="${val}"></div>`;
+      <input type="${f.type}" data-field="${f.key}" value="${admEsc(val)}"></div>`;
   }).join('');
 
   wrap.innerHTML = `
@@ -486,9 +563,9 @@ function openAdminForm(item) {
           <button type="button" class="adm-modal-close" id="admCancelBtn">${ADM_ICON.close}</button>
         </div>
         <form id="admForm">${fieldsHtml}
-          <div style="display:flex;gap:0.6rem;margin-top:0.4rem;">
-            <button type="submit" class="adm-btn adm-btn-gold" style="flex:1;justify-content:center;padding:0.75rem;">حفظ</button>
-            <button type="button" id="admCancelBtn2" class="adm-btn adm-btn-ghost" style="flex:1;justify-content:center;padding:0.75rem;">إلغاء</button>
+          <div class="adm-form-actions">
+            <button type="submit" class="adm-btn adm-btn-gold">حفظ</button>
+            <button type="button" id="admCancelBtn2" class="adm-btn adm-btn-ghost">إلغاء</button>
           </div>
           <p id="admFormErr" class="adm-err"></p>
         </form>
@@ -528,7 +605,16 @@ function openAdminForm(item) {
     for (const f of schema.fields) {
       if (f.type === 'image') continue;
       const el = e.target.querySelector(`[data-field="${f.key}"]`);
-      payload[f.key] = f.type === 'number' ? (parseFloat(el.value) || 0) : el.value;
+      const raw = el ? el.value : '';
+      // الحقول المطلوبة بتتحقق هنا كمان مش بس في الـ HTML: قيمة فاضية كانت
+      // هتتحفظ من غير ما حد ياخد باله وتطلّع كارت فاضي في الموقع.
+      if (f.required && !String(raw).trim()) {
+        errEl.textContent = `${f.label} مطلوب`;
+        errEl.style.display = 'block';
+        if (el) el.focus();
+        return;
+      }
+      payload[f.key] = f.type === 'number' ? (parseFloat(raw) || 0) : raw;
     }
     for (const f of schema.fields.filter(x => x.type === 'image')) {
       const fileInput = e.target.querySelector(`[data-imgfield][data-field="${f.key}"]`);
@@ -544,6 +630,7 @@ function openAdminForm(item) {
       const method = isNew ? 'POST' : 'PUT';
       const url = isNew ? schema.api : `${schema.api}?id=${item[schema.idField]}`;
       const r = await adminFetch(url, { method, body: JSON.stringify(payload) });
+      if (r.status === 401) { forceAdminLogout(); return; }
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
         errEl.textContent = d.error || 'حصل خطأ، حاول تاني';

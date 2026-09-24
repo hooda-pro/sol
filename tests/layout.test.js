@@ -1,0 +1,108 @@
+/* ============================================================
+   tests/layout.test.js — فحص سريع للتنسيقات (CSS)
+   ------------------------------------------------------------
+   - يتأكد إن أقواس css/style.css مقفولة وكل declaration سليم.
+   - بيستخرج الـ CSS اللي admin.js بيحقنه فعلًا (injectAdminStyles)
+     ويفحصه هو كمان — لأن تنسيقات اللوحة كلها جوه string في الجافاسكريبت،
+     يعني أي غلطة فيها مش بتبان غير على الشاشة.
+   - ويتأكد إن قواعد إصلاح الصور وتنظيم الموبايل موجودة.
+
+   طريقة التشغيل:  node tests/layout.test.js
+============================================================ */
+const fs = require('fs');
+const vm = require('vm');
+const path = require('path');
+
+const ROOT = process.argv[2] || path.join(__dirname, '..');
+let problems = 0;
+
+function stripComments(css) {
+  let out = '', i = 0, inStr = null, inComment = false;
+  while (i < css.length) {
+    const c = css[i], n = css[i + 1];
+    if (inComment) { if (c === '*' && n === '/') { inComment = false; i += 2; continue; } i++; continue; }
+    if (inStr) { out += c; if (c === '\\') { out += n; i += 2; continue; } if (c === inStr) inStr = null; i++; continue; }
+    if (c === '/' && n === '*') { inComment = true; i += 2; continue; }
+    if (c === '"' || c === "'") { inStr = c; out += c; i++; continue; }
+    out += c; i++;
+  }
+  if (inComment) { console.log('  FAIL  unclosed comment'); problems++; }
+  if (inStr) { console.log('  FAIL  unterminated string'); problems++; }
+  return out;
+}
+
+function validateCss(name, raw) {
+  const css = stripComments(raw);
+  const open = (css.match(/\{/g) || []).length, close = (css.match(/\}/g) || []).length;
+  if (open !== close) { console.log(`  FAIL  ${name}: { ${open} vs } ${close}`); problems++; }
+  else console.log(`  PASS  ${name}: braces balanced (${open} blocks)`);
+
+  const leafRe = /\{([^{}]*)\}/g;
+  let m, bad = 0, decls = 0;
+  while ((m = leafRe.exec(css))) {
+    const body = m[1];
+    if (/@(keyframes|media|supports|font-face)/.test(body)) continue;
+    body.split(';').forEach(part => {
+      const d = part.trim();
+      if (!d) return;
+      decls++;
+      if (!/^(-{0,2}[a-zA-Z][\w-]*)\s*:\s*\S/.test(d)) {
+        if (bad < 5) console.log(`  FAIL  ${name}: bad declaration -> "${d.slice(0, 70)}"`);
+        bad++;
+      }
+    });
+  }
+  if (bad) { problems++; console.log(`  FAIL  ${name}: ${bad} bad declaration(s) of ${decls}`); }
+  else console.log(`  PASS  ${name}: ${decls} declarations well formed`);
+  return css;
+}
+
+const siteCss = validateCss('css/style.css', fs.readFileSync(path.join(ROOT, 'css', 'style.css'), 'utf8'));
+
+// ---- استخراج الـ CSS المولّد من admin.js وتشغيله فعليًا ----
+const el = () => ({ style: {}, dataset: {}, className: '', textContent: '', innerHTML: '', children: [],
+  appendChild(c) { this.children.push(c); }, querySelector() { return null; }, addEventListener() {} });
+const sandbox = {
+  console, setTimeout: () => 0, setInterval: () => 0,
+  sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
+  location: { hash: '' },
+  document: { head: el(), createElement: el, getElementById: () => null, querySelectorAll: () => [], addEventListener() {}, body: { style: {} } },
+  window: { addEventListener() {}, location: { hash: '' } },
+  fetch: () => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }),
+};
+sandbox.window.window = sandbox.window;
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js', 'admin.js'), 'utf8'), sandbox, { filename: 'admin.js' });
+sandbox.injectAdminStyles();
+const injected = sandbox.document.head.children.map(c => c.textContent).join('\n');
+if (!injected.includes('.adm-tabs')) { console.log('  FAIL  admin CSS not captured'); problems++; }
+validateCss('admin.js injected CSS', injected);
+
+// ---- تأكيد إن قواعد الإصلاح الأساسية موجودة ----
+const mustHave = [
+  ['.teacher-photo-img {', 'photo rule'],
+  ['.teacher-row-photo.has-photo .teacher-photo-img { opacity:1; }', 'photo shown via opacity'],
+  ['.principal-portrait-area.has-photo .principal-photo-img { opacity:1; }', 'principal photo shown via opacity'],
+  ['.t-modal-avatar.has-photo .t-modal-avatar-img { opacity:1; }', 'avatar photo shown via opacity'],
+  ['.s-dob {', 'student dob class'],
+  ['.teacher-row-photo { min-height:0; aspect-ratio:4/3; }', 'mobile poster photo'],
+  ['.students-grid { grid-template-columns:1fr; gap:1rem; }', 'mobile students column'],
+];
+mustHave.forEach(([needle, label]) => {
+  if (siteCss.includes(needle)) console.log(`  PASS  css has ${label}`);
+  else { console.log(`  FAIL  css missing ${label}: ${needle}`); problems++; }
+});
+if (/\.teacher-photo-img\s*\{[^}]*display\s*:\s*none/.test(siteCss)) { console.log('  FAIL  .teacher-photo-img still uses display:none'); problems++; }
+else console.log('  PASS  no display:none on .teacher-photo-img');
+
+[['.adm-grid { grid-template-columns:1fr;', 'admin single-column cards'],
+ ['.adm-tabs { display:grid;', 'admin 3-column tabs'],
+ ['.adm-form-actions {', 'admin sticky actions'],
+ ['.adm-card-actions .adm-btn { flex:0 0 auto; width:44px;', 'admin 44px touch buttons']]
+.forEach(([needle, label]) => {
+  if (injected.includes(needle)) console.log(`  PASS  admin css has ${label}`);
+  else { console.log(`  FAIL  admin css missing ${label}`); problems++; }
+});
+
+console.log(problems ? `\n${problems} problem(s) found.` : '\nAll CSS/layout checks passed.');
+process.exit(problems ? 1 : 0);
