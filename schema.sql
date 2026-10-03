@@ -1,74 +1,88 @@
--- schema.sql
--- شغّل الكود ده مرة واحدة في Neon (SQL editor بتاع neon.tech) قبل أول ديبلوي.
+-- ==========================================
+-- Malg App — Database Schema (from scratch)
+-- ==========================================
 
-CREATE TABLE IF NOT EXISTS teachers (
-  id          SERIAL PRIMARY KEY,
-  name        TEXT NOT NULL,
-  subject     TEXT,
-  spec        TEXT,
-  grade       TEXT DEFAULT 'الثانوية',
-  icon        TEXT,
-  cat         TEXT,
-  "where"     TEXT DEFAULT 'مدرسة شهيد حسن حمدي الثانوية',
-  lang        TEXT DEFAULT 'ar',
-  gender      TEXT DEFAULT 'ذ',
-  bio         TEXT,
-  photo_data  TEXT,            -- صورة base64 (اختياري)
-  sort_order  INT DEFAULT 0,
-  created_at  TIMESTAMPTZ DEFAULT now()
+-- جدول المستخدمين الأساسي
+CREATE TABLE IF NOT EXISTS users (
+  id                    SERIAL PRIMARY KEY,
+  phone                 TEXT NOT NULL UNIQUE,          -- رقم الهاتف (يستخدم كـ username)
+  password_hash         TEXT NOT NULL,                 -- كلمة السر مشفرة (bcrypt)
+  name                  TEXT NOT NULL,                 -- اسم المستخدم الظاهر
+  avatar_url            TEXT,                          -- صورة البروفايل
+  status_text           TEXT DEFAULT '',               -- الحالة (زي "Available" في واتساب)
+  bio                   TEXT DEFAULT '',               -- تعريف عن الشخص (نبذة)
+  age                   SMALLINT,                      -- السن (اختياري)
+  city                  TEXT DEFAULT '',               -- المدينة/البلد (اختياري)
+
+  -- توثيق وحسابات رسمية
+  is_verified           BOOLEAN NOT NULL DEFAULT false, -- علامة التوثيق ✔️
+  is_official           BOOLEAN NOT NULL DEFAULT false, -- حساب رسمي (زي حساب Malg نفسه)
+  official_display_name TEXT,                           -- الاسم الظاهر بدل الرقم لو حساب رسمي
+
+  -- الحظر وإدارة الحساب
+  banned                BOOLEAN NOT NULL DEFAULT false,
+  banned_reason         TEXT,
+  banned_at             TIMESTAMPTZ,
+
+  -- حماية تسجيل الدخول
+  failed_login_attempts INTEGER NOT NULL DEFAULT 0,
+  locked_until          TIMESTAMPTZ,
+
+  created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at          TIMESTAMPTZ
 );
 
-CREATE TABLE IF NOT EXISTS students (
-  id          SERIAL PRIMARY KEY,
-  rank        INT DEFAULT 0,
-  name        TEXT NOT NULL,
-  icon        TEXT,
-  grade       TEXT,
-  score       TEXT,
-  "from"      TEXT,
-  dob         DATE,
-  quote       TEXT,
-  photo_data  TEXT,
-  created_at  TIMESTAMPTZ DEFAULT now()
+-- لو الجدول موجود عندك من قبل: الأسطر دي بتضيف الأعمدة الجديدة من غير ما تمس بياناتك
+ALTER TABLE users ADD COLUMN IF NOT EXISTS bio  TEXT DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS age  SMALLINT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS city TEXT DEFAULT '';
+
+CREATE INDEX IF NOT EXISTS idx_users_phone ON users (phone);
+CREATE INDEX IF NOT EXISTS idx_users_verified ON users (is_verified);
+
+-- جلسات تسجيل الدخول (بدل ما نخزن التوكن في الداتابيز ممكن نستخدم JWT بس ده لو عايزين نقدر نلغي الجلسة من لوحة الأدمن)
+CREATE TABLE IF NOT EXISTS sessions (
+  id            SERIAL PRIMARY KEY,
+  user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash    TEXT NOT NULL UNIQUE,
+  device_info   TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at    TIMESTAMPTZ NOT NULL,
+  revoked       BOOLEAN NOT NULL DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS photos (
-  id          SERIAL PRIMARY KEY,
-  title       TEXT,
-  image_data  TEXT NOT NULL,   -- صورة base64
-  sort_order  INT DEFAULT 0,
-  created_at  TIMESTAMPTZ DEFAULT now()
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions (user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions (token_hash);
+
+-- طلبات إعادة تعيين كلمة السر (لما حد ينسى الباسورد ويتواصل واتساب)
+CREATE TABLE IF NOT EXISTS password_reset_requests (
+  id            SERIAL PRIMARY KEY,
+  phone         TEXT NOT NULL,
+  status        TEXT NOT NULL DEFAULT 'pending', -- pending / resolved
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  resolved_at   TIMESTAMPTZ,
+  resolved_by   TEXT -- اسم الأدمن اللي حل الطلب
 );
 
--- بيانات ابتدائية اختيارية: تقدر تنسخ المدرسين والطلاب الموجودين في الكود
--- القديم (index.html) وتحطهم هنا كـ INSERT، أو تضيفهم يدويًا من لوحة الأدمن
--- بعد ما الموقع يشتغل (أسهل بكتير).
-
--- ============================================================
--- الشكاوى والاقتراحات (بتتبعت من نموذج "تواصل معانا" في الموقع
--- وبتظهر في تبويب "الشكاوى" في لوحة الأدمن).
--- لو الجداول اللي فوق موجودة عندك خلاص، شغّل الجزء ده لوحده في Neon.
--- ============================================================
-CREATE TABLE IF NOT EXISTS complaints (
-  id          SERIAL PRIMARY KEY,
-  type        TEXT NOT NULL,          -- نوع الشكوى (من قائمة ثابتة في _validate.js)
-  name        TEXT NOT NULL,          -- اسم مقدم الشكوى بالكامل
-  phone       TEXT NOT NULL,          -- موبايل مصري عليه واتساب (01xxxxxxxxx)
-  details     TEXT NOT NULL,          -- تفاصيل الشكوى
-  images      JSONB DEFAULT '[]'::jsonb,  -- لحد 5 صور base64 (اختياري)
-  status      TEXT DEFAULT 'جديدة',   -- جديدة / تمت المراجعة
-  created_at  TIMESTAMPTZ DEFAULT now()
+-- ==========================================
+-- حد أقصى لمحاولات البحث عن رقم (حماية خصوصية)
+-- البحث بقى بالرقم الكامل بالظبط، بس ده لوحده مايمنعش حد يجرب أرقام واحد ورا التاني.
+-- الجدول ده عدّاد واحد لكل مستخدم (صف واحد ثابت، مش لوج بيكبر).
+-- ==========================================
+CREATE TABLE IF NOT EXISTS search_rate_limit (
+  user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  window_start  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  attempts      INTEGER NOT NULL DEFAULT 0
 );
 
--- ============================================================
--- إعدادات الموقع العامة (key/value): بيانات المدير وشريط إحصائيات
--- الرئيسية بتتخزن هنا وبتتعدل من لوحة الأدمن (تبويب "المدير" وتبويب
--- "معلومات الموقع") بدون أي تعديل في الكود — والزائر بيشوفها لحظيًا.
--- لو الجداول اللي فوق موجودة عندك خلاص، شغّل الجزء ده لوحده في Neon.
--- ============================================================
-CREATE TABLE IF NOT EXISTS site_settings (
-  key         TEXT PRIMARY KEY,           -- principal / stats
-  value       JSONB NOT NULL DEFAULT '{}'::jsonb,
-  updated_at  TIMESTAMPTZ DEFAULT now()
+-- سجل أحداث الأدمن (Audit log) - مهم عشان تعرف مين عمل حظر/توثيق/مسح
+CREATE TABLE IF NOT EXISTS admin_actions_log (
+  id            SERIAL PRIMARY KEY,
+  admin_user    TEXT NOT NULL,
+  action_type   TEXT NOT NULL, -- ban / unban / verify / unverify / delete / reset_password
+  target_user_id INTEGER,
+  target_phone  TEXT,
+  details       JSONB,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
