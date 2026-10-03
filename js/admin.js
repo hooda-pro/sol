@@ -440,6 +440,18 @@ const ADMIN_SCHEMAS = {
     ],
     itemTitle: () => '', itemSub: () => '',
   },
+  // صور المطورين (كروت "خلف الموقع" في صفحة عن الموقع) — قيمة واحدة في
+  // site_settings تحت مفتاح 'developers'، نفس فورم إعدادات المدير.
+  developers: {
+    label: 'المطورين', api: '/api/settings', idField: 'id', custom: 'settings',
+    settingsKey: 'developers',
+    settingsHint: 'صور المطورين بتظهر في كروت "خلف الموقع" وفي نافذة التعريف بصفحة "عن الموقع" فور الحفظ. اللي هتسيبه من غير اختيار صورة بتفضل صورته القديمة.',
+    fields: [
+      { key: 'mahmoud_photo', label: 'صورة محمود أحمد سعيد', type: 'image' },
+      { key: 'rimas_photo', label: 'صورة ريماس حبيب', type: 'image' },
+    ],
+    itemTitle: () => '', itemSub: () => '',
+  },
   // إحصائيات وأرقام الموقع — عدادات من قاعدة البيانات + فورم تعديل شريط
   // الإحصائيات اللي بيظهر للزوار في الرئيسية (custom: 'siteinfo').
   siteinfo: {

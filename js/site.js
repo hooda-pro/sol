@@ -372,6 +372,8 @@ function emptyStateHtml(msg, sub) {
 function applySiteSettings() {
   try { if (siteSettings.principal) applyPrincipalSettings(siteSettings.principal); }
   catch (e) { console.error('applyPrincipalSettings failed:', e); }
+  try { if (siteSettings.developers) applyDevelopersSettings(siteSettings.developers); }
+  catch (e) { console.error('applyDevelopersSettings failed:', e); }
   try { if (Array.isArray(siteSettings.stats)) applyStatsSettings(siteSettings.stats); }
   catch (e) { console.error('applyStatsSettings failed:', e); }
 }
@@ -412,6 +414,29 @@ function applyPrincipalSettings(p) {
     const area = img.closest('.principal-portrait-area');
     if (area) area.classList.add('has-photo');
   }
+}
+
+// صور المطورين: بتيجي من site_settings تحت 'developers' كـ { mahmoud_photo, rimas_photo }.
+// بتعدي على safePhotoSrc زي باقي صور الموقع، وبتتحفظ في DEV_PHOTOS عشان نافذة
+// التعريف (openDev) تعرض نفس الصورة.
+const DEV_PHOTOS = {};
+function applyDevelopersSettings(d) {
+  if (!d || typeof d !== 'object') return;
+  Object.keys(DEVELOPERS).forEach(id => {
+    const photo = safePhotoSrc(d[id + '_photo']);
+    if (!photo) return;
+    DEV_PHOTOS[id] = photo;
+    const card = document.querySelector('.about-member[data-dev="' + id + '"]');
+    const img = card && card.querySelector('.about-member-photo-img');
+    if (!img) return;
+    // صورة من قاعدة البيانات — نوقف منطق تجربة photos/<id>.jpg عشان onerror ميرجّعش القديمة
+    img.removeAttribute('data-num');
+    img.alt = DEVELOPERS[id].name;
+    img.src = photo;
+    img.style.display = '';
+    const holder = img.closest('.about-member-photo');
+    if (holder) holder.classList.add('has-photo');
+  });
 }
 
 // أرقام الشريط: بنحدث الأهداف والتسميات بالترتيب على كروت الصفحة الرئيسية.
@@ -1193,7 +1218,7 @@ function renderDevAges() {
 function openDev(id) {
   const d = DEVELOPERS[id];
   if (!d) return;
-  openTModal({ name:d.name, subject:d.role, icon:d.icon, num:id, age:devAge(d), bio:d.bio });
+  openTModal({ name:d.name, subject:d.role, icon:d.icon, num:id, age:devAge(d), bio:d.bio, photo_data:DEV_PHOTOS[id] });
 }
 
 function openTModal(t) {

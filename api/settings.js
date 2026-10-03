@@ -6,13 +6,14 @@
 // المفاتيح المسموحة (whitelist) عشان محدش يخزن حاجات عشوائية في القاعدة:
 //   principal → بيانات المدير (اسم/وظيفة/شارة/نبذة/صورة)
 //   stats     → شريط إحصائيات الرئيسية (4 أرقام وتسمياتها)
+//   developers → صور المطورين في صفحة "عن الموقع" (mahmoud_photo / rimas_photo)
 // سلوك الحفظ: دمج مع القديم — حقل مش مبعوت = سيبه زي ما هو،
 // وحقل مبعوت بـ null = امسحه (بتستخدمه لوحة الأدمن لإزالة الصور).
 const { sql } = require('./_db.js');
 const { isAuthorized } = require('./_auth.js');
 const { cleanImage } = require('./_validate.js');
 
-const ALLOWED_KEYS = new Set(['principal', 'stats']);
+const ALLOWED_KEYS = new Set(['principal', 'stats', 'developers']);
 
 // مفاتيح قيمتها مصفوفة مش كائن. دي بتتخزن كما هي (استبدال كامل) — الدمج
 // الجزئي مالوش معنى مع المصفوفات، وكمان بيبوّظ شكلها (بصت لكائن أرقام).
@@ -21,6 +22,8 @@ const ARRAY_KEYS = new Set(['stats']);
 // حد أقصى لحجم القيمة المخزنة (كنص JSON) — يكفي صورة base64 مضغوطة
 // (الفرونت بيضغط لـ WebP صغير) + الحقول النصية، وبيمنع تخزين payload ضخم.
 const MAX_VALUE_BYTES = 200 * 1024;
+// مفتاح المطورين فيه صورتين مع بعض (محمود + ريماس) فليه حد أكبر.
+const MAX_VALUE_BYTES_BY_KEY = { developers: 450 * 1024 };
 
 function isPlainObject(v) {
   return !!v && typeof v === 'object' && !Array.isArray(v);
@@ -51,7 +54,8 @@ function sanitizeValue(v) {
   for (const [k, val] of Object.entries(v)) {
     if (typeof k !== 'string' || !k || k.length > 40) continue;
     if (val === null) { out[k] = null; continue; } // null = مسح متعمد للحقل
-    if (k === 'photo_data') {
+    // photo_data (المدير) أو أي مفتاح ينتهي بـ _photo (مثلًا mahmoud_photo)
+    if (k === 'photo_data' || k.endsWith('_photo')) {
       if (typeof val === 'string' && val) {
         const img = cleanImage(val);
         if (!img) return { error: 'الصورة غير صالحة — المسموح صور فقط' };
@@ -165,7 +169,7 @@ module.exports = async function handler(req, res) {
         }
       }
       const mergedJson = JSON.stringify(merged);
-      if (mergedJson.length > MAX_VALUE_BYTES) {
+      if (mergedJson.length > (MAX_VALUE_BYTES_BY_KEY[key] || MAX_VALUE_BYTES)) {
         return res.status(413).json({ error: 'القيمة أكبر من الحد المسموح' });
       }
       await sql`

@@ -91,6 +91,24 @@ function check(name, cond) {
   await handler(mockReq('PUT', { key: 'hacked' }, { value: { a: 1 } }), res);
   check('مفتاح غير معروف بيترفض 400', res.statusCode === 400);
 
+  // ٧) صور المطورين: حفظ صورة محمود ثم صورة ريماس — الأولى لازم تفضل (دمج)
+  const tiny = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ==';
+  res = mockRes();
+  await handler(mockReq('PUT', { key: 'developers' }, { value: { mahmoud_photo: tiny } }), res);
+  check('PUT developers (صورة محمود) يرجع 200', res.statusCode === 200);
+  res = mockRes();
+  await handler(mockReq('PUT', { key: 'developers' }, { value: { rimas_photo: tiny } }), res);
+  check('حفظ صورة ريماس بيحتفظ بصورة محمود', res.payload.value.mahmoud_photo === tiny && res.payload.value.rimas_photo === tiny);
+  res = mockRes();
+  await handler(mockReq('GET', {}), res);
+  check('الزائر بيشوف settings.developers بالصورتين', res.payload.settings.developers && res.payload.settings.developers.rimas_photo === tiny);
+  res = mockRes();
+  await handler(mockReq('PUT', { key: 'developers' }, { value: { mahmoud_photo: null } }), res);
+  check('null بيمسح صورة محمود وريماس تفضل', !('mahmoud_photo' in res.payload.value) && res.payload.value.rimas_photo === tiny);
+  res = mockRes();
+  await handler(mockReq('PUT', { key: 'developers' }, { value: { mahmoud_photo: 'https://evil.example/x.jpg' } }), res);
+  check('رابط خارجي بدل data:image بيترفض 400', res.statusCode === 400);
+
   if (failures) { console.error(failures + ' check(s) failed.'); process.exit(1); }
   console.log('\nكل اختبارات دورة حفظ/قراءة الإعدادات نجحت — الكود المحلي سليم.');
 })().catch(e => { console.error(e); process.exit(1); });
