@@ -629,30 +629,30 @@
     <div class="about-team-section">
       <div class="about-team-label">خلف الموقع</div>
       <div class="about-team-grid">
-        <div class="about-member about-member--lead about-member-reveal" style="transition-delay:0s">
+        <div class="about-member about-member--lead about-member-reveal" data-dev="mahmoud" role="button" tabindex="0" onclick="openDev('mahmoud')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDev('mahmoud')}" style="transition-delay:0s">
           <div class="about-member-photo">
             <span class="about-member-photo-letter">م</span>
-            <img class="about-member-photo-img" src="photos/mahmoud.jpg" alt="محمود أحمد سعيد" loading="lazy" onerror="this.style.display='none'" onload="this.parentNode.classList.add('has-photo')" />
+            <img class="about-member-photo-img" src="photos/mahmoud.jpg" data-num="mahmoud" data-ext-idx="0" alt="محمود أحمد سعيد" loading="lazy" onerror="tryNextPhotoExt(this)" onload="onPhotoLoad(this, '.about-member-photo')" />
             <div class="about-member-badge"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           </div>
           <div class="about-member-info">
             <h4 class="about-member-name">محمود أحمد سعيد</h4>
             <p class="about-member-role">مطوّر الموقع ومصمّمه</p>
-            <span class="about-member-age" data-birth="" data-age=""></span>
-            <p class="about-member-bio"></p>
+            <span class="about-member-age"></span>
+            <span class="about-member-hint">اضغط للتعريف بيّا ←</span>
           </div>
         </div>
-        <div class="about-member  about-member-reveal" style="transition-delay:0.1s">
+        <div class="about-member about-member--lead about-member-reveal" data-dev="rimas" role="button" tabindex="0" onclick="openDev('rimas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDev('rimas')}" style="transition-delay:0.1s">
           <div class="about-member-photo">
             <span class="about-member-photo-letter">ر</span>
-            <img class="about-member-photo-img" src="photos/rimas.jpg" alt="ريماس حبيب" loading="lazy" onerror="this.style.display='none'" onload="this.parentNode.classList.add('has-photo')" />
+            <img class="about-member-photo-img" src="photos/rimas.jpg" data-num="rimas" data-ext-idx="0" alt="ريماس حبيب" loading="lazy" onerror="tryNextPhotoExt(this)" onload="onPhotoLoad(this, '.about-member-photo')" />
             <div class="about-member-badge"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           </div>
           <div class="about-member-info">
             <h4 class="about-member-name">ريماس حبيب</h4>
             <p class="about-member-role">مساهمة في التفكير والتخطيط</p>
-            <span class="about-member-age" data-age="16"></span>
-            <p class="about-member-bio"></p>
+            <span class="about-member-age"></span>
+            <span class="about-member-hint">اضغط للتعريف بيّا ←</span>
           </div>
         </div>
       </div>
@@ -689,10 +689,10 @@
     <div class="t-modal-grid">
       <div class="t-modal-cell" id="mAgeCell"><span class="lbl">السن</span><span class="val" id="mAge">—</span></div>
       <div class="t-modal-cell" id="mExpCell"><span class="lbl">الخبرة</span><span class="val" id="mExp">—</span></div>
-      <div class="t-modal-cell"><span class="lbl">التخصص</span><span class="val" id="mSpec">—</span></div>
-      <div class="t-modal-cell"><span class="lbl">المرحلة</span><span class="val" id="mGrade">—</span></div>
+      <div class="t-modal-cell" id="mSpecCell"><span class="lbl">التخصص</span><span class="val" id="mSpec">—</span></div>
+      <div class="t-modal-cell" id="mGradeCell"><span class="lbl">المرحلة</span><span class="val" id="mGrade">—</span></div>
       <div class="t-modal-cell" id="mFromCell"><span class="lbl">المنشأ</span><span class="val" id="mFrom">—</span></div>
-      <div class="t-modal-cell"><span class="lbl">يُدرِّس في</span><span class="val" id="mWhere">—</span></div>
+      <div class="t-modal-cell" id="mWhereCell"><span class="lbl">يُدرِّس في</span><span class="val" id="mWhere">—</span></div>
     </div>
     <div class="t-modal-bio" id="mBio">—</div>
   </div>

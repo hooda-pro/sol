@@ -23,18 +23,7 @@ function toArabicDigits(n) {
 function updateCopyrightYear() {
   const year = toArabicDigits(new Date().getFullYear());
   document.querySelectorAll('.copyright-year').forEach(el => { el.textContent = year; });
-  // سن المطوّرين: لو فيه data-birth (YYYY-MM-DD) بيتحسب لوحده ويزيد يوم عيد الميلاد،
-  // ولو مفيش بيتعرض الرقم الثابت من data-age. لو الاتنين فاضيين الخانة بتختفي.
-  document.querySelectorAll('.about-member-age').forEach(el => {
-    let age = parseInt(el.dataset.age || '', 10);
-    const b = (el.dataset.birth || '').split('-').map(Number);
-    if (b.length === 3 && b[0]) {
-      const now = new Date();
-      age = now.getFullYear() - b[0];
-      if (now.getMonth() + 1 < b[1] || (now.getMonth() + 1 === b[1] && now.getDate() < b[2])) age--;
-    }
-    if (age > 0) el.textContent = 'السن: ' + age.toLocaleString('ar-EG') + ' سنة';
-  });
+  renderDevAges();
 }
 
 /* ============================================================
@@ -79,7 +68,7 @@ const PHOTO_EXTS = ['jpg','jpeg','png','webp'];
 // (initial letter + silhouette) comes back instead of an empty panel.
 function photoFailed(img) {
   img.style.display = 'none';
-  const holder = img.closest('.teacher-row-photo, .principal-portrait-area, .t-modal-avatar');
+  const holder = img.closest('.teacher-row-photo, .principal-portrait-area, .t-modal-avatar, .about-member-photo');
   if (holder) holder.classList.remove('has-photo');
 }
 
@@ -1169,6 +1158,44 @@ function openTeacherPage(t) {
   goPage('teacher-profile');
 }
 
+
+/* ============================================================
+   المطوّرين — بيانات كروت "عن الموقع" وتعريفهم اللي بيظهر لما تضغط على الكارت
+   - birth: تاريخ الميلاد (YYYY-MM-DD) لو عايز السن يزيد لوحده يوم عيد الميلاد
+     (ملحوظة: التاريخ بيبقى ظاهر لأي حد يفتح مصدر الصفحة).
+   - age: رقم ثابت بيتستخدم لو مفيش birth.
+   - bio: التعريف. لو فاضي بيتخفي مكانه.
+   - الصورة: photos/<id>.jpg (أو png / webp / jpeg)
+============================================================ */
+const DEVELOPERS = {
+  mahmoud: { name:'محمود أحمد سعيد', role:'مطوّر الموقع ومصمّمه',      icon:'م', birth:'', age:0,  bio:'' },
+  rimas:   { name:'ريماس حبيب',      role:'مساهمة في التفكير والتخطيط', icon:'ر', birth:'', age:16, bio:'' }
+};
+function devAge(d) {
+  const b = (d.birth || '').split('-').map(Number);
+  if (b.length === 3 && b[0]) {
+    const now = new Date();
+    let age = now.getFullYear() - b[0];
+    if (now.getMonth() + 1 < b[1] || (now.getMonth() + 1 === b[1] && now.getDate() < b[2])) age--;
+    return age;
+  }
+  return d.age || 0;
+}
+function renderDevAges() {
+  document.querySelectorAll('.about-member[data-dev]').forEach(card => {
+    const d = DEVELOPERS[card.dataset.dev];
+    const el = card.querySelector('.about-member-age');
+    const age = d ? devAge(d) : 0;
+    if (el && age > 0) el.textContent = 'السن: ' + age.toLocaleString('ar-EG') + ' سنة';
+  });
+}
+// نفس نافذة المدرس: صورة + اسم + دور + سن + تعريف
+function openDev(id) {
+  const d = DEVELOPERS[id];
+  if (!d) return;
+  openTModal({ name:d.name, subject:d.role, icon:d.icon, num:id, age:devAge(d), bio:d.bio });
+}
+
 function openTModal(t) {
   document.getElementById('mAvLetter').textContent = t.icon;
   const avEl = document.getElementById('mAv');
@@ -1195,12 +1222,16 @@ function openTModal(t) {
   if (t.age) document.getElementById('mAge').textContent = t.age + ' سنة';
   document.getElementById('mExpCell').style.display = t.exp ? '' : 'none';
   if (t.exp) document.getElementById('mExp').textContent = t.exp + ' سنة';
-  document.getElementById('mSpec').textContent = t.spec;
-  document.getElementById('mGrade').textContent= t.grade;
+  document.getElementById('mSpecCell').style.display = t.spec ? '' : 'none';
+  document.getElementById('mSpec').textContent = t.spec || '';
+  document.getElementById('mGradeCell').style.display = t.grade ? '' : 'none';
+  document.getElementById('mGrade').textContent= t.grade || '';
   document.getElementById('mFromCell').style.display = t.from ? '' : 'none';
   if (t.from) document.getElementById('mFrom').textContent = t.from;
-  document.getElementById('mWhere').textContent= t.where;
-  document.getElementById('mBio').textContent  = t.bio;
+  document.getElementById('mWhereCell').style.display = t.where ? '' : 'none';
+  document.getElementById('mWhere').textContent= t.where || '';
+  document.getElementById('mBio').textContent  = t.bio || '';
+  document.getElementById('mBio').style.display = t.bio ? '' : 'none';
   document.getElementById('tModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }

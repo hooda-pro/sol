@@ -1440,6 +1440,10 @@ html.light-mode .support-field select option { background:#fffdf7; color:#241d10
 .about-member-age:empty { display:none; }
 .about-member-bio { margin-top:0.7rem; font-size:0.82rem; line-height:1.9; color:var(--text-dim); }
 .about-member-bio:empty { display:none; }
+.about-member { cursor:pointer; }
+.about-member:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+.about-member-hint { display:block; margin-top:0.7rem; font-size:0.72rem; color:var(--text-muted); }
+.about-member:hover .about-member-hint { color:var(--gold); }
 @media (max-width:640px) {
   .about-member--lead .about-member-photo, .about-member-photo { aspect-ratio:4/3; }
   .about-member-info { padding:1rem 1.1rem 1.25rem; }
